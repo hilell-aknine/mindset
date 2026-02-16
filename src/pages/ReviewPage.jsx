@@ -37,10 +37,12 @@ export default function ReviewPage() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [feedback, setFeedback] = useState(null)
   const [completed, setCompleted] = useState(0)
+  const [lastCorrect, setLastCorrect] = useState(false)
 
   const current = reviewExercises[currentIndex]
-  const progress = reviewExercises.length > 0
-    ? ((currentIndex) / reviewExercises.length) * 100
+  const totalToReview = reviewExercises.length + completed
+  const progress = totalToReview > 0
+    ? ((currentIndex + completed) / totalToReview) * 100
     : 0
 
   const handleAnswer = useCallback((isCorrect, explanation) => {
@@ -48,6 +50,7 @@ export default function ReviewPage() {
       play('correct')
       onCorrectAnswer()
       setFeedback({ correct: true, explanation })
+      setLastCorrect(true)
       // Remove from review queue
       updatePlayer(prev => ({
         ...prev,
@@ -58,17 +61,19 @@ export default function ReviewPage() {
       play('wrong')
       onWrongAnswer()
       setFeedback({ correct: false, explanation })
+      setLastCorrect(false)
     }
   }, [currentIndex, onCorrectAnswer, onWrongAnswer, play, updatePlayer])
 
   const handleContinue = useCallback(() => {
     setFeedback(null)
-    if (currentIndex + 1 >= reviewExercises.length) {
-      // All done
-    } else {
+    // If last answer was correct, array already shortened — don't increment
+    // If last answer was wrong, item stays — need to move to next
+    if (!lastCorrect) {
       setCurrentIndex(i => i + 1)
     }
-  }, [currentIndex, reviewExercises.length])
+    // If correct, currentIndex stays but reviewExercises has shifted
+  }, [lastCorrect])
 
   // Empty state
   if (reviewExercises.length === 0) {
