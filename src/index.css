@@ -22,20 +22,19 @@
   box-sizing: border-box;
 }
 
-html {
+html, body {
   font-family: var(--font-body);
   background: var(--color-bg-base);
   color: var(--color-frost-white);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
 }
 
 body {
   min-height: 100dvh;
-  overflow-x: hidden;
-  width: 100%;
-  max-width: 100vw;
 }
 
 #root {
@@ -44,6 +43,13 @@ body {
   flex-direction: column;
   overflow-x: hidden;
   width: 100%;
+  max-width: 100vw;
+}
+
+/* Force all flex/grid children to respect container width */
+main, header, footer {
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 ::-webkit-scrollbar { width: 6px; }

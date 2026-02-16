@@ -14,8 +14,8 @@ export default function HomePage() {
   return (
     <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6 overflow-hidden">
       {/* Welcome */}
-      <div className="mb-8 animate-fade-in">
-        <h2 className="font-display text-2xl font-bold text-frost-white mb-1">
+      <div className="mb-6 animate-fade-in">
+        <h2 className="font-display text-2xl font-bold text-frost-white mb-1 truncate">
           שלום! 👋
         </h2>
         <p className="text-frost-white/50 text-sm">
@@ -50,13 +50,13 @@ export default function HomePage() {
             <button
               key={book.slug}
               onClick={() => navigate(`/book/${book.slug}`)}
-              className="glass-card p-5 flex items-center gap-4 text-right hover:border-gold/20 transition-all group"
+              className="glass-card p-4 flex items-center gap-3 text-right hover:border-gold/20 transition-all group overflow-hidden w-full"
             >
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-3xl shrink-0 group-hover:scale-105 transition-transform">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-2xl sm:text-3xl shrink-0 group-hover:scale-105 transition-transform">
                 {book.icon}
               </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-display text-lg font-bold text-frost-white truncate">{book.title}</h3>
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <h3 className="font-display text-base sm:text-lg font-bold text-frost-white truncate">{book.title}</h3>
                 <p className="text-xs text-frost-white/40 mt-0.5">{book.author}</p>
                 <div className="mt-2 flex items-center gap-2">
                   <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
@@ -68,14 +68,13 @@ export default function HomePage() {
                   <span className="text-[10px] text-frost-white/40">{Math.round(progress)}%</span>
                 </div>
               </div>
-              <BookOpen className="w-5 h-5 text-frost-white/20 group-hover:text-gold transition-colors shrink-0" />
             </button>
           )
         })}
       </div>
 
       {/* Quick actions */}
-      <div className="grid grid-cols-3 gap-3 mt-6">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-6">
         {/* Review */}
         <button
           onClick={() => navigate('/review')}
@@ -117,7 +116,7 @@ export default function HomePage() {
       </div>
 
       {/* Stats summary */}
-      <div className="grid grid-cols-3 gap-3 mt-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-4">
         <div className="glass-card p-3 text-center animate-fade-in" style={{ animationDelay: '0.3s' }}>
           <p className="text-2xl font-bold text-gold">{player.xp}</p>
           <p className="text-[10px] text-frost-white/40 mt-1">XP</p>
