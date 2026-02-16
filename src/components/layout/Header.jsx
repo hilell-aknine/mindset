@@ -12,7 +12,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 bg-bg-base/80 backdrop-blur-lg border-b border-white/5">
-      <div className="max-w-2xl mx-auto px-4 py-2.5 flex items-center justify-between">
+      <div className="max-w-2xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2 overflow-hidden">
         {/* Logo */}
         <button
           onClick={() => navigate('/home')}
@@ -25,7 +25,7 @@ export default function Header() {
         </button>
 
         {/* Stats bar */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {/* Streak */}
           {player.currentStreak > 0 && (
             <div className="flex items-center gap-1 text-warning">

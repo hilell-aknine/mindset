@@ -42,7 +42,7 @@ export default function BookPage() {
   }
 
   return (
-    <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
+    <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6 overflow-hidden">
       {/* Back + Title */}
       <div className="flex items-center gap-3 mb-6 animate-fade-in">
         <button
