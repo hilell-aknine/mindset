@@ -5,8 +5,11 @@ import { ArrowRight, Lock, Check, Play } from 'lucide-react'
 import PurchaseModal from '../components/modals/PurchaseModal'
 import AICoachButton from '../components/ai/AICoachButton'
 import strengthsFinder from '../data/books/strengths-finder.json'
+import atomicHabits from '../data/books/atomic-habits.json'
+import happyChemicals from '../data/books/happy-chemicals.json'
+import nextFiveMoves from '../data/books/next-five-moves.json'
 
-const BOOKS = { 'strengths-finder': strengthsFinder }
+const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves }
 
 export default function BookPage() {
   const { slug } = useParams()

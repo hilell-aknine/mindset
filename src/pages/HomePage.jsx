@@ -2,8 +2,11 @@ import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
 import { BookOpen, Trophy, Flame, RotateCcw, BarChart2, Settings } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
+import atomicHabits from '../data/books/atomic-habits.json'
+import happyChemicals from '../data/books/happy-chemicals.json'
+import nextFiveMoves from '../data/books/next-five-moves.json'
 
-const BOOKS = [strengthsFinder]
+const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves]
 
 export default function HomePage() {
   const navigate = useNavigate()

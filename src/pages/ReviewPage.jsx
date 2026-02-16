@@ -7,8 +7,11 @@ import ExerciseRouter from '../components/exercises/ExerciseRouter'
 import FeedbackPanel from '../components/feedback/FeedbackPanel'
 import { ArrowRight, RotateCcw, PartyPopper } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
+import atomicHabits from '../data/books/atomic-habits.json'
+import happyChemicals from '../data/books/happy-chemicals.json'
+import nextFiveMoves from '../data/books/next-five-moves.json'
 
-const BOOKS = { 'strengths-finder': strengthsFinder }
+const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves }
 
 export default function ReviewPage() {
   const navigate = useNavigate()

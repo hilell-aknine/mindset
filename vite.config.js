@@ -10,7 +10,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
           supabase: ['@supabase/supabase-js'],
-          data: ['./src/data/books/strengths-finder.json'],
+          data: ['./src/data/books/strengths-finder.json', './src/data/books/atomic-habits.json', './src/data/books/happy-chemicals.json', './src/data/books/next-five-moves.json'],
         },
       },
     },
