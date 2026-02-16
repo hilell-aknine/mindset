@@ -41,8 +41,6 @@ export default function LessonPage() {
   const progress = exercises.length > 0 ? ((currentIndex) / exercises.length) * 100 : 0
 
   const handleAnswer = useCallback((isCorrect, explanation) => {
-    const prevLevel = player.level
-
     if (isCorrect) {
       play('correct')
       onCorrectAnswer()
@@ -62,7 +60,6 @@ export default function LessonPage() {
           lessonIndex: parseInt(lessonIndex),
           exerciseIndex: currentIndex,
         }
-        // Avoid duplicates
         const exists = queue.some(q =>
           q.bookSlug === item.bookSlug &&
           q.chapterIndex === item.chapterIndex &&
@@ -70,15 +67,16 @@ export default function LessonPage() {
           q.exerciseIndex === item.exerciseIndex
         )
         if (exists) return prev
+
+        // Check if hearts ran out (use prev to get accurate count after decrement)
+        if (prev.hearts <= 1) {
+          setTimeout(() => setShowOutOfHearts(true), 600)
+        }
+
         return { ...prev, reviewQueue: [...queue, item] }
       })
-
-      // Check if hearts ran out
-      if (player.hearts <= 1) {
-        setTimeout(() => setShowOutOfHearts(true), 600)
-      }
     }
-  }, [onCorrectAnswer, onWrongAnswer, updatePlayer, player.hearts, player.level, play, bookSlug, chapterIndex, lessonIndex, currentIndex])
+  }, [onCorrectAnswer, onWrongAnswer, updatePlayer, play, bookSlug, chapterIndex, lessonIndex, currentIndex])
 
   // Watch for level changes
   const [prevLevel, setPrevLevel] = useState(player.level)
@@ -108,11 +106,12 @@ export default function LessonPage() {
     setFeedback(null)
     if (currentIndex + 1 >= exercises.length) {
       completeLesson(bookSlug, parseInt(chapterIndex), parseInt(lessonIndex), mistakes)
+      play('lessonComplete')
       setIsComplete(true)
     } else {
       setCurrentIndex(i => i + 1)
     }
-  }, [currentIndex, exercises.length, bookSlug, chapterIndex, lessonIndex, mistakes, completeLesson])
+  }, [currentIndex, exercises.length, bookSlug, chapterIndex, lessonIndex, mistakes, completeLesson, play])
 
   if (!book || !lesson) {
     return (

@@ -39,6 +39,10 @@ export function useSound() {
         case 'achievement':
           tone(659, 0.15); tone(784, 0.15, 'sine', 0.3, 0.15); tone(1047, 0.3, 'sine', 0.3, 0.3)
           break
+        case 'lessonComplete':
+          [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.2, 'sine', 0.25, i * 0.12))
+          tone(1047, 0.4, 'sine', 0.2, 0.5)
+          break
         case 'click':
           tone(600, 0.08, 'sine', 0.15)
           break

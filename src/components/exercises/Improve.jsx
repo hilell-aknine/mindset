@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { checkAnswer, getExplanation } from '../../lib/gameEngine'
+import { checkAnswer } from '../../lib/gameEngine'
 
 const LETTERS = ['א', 'ב', 'ג', 'ד']
 
@@ -14,8 +14,7 @@ export default function Improve({ exercise, onAnswer, disabled }) {
   const handleCheck = () => {
     if (selected === null) return
     const correct = checkAnswer(exercise, selected)
-    const explanation = getExplanation(exercise, selected)
-    onAnswer(correct, explanation)
+    onAnswer(correct, exercise.explanation)
   }
 
   return (

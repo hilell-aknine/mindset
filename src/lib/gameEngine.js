@@ -52,13 +52,6 @@ function checkIdentifyAnswer(exercise, selection) {
   return selectionOverlapRatio >= 0.6 && correctOverlapRatio >= 0.4
 }
 
-export function getExplanation(exercise, userAnswer) {
-  if (exercise.wrongExplanations && userAnswer !== exercise.correct) {
-    return exercise.wrongExplanations[userAnswer] || exercise.explanation
-  }
-  return exercise.explanation
-}
-
 export function shuffleArray(array) {
   const shuffled = [...array]
   for (let i = shuffled.length - 1; i > 0; i--) {

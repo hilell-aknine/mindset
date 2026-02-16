@@ -3,7 +3,8 @@ import { supabase } from '../config/supabase'
 import { useAuth } from './AuthContext'
 import {
   DEFAULT_PLAYER, MAX_HEARTS, FREE_DAILY_TOKENS,
-  HEART_RECOVERY_MINUTES, getLevelForXP, XP_CORRECT_ANSWER
+  HEART_RECOVERY_MINUTES, getLevelForXP, XP_CORRECT_ANSWER,
+  XP_LESSON_COMPLETE, XP_PERFECT_LESSON
 } from '../config/constants'
 
 const PlayerContext = createContext(null)
@@ -167,7 +168,7 @@ export function PlayerProvider({ children }) {
       const key = `${bookSlug}:${chapterId}:${lessonId}`
       return {
         ...prev,
-        xp: prev.xp + 50 + (mistakes === 0 ? 25 : 0),
+        xp: prev.xp + XP_LESSON_COMPLETE + (mistakes === 0 ? XP_PERFECT_LESSON : 0),
         completedLessons: { ...prev.completedLessons, [key]: true },
         perfectLessons: mistakes === 0 ? (prev.perfectLessons || 0) + 1 : (prev.perfectLessons || 0),
       }
