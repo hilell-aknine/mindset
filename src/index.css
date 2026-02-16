@@ -16,40 +16,35 @@
   --font-body: "Heebo", sans-serif;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* Reset moved to @layer base so Tailwind utilities can override */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 }
 
-html, body {
-  font-family: var(--font-body);
-  background: var(--color-bg-base);
-  color: var(--color-frost-white);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
-  width: 100%;
-  max-width: 100vw;
-}
+@layer base {
+  html, body {
+    font-family: var(--font-body);
+    background: var(--color-bg-base);
+    color: var(--color-frost-white);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
 
-body {
-  min-height: 100dvh;
-}
+  body {
+    min-height: 100dvh;
+  }
 
-#root {
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  overflow-x: hidden;
-  width: 100%;
-  max-width: 100vw;
-}
-
-/* Force all flex/grid children to respect container width */
-main, header, footer {
-  max-width: 100vw;
-  overflow-x: hidden;
+  #root {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
 }
 
 ::-webkit-scrollbar { width: 6px; }
