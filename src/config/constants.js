@@ -37,6 +37,7 @@ export const DEFAULT_PLAYER = {
   onboardingComplete: false,
   completedLessons: {},
   reviewQueue: [],
+  perfectLessons: 0,
 }
 
 export const getLevelForXP = (xp) => {

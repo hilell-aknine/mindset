@@ -1,10 +1,16 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
 import { useToast } from '../contexts/ToastContext'
+import { useSound } from '../hooks/useSound'
+import { checkNewAchievements } from '../lib/achievements'
 import ExerciseRouter from '../components/exercises/ExerciseRouter'
 import FeedbackPanel from '../components/feedback/FeedbackPanel'
 import LessonComplete from '../components/feedback/LessonComplete'
+import LevelUpOverlay from '../components/feedback/LevelUpOverlay'
+import AchievementPopup from '../components/feedback/AchievementPopup'
+import OutOfHeartsModal from '../components/modals/OutOfHeartsModal'
+import PurchaseModal from '../components/modals/PurchaseModal'
 import { X, Heart } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
 
@@ -13,8 +19,9 @@ const BOOKS = { 'strengths-finder': strengthsFinder }
 export default function LessonPage() {
   const { bookSlug, chapterIndex, lessonIndex } = useParams()
   const navigate = useNavigate()
-  const { player, onCorrectAnswer, onWrongAnswer, completeLesson } = usePlayer()
+  const { player, updatePlayer, onCorrectAnswer, onWrongAnswer, completeLesson } = usePlayer()
   const toast = useToast()
+  const { play } = useSound()
 
   const book = BOOKS[bookSlug]
   const chapter = book?.chapters[parseInt(chapterIndex)]
@@ -22,23 +29,80 @@ export default function LessonPage() {
   const exercises = lesson?.exercises || []
 
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [feedback, setFeedback] = useState(null) // { correct, explanation }
+  const [feedback, setFeedback] = useState(null)
   const [mistakes, setMistakes] = useState(0)
   const [isComplete, setIsComplete] = useState(false)
+  const [levelUp, setLevelUp] = useState(null)
+  const [newAchievement, setNewAchievement] = useState(null)
+  const [showOutOfHearts, setShowOutOfHearts] = useState(false)
+  const [showPurchase, setShowPurchase] = useState(false)
 
   const currentExercise = exercises[currentIndex]
   const progress = exercises.length > 0 ? ((currentIndex) / exercises.length) * 100 : 0
 
   const handleAnswer = useCallback((isCorrect, explanation) => {
+    const prevLevel = player.level
+
     if (isCorrect) {
+      play('correct')
       onCorrectAnswer()
       setFeedback({ correct: true, explanation })
     } else {
+      play('wrong')
       onWrongAnswer()
       setMistakes(m => m + 1)
       setFeedback({ correct: false, explanation })
+
+      // Add to review queue
+      updatePlayer(prev => {
+        const queue = prev.reviewQueue || []
+        const item = {
+          bookSlug,
+          chapterIndex: parseInt(chapterIndex),
+          lessonIndex: parseInt(lessonIndex),
+          exerciseIndex: currentIndex,
+        }
+        // Avoid duplicates
+        const exists = queue.some(q =>
+          q.bookSlug === item.bookSlug &&
+          q.chapterIndex === item.chapterIndex &&
+          q.lessonIndex === item.lessonIndex &&
+          q.exerciseIndex === item.exerciseIndex
+        )
+        if (exists) return prev
+        return { ...prev, reviewQueue: [...queue, item] }
+      })
+
+      // Check if hearts ran out
+      if (player.hearts <= 1) {
+        setTimeout(() => setShowOutOfHearts(true), 600)
+      }
     }
-  }, [onCorrectAnswer, onWrongAnswer])
+  }, [onCorrectAnswer, onWrongAnswer, updatePlayer, player.hearts, player.level, play, bookSlug, chapterIndex, lessonIndex, currentIndex])
+
+  // Watch for level changes
+  const [prevLevel, setPrevLevel] = useState(player.level)
+  useEffect(() => {
+    if (player.level > prevLevel) {
+      play('levelUp')
+      setLevelUp(player.level)
+    }
+    setPrevLevel(player.level)
+  }, [player.level, prevLevel, play])
+
+  // Watch for new achievements
+  useEffect(() => {
+    const newOnes = checkNewAchievements(player)
+    if (newOnes.length > 0 && !newAchievement) {
+      play('achievement')
+      setNewAchievement(newOnes[0])
+      // Save the earned achievement
+      updatePlayer(prev => ({
+        ...prev,
+        achievements: [...(prev.achievements || []), newOnes[0].id],
+      }))
+    }
+  }, [player.xp, player.totalCorrect, player.completedLessons, player.currentStreak, player.perfectLessons])
 
   const handleContinue = useCallback(() => {
     setFeedback(null)
@@ -114,6 +178,41 @@ export default function LessonPage() {
           correct={feedback.correct}
           explanation={feedback.explanation}
           onContinue={handleContinue}
+        />
+      )}
+
+      {/* Level up overlay */}
+      {levelUp && (
+        <LevelUpOverlay level={levelUp} onClose={() => setLevelUp(null)} />
+      )}
+
+      {/* Achievement popup */}
+      {newAchievement && (
+        <AchievementPopup
+          achievement={newAchievement}
+          onClose={() => setNewAchievement(null)}
+        />
+      )}
+
+      {/* Out of hearts modal */}
+      {showOutOfHearts && (
+        <OutOfHeartsModal
+          onClose={() => {
+            setShowOutOfHearts(false)
+            navigate(`/book/${bookSlug}`)
+          }}
+          onPurchase={() => {
+            setShowOutOfHearts(false)
+            setShowPurchase(true)
+          }}
+        />
+      )}
+
+      {/* Purchase modal */}
+      {showPurchase && (
+        <PurchaseModal
+          bookSlug={bookSlug}
+          onClose={() => setShowPurchase(false)}
         />
       )}
     </div>

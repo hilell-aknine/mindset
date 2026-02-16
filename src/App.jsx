@@ -8,12 +8,26 @@ import Spinner from './components/shared/Spinner'
 import HomePage from './pages/HomePage'
 import BookPage from './pages/BookPage'
 import LessonPage from './pages/LessonPage'
+import ReviewPage from './pages/ReviewPage'
+import StatsPage from './pages/StatsPage'
+import SettingsPage from './pages/SettingsPage'
+import WorkbookPage from './pages/WorkbookPage'
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
   if (loading) return <Spinner size="lg" text="טוען..." />
   if (!isAuthenticated) return <Navigate to="/" replace />
   return children
+}
+
+function PageLayout({ children }) {
+  return (
+    <>
+      <Header />
+      {children}
+      <Footer />
+    </>
+  )
 }
 
 export default function App() {
@@ -34,9 +48,7 @@ export default function App() {
           path="/home"
           element={
             <ProtectedRoute>
-              <Header />
-              <HomePage />
-              <Footer />
+              <PageLayout><HomePage /></PageLayout>
             </ProtectedRoute>
           }
         />
@@ -44,9 +56,7 @@ export default function App() {
           path="/book/:slug"
           element={
             <ProtectedRoute>
-              <Header />
-              <BookPage />
-              <Footer />
+              <PageLayout><BookPage /></PageLayout>
             </ProtectedRoute>
           }
         />
@@ -55,6 +65,38 @@ export default function App() {
           element={
             <ProtectedRoute>
               <LessonPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/review"
+          element={
+            <ProtectedRoute>
+              <ReviewPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/stats"
+          element={
+            <ProtectedRoute>
+              <PageLayout><StatsPage /></PageLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <PageLayout><SettingsPage /></PageLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/workbook/:slug"
+          element={
+            <ProtectedRoute>
+              <PageLayout><WorkbookPage /></PageLayout>
             </ProtectedRoute>
           }
         />

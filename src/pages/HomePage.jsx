@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
-import { BookOpen, Lock, Trophy, Flame } from 'lucide-react'
+import { BookOpen, Trophy, Flame, RotateCcw, BarChart2, Settings } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
 
 const BOOKS = [strengthsFinder]
@@ -8,6 +8,8 @@ const BOOKS = [strengthsFinder]
 export default function HomePage() {
   const navigate = useNavigate()
   const { player } = usePlayer()
+
+  const reviewCount = (player.reviewQueue || []).length
 
   return (
     <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
@@ -72,17 +74,59 @@ export default function HomePage() {
         })}
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-3 mt-8">
-        <div className="glass-card p-3 text-center">
+      {/* Quick actions */}
+      <div className="grid grid-cols-3 gap-3 mt-6">
+        {/* Review */}
+        <button
+          onClick={() => navigate('/review')}
+          className="glass-card p-3 text-center hover:border-gold/20 transition-all animate-fade-in"
+          style={{ animationDelay: '0.15s' }}
+        >
+          <div className="w-9 h-9 rounded-xl bg-warning/10 flex items-center justify-center mx-auto mb-2">
+            <RotateCcw className="w-4 h-4 text-warning" />
+          </div>
+          <p className="text-xs text-frost-white/60">חזרה</p>
+          {reviewCount > 0 && (
+            <span className="text-[9px] text-gold font-bold">{reviewCount} תרגילים</span>
+          )}
+        </button>
+
+        {/* Stats */}
+        <button
+          onClick={() => navigate('/stats')}
+          className="glass-card p-3 text-center hover:border-gold/20 transition-all animate-fade-in"
+          style={{ animationDelay: '0.2s' }}
+        >
+          <div className="w-9 h-9 rounded-xl bg-dusty-aqua/10 flex items-center justify-center mx-auto mb-2">
+            <BarChart2 className="w-4 h-4 text-dusty-aqua" />
+          </div>
+          <p className="text-xs text-frost-white/60">סטטיסטיקות</p>
+        </button>
+
+        {/* Settings */}
+        <button
+          onClick={() => navigate('/settings')}
+          className="glass-card p-3 text-center hover:border-gold/20 transition-all animate-fade-in"
+          style={{ animationDelay: '0.25s' }}
+        >
+          <div className="w-9 h-9 rounded-xl bg-frost-white/5 flex items-center justify-center mx-auto mb-2">
+            <Settings className="w-4 h-4 text-frost-white/40" />
+          </div>
+          <p className="text-xs text-frost-white/60">הגדרות</p>
+        </button>
+      </div>
+
+      {/* Stats summary */}
+      <div className="grid grid-cols-3 gap-3 mt-4">
+        <div className="glass-card p-3 text-center animate-fade-in" style={{ animationDelay: '0.3s' }}>
           <p className="text-2xl font-bold text-gold">{player.xp}</p>
           <p className="text-[10px] text-frost-white/40 mt-1">XP</p>
         </div>
-        <div className="glass-card p-3 text-center">
+        <div className="glass-card p-3 text-center animate-fade-in" style={{ animationDelay: '0.35s' }}>
           <p className="text-2xl font-bold text-success">{player.totalCorrect}</p>
           <p className="text-[10px] text-frost-white/40 mt-1">תשובות נכונות</p>
         </div>
-        <div className="glass-card p-3 text-center">
+        <div className="glass-card p-3 text-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
           <p className="text-2xl font-bold text-dusty-aqua">{Object.keys(player.completedLessons).length}</p>
           <p className="text-[10px] text-frost-white/40 mt-1">שיעורים</p>
         </div>

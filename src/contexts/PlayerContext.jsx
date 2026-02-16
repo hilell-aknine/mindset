@@ -169,6 +169,7 @@ export function PlayerProvider({ children }) {
         ...prev,
         xp: prev.xp + 50 + (mistakes === 0 ? 25 : 0),
         completedLessons: { ...prev.completedLessons, [key]: true },
+        perfectLessons: mistakes === 0 ? (prev.perfectLessons || 0) + 1 : (prev.perfectLessons || 0),
       }
     })
   }, [updatePlayer])
@@ -210,6 +211,7 @@ function mapFromDB(row) {
     onboardingComplete: row.onboarding_complete ?? false,
     completedLessons: row.completed_lessons ?? {},
     reviewQueue: row.review_queue ?? [],
+    perfectLessons: row.perfect_lessons ?? 0,
   }
 }
 
@@ -233,5 +235,6 @@ function mapToDB(player) {
     onboarding_complete: player.onboardingComplete,
     completed_lessons: player.completedLessons,
     review_queue: player.reviewQueue,
+    perfect_lessons: player.perfectLessons,
   }
 }

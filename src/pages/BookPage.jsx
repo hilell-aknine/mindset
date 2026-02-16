@@ -1,6 +1,9 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
-import { ArrowRight, Lock, Check, Play, BookOpen } from 'lucide-react'
+import { ArrowRight, Lock, Check, Play } from 'lucide-react'
+import PurchaseModal from '../components/modals/PurchaseModal'
+import AICoachButton from '../components/ai/AICoachButton'
 import strengthsFinder from '../data/books/strengths-finder.json'
 
 const BOOKS = { 'strengths-finder': strengthsFinder }
@@ -10,6 +13,7 @@ export default function BookPage() {
   const navigate = useNavigate()
   const { player } = usePlayer()
   const book = BOOKS[slug]
+  const [showPurchase, setShowPurchase] = useState(false)
 
   if (!book) {
     return (
@@ -20,7 +24,7 @@ export default function BookPage() {
   }
 
   const isChapterUnlocked = (chapterIndex) => {
-    if (chapterIndex === 0) return true // First chapter always free
+    if (chapterIndex === 0) return true
     if (player.isPremium || player.premiumBooks.includes(slug)) return true
     return false
   }
@@ -55,7 +59,6 @@ export default function BookPage() {
 
       {/* Chapters path */}
       <div className="relative">
-        {/* Vertical line */}
         <div className="absolute right-7 top-0 bottom-0 w-0.5 bg-white/5" />
 
         <div className="space-y-4">
@@ -134,18 +137,29 @@ export default function BookPage() {
 
                 {/* Locked chapter CTA */}
                 {!unlocked && (
-                  <div className="mr-14 glass-card p-4 flex items-center gap-3 border-gold/10">
+                  <button
+                    onClick={() => setShowPurchase(true)}
+                    className="mr-14 w-[calc(100%-3.5rem)] glass-card p-4 flex items-center gap-3 border-gold/10 hover:border-gold/30 transition-colors"
+                  >
                     <Lock className="w-4 h-4 text-gold/60" />
                     <p className="text-xs text-frost-white/30">
-                      פרק נעול — רכשו את הספר המלא כדי להמשיך
+                      פרק נעול — לחצו לרכישת הספר המלא
                     </p>
-                  </div>
+                  </button>
                 )}
               </div>
             )
           })}
         </div>
       </div>
+
+      {/* AI Coach floating button */}
+      <AICoachButton bookSlug={slug} systemPrompt={book.systemPrompt} />
+
+      {/* Purchase modal */}
+      {showPurchase && (
+        <PurchaseModal bookSlug={slug} onClose={() => setShowPurchase(false)} />
+      )}
     </main>
   )
 }

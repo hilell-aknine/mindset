@@ -1,12 +1,10 @@
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../contexts/AuthContext'
 import { usePlayer } from '../../contexts/PlayerContext'
 import { getXPProgress, LEVEL_NAMES } from '../../config/constants'
-import { Brain, Flame, Heart, Zap, Settings, LogOut } from 'lucide-react'
+import { Brain, Flame, Heart, Zap, Settings } from 'lucide-react'
 
 export default function Header() {
   const navigate = useNavigate()
-  const { logout } = useAuth()
   const { player } = usePlayer()
 
   const xpProgress = getXPProgress(player.xp)
@@ -59,13 +57,13 @@ export default function Header() {
             <span className="text-[10px] text-frost-white/50">{levelName}</span>
           </div>
 
-          {/* Logout */}
+          {/* Settings */}
           <button
-            onClick={logout}
+            onClick={() => navigate('/settings')}
             className="p-1.5 rounded-lg hover:bg-white/5 transition-colors text-frost-white/40 hover:text-frost-white/70"
-            title="התנתק"
+            title="הגדרות"
           >
-            <LogOut className="w-4 h-4" />
+            <Settings className="w-4 h-4" />
           </button>
         </div>
       </div>
