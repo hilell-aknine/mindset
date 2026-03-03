@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a12"/>
+      <stop offset="100%" style="stop-color:#003B46"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#D4AF37"/>
+      <stop offset="100%" style="stop-color:#e8c84a"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#003B46"/>
+      <stop offset="100%" style="stop-color:#2F8592"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Decorative orbs -->
+  <circle cx="200" cy="150" r="200" fill="#003B46" opacity="0.3"/>
+  <circle cx="1000" cy="500" r="250" fill="#D4AF37" opacity="0.08"/>
+
+  <!-- Brain icon circle -->
+  <circle cx="600" cy="230" r="70" fill="url(#teal)"/>
+  <text x="600" y="250" text-anchor="middle" font-size="60" fill="#E8F1F2">🧠</text>
+
+  <!-- Title -->
+  <text x="600" y="360" text-anchor="middle" font-family="serif" font-size="72" font-weight="bold" fill="#E8F1F2">MindSet</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="420" text-anchor="middle" font-family="sans-serif" font-size="28" fill="#E8F1F2" opacity="0.6">שחק ספר במקום לקרוא אותו</text>
+
+  <!-- Stats bar -->
+  <text x="600" y="500" text-anchor="middle" font-family="sans-serif" font-size="20" fill="url(#gold)">4 ספרים · 7 סוגי תרגילים · 15 דקות לכל ספר</text>
+
+  <!-- Gold line -->
+  <rect x="400" y="530" width="400" height="3" rx="2" fill="url(#gold)" opacity="0.5"/>
+</svg>

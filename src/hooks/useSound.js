@@ -53,6 +53,19 @@ export function useSound() {
           [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, 0.2, 'sine', 0.2, i * 0.1))
           tone(1319, 0.5, 'sine', 0.15, 0.55)
           break
+        case 'hint':
+          tone(880, 0.1, 'triangle', 0.15); tone(660, 0.15, 'triangle', 0.1, 0.1)
+          break
+        case 'timerWarning':
+          tone(440, 0.08, 'square', 0.1); tone(440, 0.08, 'square', 0.1, 0.15)
+          break
+        case 'secondChance':
+          tone(350, 0.15, 'triangle', 0.15); tone(440, 0.15, 'triangle', 0.15, 0.12)
+          break
+        case 'streakFreeze':
+          tone(523, 0.1, 'sine', 0.2); tone(784, 0.15, 'sine', 0.2, 0.1)
+          tone(1047, 0.2, 'sine', 0.15, 0.2)
+          break
       }
     } catch {}
   }, [])

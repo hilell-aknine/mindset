@@ -23,6 +23,40 @@ const EXERCISE_TYPES = [
   { name: 'זיהוי', icon: '🔍' },
 ]
 
+// Animated counter hook
+function useCountUp(target, duration = 1500) {
+  const [count, setCount] = useState(0)
+  const ref = useRef(null)
+  const started = useRef(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !started.current) {
+          started.current = true
+          const startTime = performance.now()
+          const animate = (now) => {
+            const elapsed = now - startTime
+            const progress = Math.min(elapsed / duration, 1)
+            // Ease-out cubic
+            const eased = 1 - Math.pow(1 - progress, 3)
+            setCount(Math.round(eased * target))
+            if (progress < 1) requestAnimationFrame(animate)
+          }
+          requestAnimationFrame(animate)
+        }
+      },
+      { threshold: 0.3 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [target, duration])
+
+  return { count, ref }
+}
+
 function useScrollReveal() {
   const ref = useRef(null)
   useEffect(() => {
@@ -52,6 +86,17 @@ function RevealSection({ children, className = '', delay = 0 }) {
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}
+    </div>
+  )
+}
+
+function CounterStat({ target, label, icon: Icon }) {
+  const { count, ref } = useCountUp(target)
+  return (
+    <div ref={ref} className="flex flex-col items-center gap-1">
+      <Icon className="w-5 h-5 text-gold mb-1" />
+      <span className="font-display text-2xl sm:text-3xl font-bold text-frost-white">{count}</span>
+      <span className="text-[11px] sm:text-xs text-frost-white/40">{label}</span>
     </div>
   )
 }
@@ -300,17 +345,9 @@ export default function LandingPage() {
       <RevealSection>
         <div className="border-y border-white/5 bg-white/[0.02]">
           <div className="max-w-6xl mx-auto px-4 py-6 grid grid-cols-3 gap-4 text-center">
-            {[
-              { num: '4', label: 'ספרים זמינים', icon: BookOpen },
-              { num: '7', label: 'סוגי תרגילים', icon: Target },
-              { num: '15 דק\'', label: 'לכל ספר', icon: Flame },
-            ].map(({ num, label, icon: Icon }) => (
-              <div key={label} className="flex flex-col items-center gap-1">
-                <Icon className="w-5 h-5 text-gold mb-1" />
-                <span className="font-display text-2xl sm:text-3xl font-bold text-frost-white">{num}</span>
-                <span className="text-[11px] sm:text-xs text-frost-white/40">{label}</span>
-              </div>
-            ))}
+            <CounterStat target={4} label="ספרים זמינים" icon={BookOpen} />
+            <CounterStat target={7} label="סוגי תרגילים" icon={Target} />
+            <CounterStat target={360} label="תרגילים" icon={Flame} />
           </div>
         </div>
       </RevealSection>
