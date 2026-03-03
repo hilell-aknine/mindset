@@ -330,7 +330,7 @@ export default function LandingPage() {
 
       {/* ─── Hero ─── */}
       <section ref={heroRef} className="relative pt-20 sm:pt-36 pb-10 sm:pb-24 px-4">
-        {/* Background video - hidden on mobile to save battery */}
+        {/* Background video on desktop, static image on mobile */}
         <video
           autoPlay
           loop
@@ -341,6 +341,12 @@ export default function LandingPage() {
         >
           <source src="/hero-bg.mp4" type="video/mp4" />
         </video>
+        <img
+          src="/backgrounds/hero-mobile-bg.png"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-40 pointer-events-none sm:hidden"
+          aria-hidden="true"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-bg-base/40 via-transparent to-bg-base pointer-events-none" />
 
         {/* Background orbs - smaller on mobile */}
@@ -429,32 +435,34 @@ export default function LandingPage() {
             {[
               {
                 step: 1,
-                icon: BookOpen,
+                img: '/steps/step-choose.png',
                 title: 'בחר ספר',
                 desc: 'גלה ספרי פיתוח אישי מובילים — כל ספר מחולק לפרקים ושיעורים קצרים',
               },
               {
                 step: 2,
-                icon: Gamepad2,
+                img: '/steps/step-play.png',
                 title: 'שחק שיעורים',
                 desc: '7 סוגי תרגילים אינטראקטיביים שמפעילים את המוח — לא קריאה פסיבית',
               },
               {
                 step: 3,
-                icon: Brain,
+                img: '/steps/step-retain.png',
                 title: 'תקבע ידע',
                 desc: 'חזרה מרווחת, מאמן AI אישי ומערכת ניקוד — הידע נשאר לטווח ארוך',
               },
-            ].map(({ step, icon: Icon, title, desc }, i) => (
+            ].map(({ step, img, title, desc }, i) => (
               <RevealSection key={step} delay={i * 120}>
                 <div className="glass-card p-4 sm:p-6 text-center relative group">
                   {/* Step number */}
                   <div className="absolute -top-3 sm:-top-4 right-1/2 translate-x-1/2 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-gold to-gold/70 flex items-center justify-center text-bg-base font-bold text-xs sm:text-sm">
                     {step}
                   </div>
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center mx-auto mt-2 sm:mt-3 mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
-                    <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-frost-white" />
-                  </div>
+                  <img
+                    src={img}
+                    alt={title}
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover mx-auto mt-2 sm:mt-3 mb-3 sm:mb-4 group-hover:scale-110 transition-transform"
+                  />
                   <h3 className="font-display text-lg sm:text-xl font-bold mb-1.5 sm:mb-2">{title}</h3>
                   <p className="text-xs sm:text-sm text-frost-white/50 leading-relaxed">{desc}</p>
                 </div>
@@ -524,8 +532,15 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Exercise Types Preview ─── */}
-      <section className="py-12 sm:py-24 px-4 bg-white/[0.01] border-y border-white/5">
-        <div className="max-w-5xl mx-auto">
+      <section className="py-12 sm:py-24 px-4 bg-white/[0.01] border-y border-white/5 relative overflow-hidden">
+        <img
+          src="/backgrounds/exercises-bg.png"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-15 pointer-events-none"
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-bg-base/60 via-transparent to-bg-base/60 pointer-events-none" />
+        <div className="max-w-5xl mx-auto relative z-10">
           <RevealSection className="text-center mb-8 sm:mb-10">
             <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">
               לא קריאה פסיבית —{' '}
@@ -575,8 +590,15 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Gamification Features ─── */}
-      <section className="py-12 sm:py-24 px-4">
-        <div className="max-w-5xl mx-auto">
+      <section className="py-12 sm:py-24 px-4 relative overflow-hidden">
+        <img
+          src="/backgrounds/gamification-bg.png"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-10 pointer-events-none"
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-bg-base/70 via-bg-base/40 to-bg-base/70 pointer-events-none" />
+        <div className="max-w-5xl mx-auto relative z-10">
           <RevealSection className="text-center mb-8 sm:mb-12">
             <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">
               מערכת{' '}
@@ -622,33 +644,33 @@ export default function LandingPage() {
             {[
               {
                 name: 'נועם ר.',
-                avatar: '👨‍💻',
+                avatar: '/avatars/noam.png',
                 text: '5 דקות ביום בדרך לעבודה — ואני מפנים את החומר הרבה יותר טוב מקריאה רגילה.',
                 streak: 14,
               },
               {
                 name: 'שירה מ.',
-                avatar: '👩‍🎓',
+                avatar: '/avatars/shira.png',
                 text: 'הליגות והאירועים גורמים לי לחזור כל יום. כבר 30 ימים רצף!',
                 streak: 30,
               },
               {
                 name: 'יונתן ק.',
-                avatar: '🧑‍💼',
+                avatar: '/avatars/yonatan.png',
                 text: 'המאמן AI עזר לי להבין רעיונות שלא תפסתי בקריאה הראשונה. שווה כל שקל.',
                 streak: 7,
               },
             ].map((t, i) => (
               <RevealSection key={t.name} delay={i * 100}>
-                <div className="glass-card p-5">
+                <div className="glass-card p-4 sm:p-5">
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="text-2xl">{t.avatar}</span>
+                    <img src={t.avatar} alt={t.name} className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-gold/30" />
                     <div>
                       <p className="text-sm font-bold text-frost-white">{t.name}</p>
                       <p className="text-[10px] text-warning">🔥 רצף {t.streak} ימים</p>
                     </div>
                   </div>
-                  <p className="text-sm text-frost-white/60 leading-relaxed italic">
+                  <p className="text-xs sm:text-sm text-frost-white/60 leading-relaxed italic">
                     &ldquo;{t.text}&rdquo;
                   </p>
                 </div>
