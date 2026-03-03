@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react'
+import { X } from 'lucide-react'
 
 export default function Identify({ exercise, onAnswer, disabled }) {
   const [selection, setSelection] = useState(null) // {start, end}
@@ -35,8 +36,14 @@ export default function Identify({ exercise, onAnswer, disabled }) {
 
     if (start != null && end != null && start !== end) {
       setSelection({ start: Math.min(start, end), end: Math.max(start, end) })
+      // Clear browser selection for cleaner look
+      sel.removeAllRanges()
     }
   }, [disabled, exercise.text])
+
+  const clearSelection = () => {
+    setSelection(null)
+  }
 
   const handleCheck = () => {
     if (!selection) return
@@ -59,8 +66,34 @@ export default function Identify({ exercise, onAnswer, disabled }) {
   const renderText = () => {
     const text = exercise.text
     const correctRangeArr = exercise.correctRange || [exercise.correctStart, exercise.correctEnd]
+
+    // After checking — show correct range highlighted
     if (disabled && correctRangeArr[0] != null) {
       const [cs, ce] = correctRangeArr
+      // Also show user's selection if it was wrong
+      if (selection) {
+        const isOverlapping = !(selection.end <= cs || selection.start >= ce)
+        if (!isOverlapping) {
+          // Show both: user's wrong selection and correct
+          const segments = []
+          const points = new Set([0, cs, ce, selection.start, selection.end, text.length])
+          const sorted = [...points].sort((a, b) => a - b)
+          for (let i = 0; i < sorted.length - 1; i++) {
+            const s = sorted[i], e = sorted[i + 1]
+            if (s === e) continue
+            const isCorrect = s >= cs && e <= ce
+            const isUserWrong = s >= selection.start && e <= selection.end
+            let cls = ''
+            if (isCorrect) cls = 'bg-success/30 text-success rounded px-0.5'
+            else if (isUserWrong) cls = 'bg-danger/20 text-danger/70 rounded px-0.5 line-through'
+            segments.push(
+              <span key={i} className={cls}>{text.slice(s, e)}</span>
+            )
+          }
+          return <>{segments}</>
+        }
+      }
+
       return (
         <>
           {text.slice(0, cs)}
@@ -69,6 +102,8 @@ export default function Identify({ exercise, onAnswer, disabled }) {
         </>
       )
     }
+
+    // Show user's selection
     if (selection) {
       return (
         <>
@@ -88,7 +123,7 @@ export default function Identify({ exercise, onAnswer, disabled }) {
       </h3>
 
       <p className="text-xs text-frost-white/40 mb-3">
-        סמנו את הטקסט הרלוונטי
+        {selection && !disabled ? 'ניתן לבחור מחדש או ללחוץ בדוק' : 'סמנו את הטקסט הרלוונטי'}
       </p>
 
       {/* Text to select from */}
@@ -96,17 +131,29 @@ export default function Identify({ exercise, onAnswer, disabled }) {
         ref={textRef}
         onMouseUp={handleTextSelection}
         onTouchEnd={handleTextSelection}
-        className={`glass-card p-5 text-sm leading-loose cursor-text select-text ${
-          disabled ? 'text-frost-white/60' : 'text-frost-white/80'
+        className={`glass-card p-5 text-sm leading-loose select-text transition-all ${
+          disabled ? 'text-frost-white/60' :
+          selection ? 'text-frost-white/80 border-gold/15' :
+          'text-frost-white/80 cursor-text'
         }`}
       >
         {renderText()}
       </div>
 
+      {/* Selection preview + clear button */}
       {selection && !disabled && (
-        <p className="text-xs text-gold/60 mt-2">
-          נבחר: &quot;{exercise.text.slice(selection.start, selection.end)}&quot;
-        </p>
+        <div className="flex items-center gap-2 mt-2 animate-fade-in">
+          <p className="text-xs text-gold/60 flex-1 truncate">
+            נבחר: &quot;{exercise.text.slice(selection.start, selection.end)}&quot;
+          </p>
+          <button
+            onClick={clearSelection}
+            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-frost-white/30 hover:text-frost-white/60 hover:bg-white/5 transition-all"
+          >
+            <X className="w-3 h-3" />
+            נקה
+          </button>
+        </div>
       )}
 
       <div className="mt-6">

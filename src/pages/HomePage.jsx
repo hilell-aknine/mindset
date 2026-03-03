@@ -11,6 +11,16 @@ import nextFiveMoves from '../data/books/next-five-moves.json'
 
 const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves]
 
+const DAILY_QUOTES = [
+  { text: 'אתה לא צריך להיות מושלם כדי להתחיל, אבל צריך להתחיל כדי להשתפר.', source: 'הרגלים אטומים' },
+  { text: 'כשאתה שם לב למה שעובד לך — אתה מתחזק. זו מהות החוזקות.', source: 'חוזקות' },
+  { text: 'דופמין לא נועד לגרום לך להרגיש טוב — הוא נועד לגרום לך לחפש.', source: 'כימיקלים של אושר' },
+  { text: 'לפני שאתה עושה מהלך, שאל: מה יקרה אחרי המהלך הזה?', source: '5 מהלכים' },
+  { text: 'המטרה שלך היא לא להשיג תוצאה — המטרה היא להפוך לאדם שמשיג אותה.', source: 'הרגלים אטומים' },
+  { text: 'אנשים חזקים לא עושים הכל טוב — הם עושים כמה דברים יוצא מן הכלל.', source: 'חוזקות' },
+  { text: 'אוקסיטוצין נבנה לאט — דרך אמון, לא דרך קיצורי דרך.', source: 'כימיקלים של אושר' },
+]
+
 export default function HomePage() {
   const navigate = useNavigate()
   const { player } = usePlayer()
@@ -19,6 +29,10 @@ export default function HomePage() {
   const reviewCount = (player.reviewQueue || []).length
   const today = new Date().toDateString()
   const dailyCompleted = player.dailyChallengeCompleted === today
+
+  // Daily rotating quote
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000)
+  const dailyQuote = DAILY_QUOTES[dayOfYear % DAILY_QUOTES.length]
 
   return (
     <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6 overflow-hidden">
@@ -173,6 +187,14 @@ export default function HomePage() {
           </div>
           <p className="text-[10px] text-frost-white/60">הגדרות</p>
         </button>
+      </div>
+
+      {/* Daily quote */}
+      <div className="glass-card p-4 mt-6 border-white/5 animate-fade-in" style={{ animationDelay: '0.5s' }}>
+        <p className="text-sm text-frost-white/60 leading-relaxed italic">
+          &ldquo;{dailyQuote.text}&rdquo;
+        </p>
+        <p className="text-[10px] text-frost-white/25 mt-2">— {dailyQuote.source}</p>
       </div>
 
       {/* Stats summary */}

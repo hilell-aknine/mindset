@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
-import { ArrowRight, Lock, Check, Play } from 'lucide-react'
+import { ArrowRight, Lock, Check, Play, Clock, Star, Zap } from 'lucide-react'
 import PurchaseModal from '../components/modals/PurchaseModal'
 import AICoachButton from '../components/ai/AICoachButton'
 import strengthsFinder from '../data/books/strengths-finder.json'
@@ -10,6 +10,16 @@ import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
 
 const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves }
+
+const TYPE_ICONS = {
+  'multiple-choice': '🎯',
+  'fill-blank': '✏️',
+  'order': '🔢',
+  'compare': '⚖️',
+  'match': '🔗',
+  'improve': '💡',
+  'identify': '🔍',
+}
 
 export default function BookPage() {
   const { slug } = useParams()
@@ -44,21 +54,89 @@ export default function BookPage() {
     return { completed, total, percent: total > 0 ? (completed / total) * 100 : 0 }
   }
 
+  // Find "continue" lesson — first uncompleted lesson
+  const continueTarget = useMemo(() => {
+    for (const chapter of book.chapters) {
+      if (!isChapterUnlocked(chapter.orderIndex)) continue
+      for (let li = 0; li < chapter.lessons.length; li++) {
+        if (!isLessonCompleted(chapter.orderIndex, li)) {
+          return { ci: chapter.orderIndex, li, lesson: chapter.lessons[li], chapter }
+        }
+      }
+    }
+    return null
+  }, [book, player.completedLessons])
+
+  // Count exercise types in a lesson
+  const getLessonTypes = (lesson) => {
+    const types = new Set(lesson.exercises.map(e => e.type))
+    return [...types].map(t => TYPE_ICONS[t] || '📝').slice(0, 4)
+  }
+
+  // Book overall stats
+  const totalLessons = book.chapters.reduce((acc, ch) => acc + ch.lessons.length, 0)
+  const completedLessons = book.chapters.reduce((acc, ch) =>
+    acc + ch.lessons.filter((_, li) => isLessonCompleted(ch.orderIndex, li)).length, 0)
+  const bookProgress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0
+
   return (
     <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6 overflow-hidden">
       {/* Back + Title */}
-      <div className="flex items-center gap-3 mb-6 animate-fade-in">
+      <div className="flex items-center gap-3 mb-4 animate-fade-in">
         <button
           onClick={() => navigate('/home')}
           className="p-2 rounded-xl hover:bg-white/5 transition-colors"
         >
           <ArrowRight className="w-5 h-5 text-frost-white/60" />
         </button>
-        <div>
+        <div className="flex-1">
           <h2 className="font-display text-xl font-bold text-frost-white">{book.title}</h2>
           <p className="text-xs text-frost-white/40">{book.author}</p>
         </div>
+        <span className="text-3xl">{book.icon}</span>
       </div>
+
+      {/* Book progress bar */}
+      <div className="glass-card p-3 mb-4 animate-fade-in" style={{ animationDelay: '0.05s' }}>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <Star className={`w-4 h-4 ${bookProgress === 100 ? 'text-gold fill-gold' : 'text-frost-white/30'}`} />
+            <span className="text-xs text-frost-white/60">{completedLessons}/{totalLessons} שיעורים</span>
+          </div>
+          <span className="text-xs font-bold text-gold">{bookProgress}%</span>
+        </div>
+        <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+          <div
+            className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-700 relative"
+            style={{ width: `${bookProgress}%` }}
+          >
+            <div className="absolute inset-0 progress-shimmer rounded-full" />
+          </div>
+        </div>
+      </div>
+
+      {/* Continue button */}
+      {continueTarget && (
+        <button
+          onClick={() => navigate(`/lesson/${slug}/${continueTarget.ci}/${continueTarget.li}`)}
+          className="w-full glass-card p-4 mb-6 flex items-center gap-3 border-gold/15 hover:border-gold/30 transition-all animate-fade-in group"
+          style={{ animationDelay: '0.1s' }}
+        >
+          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Play className="w-5 h-5 text-gold fill-gold" />
+          </div>
+          <div className="flex-1 text-right">
+            <p className="text-sm font-bold text-frost-white">המשך ללמוד</p>
+            <p className="text-[10px] text-frost-white/40 mt-0.5">
+              {continueTarget.chapter.title} — {continueTarget.lesson.title}
+            </p>
+          </div>
+          <div className="flex items-center gap-1 text-gold/50">
+            <Clock className="w-3.5 h-3.5" />
+            <span className="text-[10px]">~{continueTarget.lesson.exercises.length * 30}שנ</span>
+          </div>
+        </button>
+      )}
 
       {/* Chapters path */}
       <div className="relative">
@@ -73,7 +151,7 @@ export default function BookPage() {
               <div
                 key={ci}
                 className="animate-fade-in"
-                style={{ animationDelay: `${ci * 0.08}s` }}
+                style={{ animationDelay: `${0.15 + ci * 0.08}s` }}
               >
                 {/* Chapter header */}
                 <div className="flex items-center gap-3 mb-3 relative z-10">
@@ -88,9 +166,16 @@ export default function BookPage() {
                      !unlocked ? <Lock className="w-5 h-5" /> : chapter.icon}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className={`font-semibold text-sm ${unlocked ? 'text-frost-white' : 'text-frost-white/30'}`}>
-                      {chapter.title}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className={`font-semibold text-sm ${unlocked ? 'text-frost-white' : 'text-frost-white/30'}`}>
+                        {chapter.title}
+                      </h3>
+                      {progress.percent === 100 && (
+                        <span className="px-1.5 py-0.5 rounded-full bg-success/10 text-success text-[8px] font-bold">
+                          הושלם
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center gap-2 mt-1">
                       <div className="flex-1 h-1 rounded-full bg-white/5 overflow-hidden">
                         <div
@@ -110,6 +195,8 @@ export default function BookPage() {
                   <div className="mr-14 space-y-2">
                     {chapter.lessons.map((lesson, li) => {
                       const completed = isLessonCompleted(ci, li)
+                      const types = getLessonTypes(lesson)
+
                       return (
                         <button
                           key={li}
@@ -129,9 +216,18 @@ export default function BookPage() {
                               <Play className="w-4 h-4 text-frost-white/40" />
                             )}
                           </div>
-                          <span className={`text-sm ${completed ? 'text-success' : 'text-frost-white/70'}`}>
-                            {lesson.title}
-                          </span>
+                          <div className="flex-1 min-w-0">
+                            <span className={`text-sm block ${completed ? 'text-success' : 'text-frost-white/70'}`}>
+                              {lesson.title}
+                            </span>
+                            <div className="flex items-center gap-1.5 mt-1">
+                              <span className="text-[10px] text-frost-white/25">
+                                {lesson.exercises.length} תרגילים
+                              </span>
+                              <span className="text-frost-white/10">·</span>
+                              <span className="text-[10px]">{types.join('')}</span>
+                            </div>
+                          </div>
                         </button>
                       )
                     })}
