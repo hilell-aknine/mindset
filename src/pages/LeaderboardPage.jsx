@@ -1,7 +1,7 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
-import { ArrowRight, Trophy, Medal, Crown, TrendingUp, ChevronUp, ChevronDown, Shield } from 'lucide-react'
+import { ArrowRight, Trophy, Medal, Crown, TrendingUp, ChevronUp, ChevronDown, Shield, Clock } from 'lucide-react'
 
 // 10-tier league system (Duolingo-style)
 const LEAGUES = [
@@ -67,9 +67,31 @@ function getRankBg(rank) {
   return ''
 }
 
+// Calculate time until next Sunday (season reset)
+function getSeasonTimeLeft() {
+  const now = new Date()
+  const dayOfWeek = now.getDay() // 0=Sun
+  const daysLeft = dayOfWeek === 0 ? 7 : 7 - dayOfWeek
+  const nextSunday = new Date(now)
+  nextSunday.setDate(now.getDate() + daysLeft)
+  nextSunday.setHours(0, 0, 0, 0)
+  const diff = nextSunday - now
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+  const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+  return { days, hours, mins }
+}
+
 export default function LeaderboardPage() {
   const navigate = useNavigate()
   const { player } = usePlayer()
+  const [timeLeft, setTimeLeft] = useState(getSeasonTimeLeft)
+
+  // Live season countdown — updates every minute
+  useEffect(() => {
+    const interval = setInterval(() => setTimeLeft(getSeasonTimeLeft()), 60000)
+    return () => clearInterval(interval)
+  }, [])
 
   const leagueIdx = getLeagueForXP(player.xp)
   const league = LEAGUES[leagueIdx]
@@ -116,6 +138,15 @@ export default function LeaderboardPage() {
           <ArrowRight className="w-5 h-5 text-frost-white/60" />
         </button>
         <h2 className="font-display text-xl font-bold text-frost-white">טבלת מובילים</h2>
+      </div>
+
+      {/* Season timer */}
+      <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/5 mb-4 animate-fade-in" style={{ animationDelay: '0.03s' }}>
+        <Clock className="w-3.5 h-3.5 text-frost-white/30" />
+        <span className="text-xs text-frost-white/40">העונה מסתיימת בעוד:</span>
+        <span className="text-xs font-bold font-mono text-frost-white/60">
+          {timeLeft.days}י {timeLeft.hours}ש {timeLeft.mins}ד
+        </span>
       </div>
 
       {/* League badge + tier progress */}
@@ -215,6 +246,29 @@ export default function LeaderboardPage() {
             </p>
           </div>
         )}
+      </div>
+
+      {/* Podium — Top 3 */}
+      <div className="flex items-end justify-center gap-2 mb-5 animate-fade-in" style={{ animationDelay: '0.14s' }}>
+        {[1, 0, 2].map((podiumIdx) => {
+          const p = leaderboard[podiumIdx]
+          if (!p) return null
+          const heights = ['h-24', 'h-16', 'h-12']
+          const colors = ['from-gold/20 to-gold/5 border-gold/30', 'from-frost-white/10 to-frost-white/5 border-frost-white/15', 'from-[#cd7f32]/15 to-[#cd7f32]/5 border-[#cd7f32]/20']
+          const actualRank = podiumIdx + 1
+          return (
+            <div key={podiumIdx} className="flex flex-col items-center flex-1 max-w-[120px]">
+              <span className="text-lg mb-1">{p.avatar}</span>
+              <p className={`text-[10px] font-bold truncate max-w-full ${p.isMe ? 'text-gold' : 'text-frost-white/70'}`}>{p.name}</p>
+              <p className="text-[9px] text-frost-white/30 mb-1">{p.xp.toLocaleString()} XP</p>
+              <div className={`w-full ${heights[podiumIdx]} rounded-t-xl bg-gradient-to-t ${colors[podiumIdx]} border border-b-0 flex items-start justify-center pt-1`}>
+                {actualRank === 1 && <Crown className="w-5 h-5 text-gold" />}
+                {actualRank === 2 && <Medal className="w-4 h-4 text-frost-white/60" />}
+                {actualRank === 3 && <Medal className="w-4 h-4 text-[#cd7f32]" />}
+              </div>
+            </div>
+          )
+        })}
       </div>
 
       {/* Leaderboard list */}

@@ -3,7 +3,7 @@ import ReactConfetti from 'react-confetti'
 import { usePlayer } from '../../contexts/PlayerContext'
 import { useToast } from '../../contexts/ToastContext'
 import { PRICE_SINGLE_BOOK, PRICE_MASTERY_BUNDLE, PAID_BOOK_TOKENS } from '../../config/constants'
-import { Crown, BookOpen, Sparkles, Loader2, Check } from 'lucide-react'
+import { Crown, BookOpen, Sparkles, Loader2, Check, Shield, RefreshCw, Lock } from 'lucide-react'
 
 export default function PurchaseModal({ bookSlug, onClose }) {
   const { updatePlayer } = usePlayer()
@@ -122,10 +122,26 @@ export default function PurchaseModal({ bookSlug, onClose }) {
           </div>
         )}
 
+        {/* Trust signals */}
+        <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-white/5">
+          <div className="flex items-center gap-1">
+            <Lock className="w-3 h-3 text-frost-white/20" />
+            <span className="text-[9px] text-frost-white/25">תשלום מאובטח</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <RefreshCw className="w-3 h-3 text-frost-white/20" />
+            <span className="text-[9px] text-frost-white/25">החזר תוך 7 ימים</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Shield className="w-3 h-3 text-frost-white/20" />
+            <span className="text-[9px] text-frost-white/25">ביטול בכל עת</span>
+          </div>
+        </div>
+
         <button
           onClick={onClose}
           disabled={loading}
-          className="w-full mt-4 py-2 text-xs text-frost-white/30 hover:text-frost-white/50 transition-colors"
+          className="w-full mt-3 py-2 text-xs text-frost-white/30 hover:text-frost-white/50 transition-colors"
         >
           לא עכשיו
         </button>

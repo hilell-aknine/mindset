@@ -1,9 +1,20 @@
-import { useState, useRef, useCallback } from 'react'
-import { X } from 'lucide-react'
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { X, MousePointerClick } from 'lucide-react'
 
 export default function Identify({ exercise, onAnswer, disabled }) {
   const [selection, setSelection] = useState(null) // {start, end}
   const textRef = useRef(null)
+
+  // Keyboard: Enter to check
+  useEffect(() => {
+    if (disabled) return
+    const handler = (e) => {
+      if (e.key === 'Enter' && selection) handleCheck()
+      if (e.key === 'Escape' && selection) clearSelection()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [disabled, selection])
 
   const handleTextSelection = useCallback(() => {
     if (disabled) return
@@ -117,24 +128,28 @@ export default function Identify({ exercise, onAnswer, disabled }) {
   }
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in" role="region" aria-label="תרגיל זיהוי טקסט">
       <h3 className="font-display text-lg font-bold text-frost-white mb-4 leading-relaxed">
         {exercise.question}
       </h3>
 
-      <p className="text-xs text-frost-white/40 mb-3">
-        {selection && !disabled ? 'ניתן לבחור מחדש או ללחוץ בדוק' : 'סמנו את הטקסט הרלוונטי'}
-      </p>
+      <div className="flex items-center gap-2 mb-3">
+        <MousePointerClick className="w-3.5 h-3.5 text-frost-white/30" />
+        <p className="text-xs text-frost-white/40">
+          {selection && !disabled ? 'ניתן לבחור מחדש או ללחוץ Enter' : 'סמנו את הטקסט הרלוונטי בעזרת הגרירה'}
+        </p>
+      </div>
 
       {/* Text to select from */}
       <div
         ref={textRef}
         onMouseUp={handleTextSelection}
         onTouchEnd={handleTextSelection}
+        aria-label="טקסט לבחירה"
         className={`glass-card p-5 text-sm leading-loose select-text transition-all ${
           disabled ? 'text-frost-white/60' :
           selection ? 'text-frost-white/80 border-gold/15' :
-          'text-frost-white/80 cursor-text'
+          'text-frost-white/80 cursor-text animate-pulse-glow'
         }`}
       >
         {renderText()}
@@ -142,12 +157,13 @@ export default function Identify({ exercise, onAnswer, disabled }) {
 
       {/* Selection preview + clear button */}
       {selection && !disabled && (
-        <div className="flex items-center gap-2 mt-2 animate-fade-in">
+        <div className="flex items-center gap-2 mt-2 animate-fade-in" aria-live="polite">
           <p className="text-xs text-gold/60 flex-1 truncate">
             נבחר: &quot;{exercise.text.slice(selection.start, selection.end)}&quot;
           </p>
           <button
             onClick={clearSelection}
+            aria-label="נקה בחירה (Escape)"
             className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-frost-white/30 hover:text-frost-white/60 hover:bg-white/5 transition-all"
           >
             <X className="w-3 h-3" />
@@ -161,7 +177,8 @@ export default function Identify({ exercise, onAnswer, disabled }) {
           <button
             onClick={handleCheck}
             disabled={!selection}
-            className="w-full py-3.5 rounded-xl font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90"
+            aria-label="בדוק תשובה (Enter)"
+            className="w-full py-3.5 rounded-xl font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 active:scale-[0.98]"
           >
             בדוק
           </button>

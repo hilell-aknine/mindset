@@ -12,7 +12,7 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
     setSelected(index)
   }, [disabled, eliminated])
 
-  // Keyboard shortcuts: 1-4 to select options
+  // Keyboard shortcuts: 1-4 to select, Enter to check
   useEffect(() => {
     if (disabled) return
     const handleKey = (e) => {
@@ -20,10 +20,13 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
       if (num >= 1 && num <= exercise.options.length) {
         handleSelect(num - 1)
       }
+      if (e.key === 'Enter' && selected !== null) {
+        handleCheck()
+      }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [disabled, exercise.options.length, handleSelect])
+  }, [disabled, exercise.options.length, handleSelect, selected])
 
   const handleCheck = () => {
     if (selected === null) return
@@ -52,7 +55,7 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
         </p>
       )}
 
-      <div className="space-y-3 mb-6">
+      <div className="space-y-3 mb-6" role="radiogroup" aria-label="אפשרויות תשובה">
         {exercise.options.map((option, i) => {
           const isSelected = selected === i
           const isEliminated = eliminated.includes(i)
@@ -64,6 +67,9 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
               key={i}
               onClick={() => handleSelect(i)}
               disabled={disabled || isEliminated}
+              role="radio"
+              aria-checked={isSelected}
+              aria-label={`${LETTERS[i]}: ${option}`}
               className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border text-right transition-all ${
                 isCorrect ? 'border-success bg-success/10 text-success' :
                 isWrong ? 'border-danger bg-danger/10 text-danger animate-shake' :
@@ -72,7 +78,7 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
                 'border-white/10 bg-bg-card hover:border-white/20 text-frost-white/80'
               }`}
             >
-              <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0 ${
+              <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0 relative ${
                 isCorrect ? 'bg-success/20' :
                 isWrong ? 'bg-danger/20' :
                 isEliminated ? 'bg-white/3' :
@@ -80,6 +86,7 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
                 'bg-white/5'
               }`}>
                 {LETTERS[i]}
+                <span className="absolute -top-1 -left-1 text-[8px] text-frost-white/20 font-mono">{i + 1}</span>
               </span>
               <span className="text-sm leading-relaxed">{option}</span>
             </button>
@@ -91,7 +98,8 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
         <button
           onClick={handleCheck}
           disabled={selected === null}
-          className="w-full py-3.5 rounded-xl font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90"
+          aria-label="בדוק תשובה (Enter)"
+          className="w-full py-3.5 rounded-xl font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 active:scale-[0.98]"
         >
           בדוק
         </button>

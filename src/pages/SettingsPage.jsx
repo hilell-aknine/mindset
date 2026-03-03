@@ -13,8 +13,9 @@ export default function SettingsPage() {
   const navigate = useNavigate()
   const { user, isGuest, logout } = useAuth()
   const { player, updatePlayer } = usePlayer()
-  const { toggle, isEnabled } = useSound()
+  const { toggle, isEnabled, setVolume, getVolume } = useSound()
   const [soundOn, setSoundOn] = useState(isEnabled())
+  const [vol, setVol] = useState(() => Math.round(getVolume() * 100))
   const [confirmReset, setConfirmReset] = useState(false)
   const [expandedSection, setExpandedSection] = useState(null)
 
@@ -169,26 +170,47 @@ export default function SettingsPage() {
 
       {/* Settings list */}
       <div className="space-y-2">
-        {/* Sound */}
-        <button
-          onClick={handleToggleSound}
-          className="glass-card w-full p-4 flex items-center justify-between animate-fade-in"
-          style={{ animationDelay: '0.1s' }}
-        >
-          <div className="flex items-center gap-3">
-            {soundOn ? (
-              <Volume2 className="w-5 h-5 text-dusty-aqua" />
-            ) : (
-              <VolumeX className="w-5 h-5 text-frost-white/30" />
-            )}
-            <span className="text-sm text-frost-white">צלילים</span>
-          </div>
-          <div className={`w-10 h-6 rounded-full transition-colors flex items-center ${
-            soundOn ? 'bg-dusty-aqua justify-end' : 'bg-white/10 justify-start'
-          }`}>
-            <div className="w-5 h-5 rounded-full bg-white m-0.5 shadow-sm transition-all" />
-          </div>
-        </button>
+        {/* Sound toggle + volume */}
+        <div className="glass-card p-4 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          <button
+            onClick={handleToggleSound}
+            className="w-full flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              {soundOn ? (
+                <Volume2 className="w-5 h-5 text-dusty-aqua" />
+              ) : (
+                <VolumeX className="w-5 h-5 text-frost-white/30" />
+              )}
+              <span className="text-sm text-frost-white">צלילים</span>
+            </div>
+            <div className={`w-10 h-6 rounded-full transition-colors flex items-center ${
+              soundOn ? 'bg-dusty-aqua justify-end' : 'bg-white/10 justify-start'
+            }`}>
+              <div className="w-5 h-5 rounded-full bg-white m-0.5 shadow-sm transition-all" />
+            </div>
+          </button>
+          {soundOn && (
+            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-white/5 animate-fade-in">
+              <VolumeX className="w-3.5 h-3.5 text-frost-white/20" />
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={vol}
+                onChange={(e) => {
+                  const v = parseInt(e.target.value)
+                  setVol(v)
+                  setVolume(v / 100)
+                }}
+                className="flex-1 h-1.5 rounded-full appearance-none bg-white/10 accent-dusty-aqua cursor-pointer"
+                aria-label="עוצמת שמע"
+              />
+              <Volume2 className="w-3.5 h-3.5 text-frost-white/20" />
+              <span className="text-[10px] text-frost-white/30 w-7 text-center font-mono">{vol}%</span>
+            </div>
+          )}
+        </div>
 
         {/* Premium status */}
         <div
