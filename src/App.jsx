@@ -10,6 +10,7 @@ import Toast from './components/shared/Toast'
 import Spinner from './components/shared/Spinner'
 import Onboarding from './components/Onboarding'
 import ErrorBoundary from './components/ErrorBoundary'
+import AdminGuard from './components/admin/AdminGuard'
 
 // Lazy-loaded pages for code splitting
 const HomePage = lazy(() => import('./pages/HomePage'))
@@ -21,6 +22,7 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const WorkbookPage = lazy(() => import('./pages/WorkbookPage'))
 const LeaderboardPage = lazy(() => import('./pages/LeaderboardPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
+const AdminPage = lazy(() => import('./pages/AdminPage'))
 
 function PageSuspense({ children }) {
   return (
@@ -223,6 +225,16 @@ export default function App() {
                 <PageSuspense><WorkbookPage /></PageSuspense>
               </PageLayout>
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <AdminGuard>
+              <PageLayout>
+                <PageSuspense><AdminPage /></PageSuspense>
+              </PageLayout>
+            </AdminGuard>
           }
         />
         <Route path="*" element={<PageSuspense><NotFoundPage /></PageSuspense>} />
