@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react'
-import { checkAnswer } from '../../lib/gameEngine'
-import { shuffleArray } from '../../lib/gameEngine'
+import { checkAnswer, shuffleArray } from '../../lib/gameEngine'
 
 export default function FillBlank({ exercise, onAnswer, disabled }) {
   const [selected, setSelected] = useState(null)
@@ -14,7 +13,8 @@ export default function FillBlank({ exercise, onAnswer, disabled }) {
 
   const handleSelect = (originalIndex) => {
     if (disabled) return
-    setSelected(originalIndex)
+    // Toggle selection
+    setSelected(selected === originalIndex ? null : originalIndex)
   }
 
   const handleCheck = () => {
@@ -35,14 +35,14 @@ export default function FillBlank({ exercise, onAnswer, disabled }) {
           <span key={i}>
             {part}
             {i < arr.length - 1 && (
-              <span className={`inline-block min-w-[80px] mx-1 px-3 py-0.5 rounded-lg border-b-2 text-center font-semibold ${
+              <span className={`inline-block min-w-[80px] mx-1 px-3 py-0.5 rounded-lg border-b-2 text-center font-semibold transition-all ${
                 disabled && selected === exercise.correct
                   ? 'border-success text-success bg-success/10'
                   : disabled && selected !== null
-                    ? 'border-danger text-danger bg-danger/10'
+                    ? 'border-danger text-danger bg-danger/10 animate-shake'
                     : selected !== null
-                      ? 'border-gold text-gold bg-gold/10'
-                      : 'border-white/20 text-frost-white/30'
+                      ? 'border-gold text-gold bg-gold/10 scale-105'
+                      : 'border-white/20 text-frost-white/30 animate-pulse'
               }`}>
                 {selected !== null ? exercise.options[selected] : '___'}
               </span>
@@ -52,6 +52,7 @@ export default function FillBlank({ exercise, onAnswer, disabled }) {
       </div>
 
       {/* Word bank */}
+      <p className="text-[10px] text-frost-white/30 mb-2">בחר מילה:</p>
       <div className="flex flex-wrap gap-2 mb-6">
         {shuffledOptions.map(({ text, originalIndex }) => {
           const isSelected = selected === originalIndex
@@ -64,10 +65,10 @@ export default function FillBlank({ exercise, onAnswer, disabled }) {
               onClick={() => handleSelect(originalIndex)}
               disabled={disabled}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                isCorrectAnswer ? 'bg-success/20 text-success border border-success/30' :
+                isCorrectAnswer ? 'bg-success/20 text-success border border-success/30 scale-105' :
                 isWrongSelection ? 'bg-danger/20 text-danger border border-danger/30' :
-                isSelected ? 'bg-gold/20 text-gold border border-gold/30' :
-                'bg-bg-card border border-white/10 text-frost-white/70 hover:border-white/20'
+                isSelected ? 'bg-gold/20 text-gold border border-gold/30 scale-105 shadow-lg shadow-gold/10' :
+                'bg-bg-card border border-white/10 text-frost-white/70 hover:border-white/20 hover:scale-[1.02]'
               }`}
             >
               {text}

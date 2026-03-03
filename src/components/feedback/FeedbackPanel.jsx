@@ -1,8 +1,26 @@
+import { useEffect, useRef } from 'react'
 import { CheckCircle, XCircle, Zap } from 'lucide-react'
 import { getComboLabel } from '../../config/constants'
 
 export default function FeedbackPanel({ correct, explanation, onContinue, comboStreak = 0 }) {
   const showCombo = correct && comboStreak >= 3
+  const btnRef = useRef(null)
+
+  // Auto-focus continue button + keyboard shortcut
+  useEffect(() => {
+    const timer = setTimeout(() => btnRef.current?.focus(), 100)
+    const handleKey = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        onContinue()
+      }
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('keydown', handleKey)
+    }
+  }, [onContinue])
 
   return (
     <div className={`sticky bottom-0 border-t animate-slide-up ${
@@ -38,6 +56,7 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
         </div>
 
         <button
+          ref={btnRef}
           onClick={onContinue}
           className={`w-full py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90 active:scale-[0.98] ${
             correct

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
 import { BookOpen, Trophy, Flame, RotateCcw, BarChart2, Settings, Zap, Target, Crown } from 'lucide-react'
 import DailyChallenge from '../components/DailyChallenge'
+import StreakFreeze from '../components/StreakFreeze'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
@@ -76,6 +77,11 @@ export default function HomePage() {
           </div>
         )}
       </button>
+
+      {/* Streak Freeze */}
+      <div className="mb-4">
+        <StreakFreeze />
+      </div>
 
       {/* Books grid */}
       <div className="grid gap-4">

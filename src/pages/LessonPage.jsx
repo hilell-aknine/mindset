@@ -6,13 +6,14 @@ import { useSound } from '../hooks/useSound'
 import { checkNewAchievements } from '../lib/achievements'
 import { getComboBonus, getComboLabel, XP_CORRECT_ANSWER } from '../config/constants'
 import ExerciseRouter from '../components/exercises/ExerciseRouter'
+import ExerciseTimer, { getSpeedBonus, TIMER_DURATION } from '../components/exercises/ExerciseTimer'
 import FeedbackPanel from '../components/feedback/FeedbackPanel'
 import LessonComplete from '../components/feedback/LessonComplete'
 import LevelUpOverlay from '../components/feedback/LevelUpOverlay'
 import AchievementPopup from '../components/feedback/AchievementPopup'
 import OutOfHeartsModal from '../components/modals/OutOfHeartsModal'
 import PurchaseModal from '../components/modals/PurchaseModal'
-import { X, Heart, Zap } from 'lucide-react'
+import { X, Heart, Zap, Timer } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
@@ -56,7 +57,7 @@ function MiniConfetti({ active }) {
 }
 
 // Floating XP indicator
-function XPFloat({ xp, combo }) {
+function XPFloat({ xp, combo, speedBonus }) {
   if (!xp) return null
   return (
     <div className="fixed top-1/3 left-1/2 -translate-x-1/2 z-50 pointer-events-none animate-xp-float">
@@ -65,6 +66,11 @@ function XPFloat({ xp, combo }) {
         {combo >= 3 && (
           <span className="block text-sm text-warning font-bold mt-0.5 animate-combo-scale">
             {getComboLabel(combo)} x{combo}
+          </span>
+        )}
+        {speedBonus > 0 && (
+          <span className="block text-xs text-dusty-aqua font-bold mt-0.5">
+            +{speedBonus} מהירות
           </span>
         )}
       </div>
@@ -95,6 +101,9 @@ export default function LessonPage() {
   const [transitioning, setTransitioning] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
   const [floatingXP, setFloatingXP] = useState(null)
+  const [timerEnabled, setTimerEnabled] = useState(false)
+  const timerTimeLeft = useRef(TIMER_DURATION)
+  const [totalSpeedBonus, setTotalSpeedBonus] = useState(0)
 
   const currentExercise = exercises[currentIndex]
   const progress = exercises.length > 0 ? ((currentIndex) / exercises.length) * 100 : 0
@@ -109,6 +118,22 @@ export default function LessonPage() {
     }
   }, [])
 
+  // Track timer value
+  const handleTimerUpdate = useCallback(() => {
+    // Timer expired — treat as wrong answer
+    play('wrong')
+    onWrongAnswer()
+    setMistakes(m => m + 1)
+    setFeedback({ correct: false, explanation: 'נגמר הזמן! נסה לענות מהר יותר בפעם הבאה.' })
+  }, [play, onWrongAnswer])
+
+  const handleUseToken = useCallback(() => {
+    updatePlayer(prev => ({
+      ...prev,
+      tokens: Math.max(0, (prev.tokens || 0) - 1)
+    }))
+  }, [updatePlayer])
+
   const handleAnswer = useCallback((isCorrect, explanation) => {
     if (isCorrect) {
       play('correct')
@@ -116,7 +141,12 @@ export default function LessonPage() {
       // Calculate XP earned for display
       const newCombo = (player.comboStreak || 0) + 1
       const bonus = getComboBonus(newCombo)
-      const totalXP = XP_CORRECT_ANSWER + bonus
+      const speedBonus = timerEnabled ? getSpeedBonus(timerTimeLeft.current) : 0
+      const totalXP = XP_CORRECT_ANSWER + bonus + speedBonus
+
+      if (speedBonus > 0) {
+        setTotalSpeedBonus(prev => prev + speedBonus)
+      }
 
       onCorrectAnswer()
       setFeedback({ correct: true, explanation })
@@ -126,7 +156,7 @@ export default function LessonPage() {
       setTimeout(() => setShowConfetti(false), 700)
 
       // Show floating XP
-      setFloatingXP({ xp: totalXP, combo: newCombo })
+      setFloatingXP({ xp: totalXP, combo: newCombo, speedBonus })
       setTimeout(() => setFloatingXP(null), 1300)
     } else {
       play('wrong')
@@ -159,7 +189,7 @@ export default function LessonPage() {
         return { ...prev, reviewQueue: [...queue, item] }
       })
     }
-  }, [onCorrectAnswer, onWrongAnswer, updatePlayer, play, bookSlug, chapterIndex, lessonIndex, currentIndex, player.comboStreak])
+  }, [onCorrectAnswer, onWrongAnswer, updatePlayer, play, bookSlug, chapterIndex, lessonIndex, currentIndex, player.comboStreak, timerEnabled])
 
   // Watch for level changes
   const [prevLevel, setPrevLevel] = useState(player.level)
@@ -195,6 +225,7 @@ export default function LessonPage() {
       setTransitioning(true)
       setTimeout(() => {
         setCurrentIndex(i => i + 1)
+        timerTimeLeft.current = TIMER_DURATION
         setTransitioning(false)
       }, 280)
     }
@@ -214,6 +245,7 @@ export default function LessonPage() {
         mistakes={mistakes}
         totalExercises={exercises.length}
         onContinue={() => navigate(`/book/${bookSlug}`)}
+        speedBonus={totalSpeedBonus}
       />
     )
   }
@@ -224,46 +256,68 @@ export default function LessonPage() {
       <MiniConfetti active={showConfetti} />
 
       {/* Floating XP indicator */}
-      {floatingXP && <XPFloat xp={floatingXP.xp} combo={floatingXP.combo} />}
+      {floatingXP && <XPFloat xp={floatingXP.xp} combo={floatingXP.combo} speedBonus={floatingXP.speedBonus} />}
 
       {/* Top bar */}
       <div className="sticky top-0 z-40 bg-bg-base/90 backdrop-blur-lg px-4 py-3 border-b border-white/5">
-        <div className="max-w-2xl mx-auto flex items-center gap-3">
-          <button
-            onClick={() => navigate(`/book/${bookSlug}`)}
-            className="p-1.5 rounded-lg hover:bg-white/5 transition-colors"
-          >
-            <X className="w-5 h-5 text-frost-white/40" />
-          </button>
-
-          {/* Progress bar with shimmer */}
-          <div className="flex-1 h-2.5 rounded-full bg-white/5 overflow-hidden relative">
-            <div
-              className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-700 ease-out relative"
-              style={{ width: `${progress}%` }}
+        <div className="max-w-2xl mx-auto space-y-2">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate(`/book/${bookSlug}`)}
+              className="p-1.5 rounded-lg hover:bg-white/5 transition-colors"
             >
-              <div className="absolute inset-0 progress-shimmer rounded-full" />
+              <X className="w-5 h-5 text-frost-white/40" />
+            </button>
+
+            {/* Progress bar with shimmer */}
+            <div className="flex-1 h-2.5 rounded-full bg-white/5 overflow-hidden relative">
+              <div
+                className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-700 ease-out relative"
+                style={{ width: `${progress}%` }}
+              >
+                <div className="absolute inset-0 progress-shimmer rounded-full" />
+              </div>
+            </div>
+
+            {/* Exercise counter */}
+            <span className="text-[10px] text-frost-white/30 font-medium min-w-[32px] text-center">
+              {currentIndex + 1}/{exercises.length}
+            </span>
+
+            {/* Combo indicator */}
+            {comboStreak >= 3 && (
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning/15 border border-warning/30 animate-combo-scale">
+                <Zap className="w-3 h-3 text-warning fill-current" />
+                <span className="text-[10px] font-bold text-warning">x{comboStreak}</span>
+              </div>
+            )}
+
+            {/* Timer toggle */}
+            <button
+              onClick={() => setTimerEnabled(t => !t)}
+              className={`p-1.5 rounded-lg transition-colors ${
+                timerEnabled ? 'bg-dusty-aqua/15 text-dusty-aqua' : 'hover:bg-white/5 text-frost-white/20'
+              }`}
+              title={timerEnabled ? 'כבה טיימר' : 'הפעל טיימר (+XP בונוס)'}
+            >
+              <Timer className="w-4 h-4" />
+            </button>
+
+            {/* Hearts */}
+            <div className="flex items-center gap-1 text-danger">
+              <Heart className="w-4 h-4 fill-current" />
+              <span className="text-xs font-bold">{player.hearts}</span>
             </div>
           </div>
 
-          {/* Exercise counter */}
-          <span className="text-[10px] text-frost-white/30 font-medium min-w-[32px] text-center">
-            {currentIndex + 1}/{exercises.length}
-          </span>
-
-          {/* Combo indicator */}
-          {comboStreak >= 3 && (
-            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning/15 border border-warning/30 animate-combo-scale">
-              <Zap className="w-3 h-3 text-warning fill-current" />
-              <span className="text-[10px] font-bold text-warning">x{comboStreak}</span>
-            </div>
+          {/* Timer bar */}
+          {timerEnabled && !feedback && (
+            <ExerciseTimer
+              active={timerEnabled && !feedback}
+              onTimeUp={handleTimerUpdate}
+              exerciseKey={currentIndex}
+            />
           )}
-
-          {/* Hearts */}
-          <div className="flex items-center gap-1 text-danger">
-            <Heart className="w-4 h-4 fill-current" />
-            <span className="text-xs font-bold">{player.hearts}</span>
-          </div>
         </div>
       </div>
 
@@ -278,6 +332,8 @@ export default function LessonPage() {
               exercise={currentExercise}
               onAnswer={handleAnswer}
               disabled={!!feedback}
+              tokens={player.tokens}
+              onUseToken={handleUseToken}
             />
           </div>
         )}
