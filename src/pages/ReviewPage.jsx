@@ -5,13 +5,14 @@ import { useToast } from '../contexts/ToastContext'
 import { useSound } from '../hooks/useSound'
 import ExerciseRouter from '../components/exercises/ExerciseRouter'
 import FeedbackPanel from '../components/feedback/FeedbackPanel'
-import { ArrowRight, RotateCcw, PartyPopper } from 'lucide-react'
+import { ArrowRight, RotateCcw, PartyPopper, Trophy, BookOpen } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
 
 const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves }
+const BOOKS_LIST = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves]
 
 export default function ReviewPage() {
   const navigate = useNavigate()
@@ -78,6 +79,21 @@ export default function ReviewPage() {
     // If correct, currentIndex stays but reviewExercises has shifted
   }, [lastCorrect])
 
+  // Find next unfinished lesson for suggestion
+  const nextLesson = useMemo(() => {
+    for (const book of BOOKS_LIST) {
+      for (const chapter of book.chapters) {
+        for (let li = 0; li < chapter.lessons.length; li++) {
+          const key = `${book.slug}:${chapter.orderIndex}:${li}`
+          if (!player.completedLessons[key]) {
+            return { book, chapter, lessonIndex: li, lesson: chapter.lessons[li] }
+          }
+        }
+      }
+    }
+    return null
+  }, [player.completedLessons])
+
   // Empty state
   if (reviewExercises.length === 0) {
     return (
@@ -88,15 +104,33 @@ export default function ReviewPage() {
           </button>
           <h2 className="font-display text-xl font-bold text-frost-white">חזרה</h2>
         </div>
-        <div className="text-center py-20 animate-fade-in">
+        <div className="text-center py-16 animate-fade-in">
           <div className="w-20 h-20 rounded-3xl bg-success/10 mx-auto mb-4 flex items-center justify-center">
             <PartyPopper className="w-10 h-10 text-success" />
           </div>
           <h3 className="font-display text-xl font-bold text-frost-white mb-2">אין תרגילים לחזרה!</h3>
-          <p className="text-sm text-frost-white/40">כל התשובות שלך נכונות. כל הכבוד!</p>
+          <p className="text-sm text-frost-white/40 mb-6">כל התשובות שלך נכונות. כל הכבוד!</p>
+
+          {nextLesson && (
+            <button
+              onClick={() => navigate(`/lesson/${nextLesson.book.slug}/${nextLesson.chapter.orderIndex}/${nextLesson.lessonIndex}`)}
+              className="glass-card p-4 mx-auto max-w-xs flex items-center gap-3 text-right hover:border-gold/20 transition-all mb-4"
+            >
+              <div className="w-10 h-10 rounded-xl bg-gold/15 flex items-center justify-center text-lg">
+                {nextLesson.book.icon}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-gold font-bold">המשך ללמוד</p>
+                <p className="text-sm text-frost-white truncate">{nextLesson.lesson.title}</p>
+                <p className="text-[10px] text-frost-white/30">{nextLesson.chapter.title}</p>
+              </div>
+              <BookOpen className="w-4 h-4 text-frost-white/30" />
+            </button>
+          )}
+
           <button
             onClick={() => navigate('/home')}
-            className="mt-6 px-6 py-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-bold text-sm hover:opacity-90 transition-opacity"
+            className="px-6 py-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-bold text-sm hover:opacity-90 transition-opacity"
           >
             חזרה לספרייה
           </button>
@@ -108,18 +142,41 @@ export default function ReviewPage() {
   // All reviewed
   if (currentIndex >= reviewExercises.length) {
     return (
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6 text-center py-20">
-        <div className="w-20 h-20 rounded-3xl bg-success/10 mx-auto mb-4 flex items-center justify-center animate-fade-in">
-          <RotateCcw className="w-10 h-10 text-success" />
+      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
+        <div className="text-center py-16">
+          <div className="w-20 h-20 rounded-3xl bg-success/10 mx-auto mb-4 flex items-center justify-center animate-bounce-in">
+            <Trophy className="w-10 h-10 text-success" />
+          </div>
+          <h3 className="font-display text-xl font-bold text-frost-white mb-2 animate-fade-in">סיימת חזרה!</h3>
+          <p className="text-sm text-frost-white/40 mb-2 animate-fade-in">תיקנת {completed} תרגילים</p>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gold/10 text-gold text-xs font-bold mb-6 animate-fade-in">
+            +{completed * 10} XP
+          </div>
+
+          {nextLesson && (
+            <button
+              onClick={() => navigate(`/lesson/${nextLesson.book.slug}/${nextLesson.chapter.orderIndex}/${nextLesson.lessonIndex}`)}
+              className="glass-card p-4 mx-auto max-w-xs flex items-center gap-3 text-right hover:border-gold/20 transition-all mb-4 animate-fade-in"
+              style={{ animationDelay: '0.2s' }}
+            >
+              <div className="w-10 h-10 rounded-xl bg-gold/15 flex items-center justify-center text-lg">
+                {nextLesson.book.icon}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-gold font-bold">המשך ללמוד</p>
+                <p className="text-sm text-frost-white truncate">{nextLesson.lesson.title}</p>
+              </div>
+            </button>
+          )}
+
+          <button
+            onClick={() => navigate('/home')}
+            className="px-6 py-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-bold text-sm hover:opacity-90 transition-opacity animate-fade-in"
+            style={{ animationDelay: '0.3s' }}
+          >
+            חזרה לספרייה
+          </button>
         </div>
-        <h3 className="font-display text-xl font-bold text-frost-white mb-2 animate-fade-in">סיימת חזרה!</h3>
-        <p className="text-sm text-frost-white/40 animate-fade-in">תיקנת {completed} תרגילים</p>
-        <button
-          onClick={() => navigate('/home')}
-          className="mt-6 px-6 py-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-bold text-sm hover:opacity-90 transition-opacity animate-fade-in"
-        >
-          חזרה לספרייה
-        </button>
       </main>
     )
   }
@@ -148,6 +205,9 @@ export default function ReviewPage() {
             </div>
           </div>
           <span className="text-xs text-frost-white/30">{currentIndex + 1}/{reviewExercises.length}</span>
+          {completed > 0 && (
+            <span className="text-[10px] text-success font-bold">{completed} ✓</span>
+          )}
         </div>
       </div>
 

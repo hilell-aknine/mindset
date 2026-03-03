@@ -23,15 +23,21 @@ export function useSound() {
     osc.stop(c.currentTime + delay + duration)
   }
 
+  const vibrate = (pattern) => {
+    try { navigator?.vibrate?.(pattern) } catch {}
+  }
+
   const play = useCallback((type) => {
     if (!enabled.current) return
     try {
       switch (type) {
         case 'correct':
           tone(523, 0.15); tone(659, 0.15, 'sine', 0.3, 0.1); tone(784, 0.2, 'sine', 0.3, 0.2)
+          vibrate(50)
           break
         case 'wrong':
           tone(200, 0.3, 'triangle', 0.25)
+          vibrate([50, 30, 50])
           break
         case 'levelUp':
           [523, 587, 659, 784, 880].forEach((f, i) => tone(f, 0.15, 'sine', 0.25, i * 0.1))
@@ -65,6 +71,17 @@ export function useSound() {
         case 'streakFreeze':
           tone(523, 0.1, 'sine', 0.2); tone(784, 0.15, 'sine', 0.2, 0.1)
           tone(1047, 0.2, 'sine', 0.15, 0.2)
+          break
+        case 'milestone':
+          // Epic ascending scale with harmonics
+          [440, 554, 659, 880, 1047, 1319].forEach((f, i) => tone(f, 0.2, 'sine', 0.2, i * 0.08))
+          tone(1319, 0.6, 'sine', 0.15, 0.5)
+          vibrate([50, 30, 50, 30, 100])
+          break
+        case 'eventBoost':
+          tone(660, 0.1); tone(880, 0.1, 'sine', 0.25, 0.08)
+          tone(1100, 0.15, 'sine', 0.2, 0.16)
+          vibrate(30)
           break
       }
     } catch {}
