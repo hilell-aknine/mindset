@@ -1,8 +1,87 @@
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
 import { LEVEL_NAMES, getXPProgress, LEVEL_THRESHOLDS } from '../config/constants'
 import { ACHIEVEMENTS } from '../lib/achievements'
-import { ArrowRight, Trophy, Target, Flame, Brain, Heart, Zap } from 'lucide-react'
+import { ArrowRight, Trophy, Target, Flame, Brain, Heart, Zap, TrendingUp, BookOpen } from 'lucide-react'
+import strengthsFinder from '../data/books/strengths-finder.json'
+import atomicHabits from '../data/books/atomic-habits.json'
+import happyChemicals from '../data/books/happy-chemicals.json'
+import nextFiveMoves from '../data/books/next-five-moves.json'
+
+const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves]
+
+// Simple bar chart component
+function ProgressChart({ books, completedLessons }) {
+  return (
+    <div className="space-y-3">
+      {books.map(book => {
+        const total = book.chapters.reduce((acc, ch) => acc + ch.lessons.length, 0)
+        const completed = book.chapters.reduce((acc, ch) =>
+          acc + ch.lessons.filter((_, li) =>
+            completedLessons[`${book.slug}:${ch.orderIndex}:${li}`]
+          ).length, 0)
+        const pct = total > 0 ? (completed / total) * 100 : 0
+
+        return (
+          <div key={book.slug} className="flex items-center gap-3">
+            <span className="text-lg shrink-0">{book.icon}</span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-frost-white/60 truncate">{book.title}</p>
+                <span className="text-[10px] text-frost-white/30">{completed}/{total}</span>
+              </div>
+              <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-700"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// Circular progress ring
+function ProgressRing({ value, max, size = 80, strokeWidth = 6, color = '#D4AF37', children }) {
+  const radius = (size - strokeWidth) / 2
+  const circumference = 2 * Math.PI * radius
+  const pct = max > 0 ? Math.min(value / max, 1) : 0
+  const offset = circumference * (1 - pct)
+
+  return (
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="rgba(255,255,255,0.05)"
+          strokeWidth={strokeWidth}
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={color}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          className="transition-all duration-1000 ease-out"
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        {children}
+      </div>
+    </div>
+  )
+}
 
 export default function StatsPage() {
   const navigate = useNavigate()
@@ -10,10 +89,18 @@ export default function StatsPage() {
 
   const levelName = LEVEL_NAMES[player.level - 1] || LEVEL_NAMES[0]
   const xpProgress = getXPProgress(player.xp)
+  const currentThreshold = LEVEL_THRESHOLDS[player.level - 1] || 0
   const nextThreshold = LEVEL_THRESHOLDS[player.level] || LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1]
   const accuracy = player.totalCorrect + player.totalWrong > 0
     ? Math.round((player.totalCorrect / (player.totalCorrect + player.totalWrong)) * 100)
     : 0
+
+  const totalLessonsAvailable = BOOKS.reduce((acc, b) =>
+    acc + b.chapters.reduce((a, ch) => a + ch.lessons.length, 0), 0)
+  const completedCount = Object.keys(player.completedLessons).length
+
+  const earnedAchievements = (player.achievements || []).length
+  const totalAchievements = ACHIEVEMENTS.length
 
   return (
     <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
@@ -28,37 +115,32 @@ export default function StatsPage() {
         <h2 className="font-display text-xl font-bold text-frost-white">הסטטיסטיקות שלי</h2>
       </div>
 
-      {/* Level card */}
+      {/* Level card with ring */}
       <div className="glass-card p-6 mb-6 animate-fade-in" style={{ animationDelay: '0.05s' }}>
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gold/20 to-warning/20 flex items-center justify-center">
-            <Trophy className="w-8 h-8 text-gold" />
-          </div>
-          <div>
+        <div className="flex items-center gap-5">
+          <ProgressRing value={player.xp - currentThreshold} max={nextThreshold - currentThreshold} size={80}>
+            <span className="font-display text-lg font-bold text-gold">{player.level}</span>
+          </ProgressRing>
+          <div className="flex-1">
             <p className="text-xs text-frost-white/40">רמה {player.level}</p>
             <h3 className="font-display text-2xl font-bold text-frost-white">{levelName}</h3>
+            <div className="flex items-center gap-2 mt-2">
+              <TrendingUp className="w-3.5 h-3.5 text-gold" />
+              <span className="text-xs text-frost-white/40">{player.xp}/{nextThreshold} XP</span>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex-1 h-2 rounded-full bg-white/10 overflow-hidden">
-            <div
-              className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-500"
-              style={{ width: `${xpProgress}%` }}
-            />
-          </div>
-          <span className="text-xs text-frost-white/40">{player.xp}/{nextThreshold} XP</span>
         </div>
       </div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-2 gap-3 mb-8">
+      <div className="grid grid-cols-2 gap-3 mb-6">
         {[
           { icon: Brain, color: 'text-dusty-aqua', bg: 'bg-dusty-aqua/10', value: player.xp, label: 'נקודות XP' },
           { icon: Target, color: 'text-success', bg: 'bg-success/10', value: `${accuracy}%`, label: 'דיוק' },
           { icon: Flame, color: 'text-warning', bg: 'bg-warning/10', value: player.longestStreak, label: 'רצף שיא' },
           { icon: Heart, color: 'text-danger', bg: 'bg-danger/10', value: player.totalCorrect, label: 'תשובות נכונות' },
-          { icon: Zap, color: 'text-gold', bg: 'bg-gold/10', value: Object.keys(player.completedLessons).length, label: 'שיעורים' },
-          { icon: Trophy, color: 'text-gold', bg: 'bg-gold/10', value: (player.achievements || []).length, label: 'הישגים' },
+          { icon: Zap, color: 'text-gold', bg: 'bg-gold/10', value: completedCount, label: 'שיעורים' },
+          { icon: Trophy, color: 'text-gold', bg: 'bg-gold/10', value: `${earnedAchievements}/${totalAchievements}`, label: 'הישגים' },
         ].map((stat, i) => (
           <div
             key={i}
@@ -74,24 +156,33 @@ export default function StatsPage() {
         ))}
       </div>
 
+      {/* Book progress chart */}
+      <div className="glass-card p-5 mb-6 animate-fade-in" style={{ animationDelay: '0.35s' }}>
+        <div className="flex items-center gap-2 mb-4">
+          <BookOpen className="w-4 h-4 text-frost-white/40" />
+          <h3 className="font-display text-sm font-bold text-frost-white">התקדמות בספרים</h3>
+        </div>
+        <ProgressChart books={BOOKS} completedLessons={player.completedLessons} />
+      </div>
+
       {/* Achievements */}
-      <h3 className="font-display text-lg font-bold text-frost-white mb-4 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-        הישגים
+      <h3 className="font-display text-lg font-bold text-frost-white mb-4 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+        הישגים ({earnedAchievements}/{totalAchievements})
       </h3>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
         {ACHIEVEMENTS.map((ach, i) => {
           const earned = (player.achievements || []).includes(ach.id)
           return (
             <div
               key={ach.id}
-              className={`glass-card p-3 text-center animate-fade-in ${
-                earned ? 'border-gold/20' : 'opacity-40'
+              className={`glass-card p-3 text-center animate-fade-in transition-all ${
+                earned ? 'border-gold/20 hover:border-gold/40' : 'opacity-30 grayscale'
               }`}
-              style={{ animationDelay: `${0.35 + i * 0.03}s` }}
+              style={{ animationDelay: `${0.45 + i * 0.03}s` }}
             >
               <span className="text-2xl block mb-1">{ach.icon}</span>
-              <p className="text-xs font-semibold text-frost-white truncate">{ach.title}</p>
-              <p className="text-[9px] text-frost-white/40 mt-0.5">{ach.description}</p>
+              <p className="text-[11px] font-semibold text-frost-white truncate">{ach.title}</p>
+              <p className="text-[9px] text-frost-white/40 mt-0.5 line-clamp-2">{ach.description}</p>
             </div>
           )
         })}

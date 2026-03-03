@@ -1,22 +1,77 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
+import { usePlayer } from './contexts/PlayerContext'
 import LandingPage from './pages/LandingPage'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import Toast from './components/shared/Toast'
 import Spinner from './components/shared/Spinner'
-import HomePage from './pages/HomePage'
-import BookPage from './pages/BookPage'
-import LessonPage from './pages/LessonPage'
-import ReviewPage from './pages/ReviewPage'
-import StatsPage from './pages/StatsPage'
-import SettingsPage from './pages/SettingsPage'
-import WorkbookPage from './pages/WorkbookPage'
+import Onboarding from './components/Onboarding'
+
+// Lazy-loaded pages for code splitting
+const HomePage = lazy(() => import('./pages/HomePage'))
+const BookPage = lazy(() => import('./pages/BookPage'))
+const LessonPage = lazy(() => import('./pages/LessonPage'))
+const ReviewPage = lazy(() => import('./pages/ReviewPage'))
+const StatsPage = lazy(() => import('./pages/StatsPage'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const WorkbookPage = lazy(() => import('./pages/WorkbookPage'))
+const LeaderboardPage = lazy(() => import('./pages/LeaderboardPage'))
+
+function PageSuspense({ children }) {
+  return (
+    <Suspense fallback={<LoadingSkeleton />}>
+      {children}
+    </Suspense>
+  )
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-6 animate-pulse">
+      <div className="h-8 w-48 bg-white/5 rounded-xl mb-6" />
+      <div className="space-y-4">
+        {[1, 2, 3].map(i => (
+          <div key={i} className="glass-card p-4 flex items-center gap-3">
+            <div className="w-14 h-14 rounded-2xl bg-white/5 shrink-0" />
+            <div className="flex-1 space-y-2">
+              <div className="h-4 w-3/4 bg-white/5 rounded-lg" />
+              <div className="h-3 w-1/2 bg-white/5 rounded-lg" />
+              <div className="h-1.5 w-full bg-white/5 rounded-full" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
   if (loading) return <Spinner size="lg" text="טוען..." />
   if (!isAuthenticated) return <Navigate to="/" replace />
+  return children
+}
+
+function OnboardingGate({ children }) {
+  const { player } = usePlayer()
+  const navigate = useNavigate()
+
+  if (!player.onboardingComplete) {
+    return (
+      <Onboarding
+        onComplete={(bookSlug) => {
+          if (bookSlug) {
+            navigate(`/book/${bookSlug}`)
+          } else {
+            navigate('/home')
+          }
+        }}
+      />
+    )
+  }
+
   return children
 }
 
@@ -48,7 +103,11 @@ export default function App() {
           path="/home"
           element={
             <ProtectedRoute>
-              <PageLayout><HomePage /></PageLayout>
+              <OnboardingGate>
+                <PageLayout>
+                  <PageSuspense><HomePage /></PageSuspense>
+                </PageLayout>
+              </OnboardingGate>
             </ProtectedRoute>
           }
         />
@@ -56,7 +115,9 @@ export default function App() {
           path="/book/:slug"
           element={
             <ProtectedRoute>
-              <PageLayout><BookPage /></PageLayout>
+              <PageLayout>
+                <PageSuspense><BookPage /></PageSuspense>
+              </PageLayout>
             </ProtectedRoute>
           }
         />
@@ -64,7 +125,7 @@ export default function App() {
           path="/lesson/:bookSlug/:chapterIndex/:lessonIndex"
           element={
             <ProtectedRoute>
-              <LessonPage />
+              <PageSuspense><LessonPage /></PageSuspense>
             </ProtectedRoute>
           }
         />
@@ -72,7 +133,7 @@ export default function App() {
           path="/review"
           element={
             <ProtectedRoute>
-              <ReviewPage />
+              <PageSuspense><ReviewPage /></PageSuspense>
             </ProtectedRoute>
           }
         />
@@ -80,7 +141,19 @@ export default function App() {
           path="/stats"
           element={
             <ProtectedRoute>
-              <PageLayout><StatsPage /></PageLayout>
+              <PageLayout>
+                <PageSuspense><StatsPage /></PageSuspense>
+              </PageLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/leaderboard"
+          element={
+            <ProtectedRoute>
+              <PageLayout>
+                <PageSuspense><LeaderboardPage /></PageSuspense>
+              </PageLayout>
             </ProtectedRoute>
           }
         />
@@ -88,7 +161,9 @@ export default function App() {
           path="/settings"
           element={
             <ProtectedRoute>
-              <PageLayout><SettingsPage /></PageLayout>
+              <PageLayout>
+                <PageSuspense><SettingsPage /></PageSuspense>
+              </PageLayout>
             </ProtectedRoute>
           }
         />
@@ -96,7 +171,9 @@ export default function App() {
           path="/workbook/:slug"
           element={
             <ProtectedRoute>
-              <PageLayout><WorkbookPage /></PageLayout>
+              <PageLayout>
+                <PageSuspense><WorkbookPage /></PageSuspense>
+              </PageLayout>
             </ProtectedRoute>
           }
         />

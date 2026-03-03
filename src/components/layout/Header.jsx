@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../../contexts/PlayerContext'
 import { getXPProgress, LEVEL_NAMES } from '../../config/constants'
-import { Brain, Flame, Heart, Zap, Settings } from 'lucide-react'
+import { Brain, Flame, Heart, Zap, Settings, Crown } from 'lucide-react'
 
 export default function Header() {
   const navigate = useNavigate()
@@ -56,6 +56,15 @@ export default function Header() {
             </div>
             <span className="text-[10px] text-frost-white/50">{levelName}</span>
           </div>
+
+          {/* Leaderboard */}
+          <button
+            onClick={() => navigate('/leaderboard')}
+            className="p-1.5 rounded-lg hover:bg-white/5 transition-colors text-gold/50 hover:text-gold"
+            title="טבלת מובילים"
+          >
+            <Crown className="w-4 h-4" />
+          </button>
 
           {/* Settings */}
           <button
