@@ -5,17 +5,21 @@
 export function checkAnswer(exercise, userAnswer) {
   switch (exercise.type) {
     case 'multiple-choice':
-    case 'improve':
-      return userAnswer === exercise.correct
-
     case 'fill-blank':
       return userAnswer === exercise.correct
 
+    case 'improve':
+    case 'compare': {
+      // Handle both numeric (0/1) and string ("A"/"B") correct formats
+      let correctIdx = exercise.correct
+      if (typeof correctIdx === 'string') {
+        correctIdx = correctIdx === 'A' ? 0 : 1
+      }
+      return userAnswer === correctIdx
+    }
+
     case 'order':
       return JSON.stringify(userAnswer) === JSON.stringify(exercise.correctOrder)
-
-    case 'compare':
-      return userAnswer === exercise.correct
 
     case 'match':
       return checkMatchAnswer(exercise, userAnswer)
@@ -35,7 +39,7 @@ function checkMatchAnswer(exercise, userPairs) {
 
 function checkIdentifyAnswer(exercise, selection) {
   if (!selection || selection.start == null || selection.end == null) return false
-  const [correctStart, correctEnd] = exercise.correctRange
+  const [correctStart, correctEnd] = exercise.correctRange || [exercise.correctStart, exercise.correctEnd]
 
   const overlapStart = Math.max(selection.start, correctStart)
   const overlapEnd = Math.min(selection.end, correctEnd)

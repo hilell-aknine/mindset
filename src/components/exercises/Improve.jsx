@@ -6,6 +6,12 @@ const LETTERS = ['א', 'ב', 'ג', 'ד']
 export default function Improve({ exercise, onAnswer, disabled }) {
   const [selected, setSelected] = useState(null)
 
+  // Handle both formats: options array or optionA/optionB
+  const options = exercise.options || [exercise.optionA, exercise.optionB].filter(Boolean)
+  const correctIndex = typeof exercise.correct === 'string'
+    ? (exercise.correct === 'A' ? 0 : exercise.correct === 'B' ? 1 : parseInt(exercise.correct))
+    : exercise.correct
+
   const handleSelect = (index) => {
     if (disabled) return
     setSelected(index)
@@ -13,7 +19,7 @@ export default function Improve({ exercise, onAnswer, disabled }) {
 
   const handleCheck = () => {
     if (selected === null) return
-    const correct = checkAnswer(exercise, selected)
+    const correct = selected === correctIndex
     onAnswer(correct, exercise.explanation)
   }
 
@@ -24,17 +30,20 @@ export default function Improve({ exercise, onAnswer, disabled }) {
       </h3>
 
       {/* Original text */}
-      <div className="glass-card p-4 mb-6 border-warning/20">
-        <span className="text-[10px] text-warning/60 font-bold block mb-1">המקור:</span>
-        <p className="text-sm text-frost-white/60 leading-relaxed">{exercise.original}</p>
-      </div>
+      {exercise.original && (
+        <div className="glass-card p-4 mb-6 border-warning/20">
+          <span className="text-[10px] text-warning/60 font-bold block mb-1">המקור:</span>
+          <p className="text-sm text-frost-white/60 leading-relaxed">{exercise.original}</p>
+        </div>
+      )}
 
       {/* Improvement options */}
       <div className="space-y-3 mb-6">
-        {exercise.options.map((option, i) => {
+        {options.map((option, i) => {
+          const optionText = typeof option === 'object' ? option.text : option
           const isSelected = selected === i
-          const isCorrect = disabled && i === exercise.correct
-          const isWrong = disabled && isSelected && i !== exercise.correct
+          const isCorrect = disabled && i === correctIndex
+          const isWrong = disabled && isSelected && i !== correctIndex
 
           return (
             <button
@@ -56,7 +65,7 @@ export default function Improve({ exercise, onAnswer, disabled }) {
               }`}>
                 {LETTERS[i]}
               </span>
-              <span className="text-sm leading-relaxed">{option}</span>
+              <span className="text-sm leading-relaxed">{optionText}</span>
             </button>
           )
         })}

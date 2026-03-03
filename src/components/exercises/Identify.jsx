@@ -40,7 +40,7 @@ export default function Identify({ exercise, onAnswer, disabled }) {
 
   const handleCheck = () => {
     if (!selection) return
-    const [correctStart, correctEnd] = exercise.correctRange
+    const [correctStart, correctEnd] = exercise.correctRange || [exercise.correctStart, exercise.correctEnd]
 
     const overlapStart = Math.max(selection.start, correctStart)
     const overlapEnd = Math.min(selection.end, correctEnd)
@@ -58,8 +58,9 @@ export default function Identify({ exercise, onAnswer, disabled }) {
 
   const renderText = () => {
     const text = exercise.text
-    if (disabled && exercise.correctRange) {
-      const [cs, ce] = exercise.correctRange
+    const correctRangeArr = exercise.correctRange || [exercise.correctStart, exercise.correctEnd]
+    if (disabled && correctRangeArr[0] != null) {
+      const [cs, ce] = correctRangeArr
       return (
         <>
           {text.slice(0, cs)}

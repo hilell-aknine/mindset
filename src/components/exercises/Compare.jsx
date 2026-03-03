@@ -10,11 +10,19 @@ export default function Compare({ exercise, onAnswer, disabled }) {
 
   const handleCheck = () => {
     if (selected === null) return
-    const correct = selected === exercise.correct
+    // Handle both number (0/1) and string ("A"/"B") correct format
+    let correctIndex = exercise.correct
+    if (typeof correctIndex === 'string') {
+      correctIndex = correctIndex === 'A' ? 0 : 1
+    }
+    const correct = selected === correctIndex
     onAnswer(correct, exercise.explanation)
   }
 
   const options = [exercise.optionA, exercise.optionB]
+  const correctIndex = typeof exercise.correct === 'string'
+    ? (exercise.correct === 'A' ? 0 : 1)
+    : exercise.correct
 
   return (
     <div className="animate-fade-in">
@@ -25,8 +33,8 @@ export default function Compare({ exercise, onAnswer, disabled }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
         {options.map((option, i) => {
           const isSelected = selected === i
-          const isCorrect = disabled && i === exercise.correct
-          const isWrong = disabled && isSelected && i !== exercise.correct
+          const isCorrect = disabled && i === correctIndex
+          const isWrong = disabled && isSelected && i !== correctIndex
 
           return (
             <button
