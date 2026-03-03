@@ -450,7 +450,18 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Book Showcase ─── */}
-      <section className="py-16 sm:py-24 px-4 relative">
+      <section className="py-16 sm:py-24 px-4 relative overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
+          aria-hidden="true"
+        >
+          <source src="/books-bg.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-bg-base via-transparent to-bg-base pointer-events-none" />
         <div className="absolute top-1/2 left-0 w-[400px] h-[400px] rounded-full bg-deep-petrol/15 blur-[100px] pointer-events-none -translate-y-1/2" />
 
         <div className="max-w-5xl mx-auto relative z-10">
