@@ -1,32 +1,50 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import ReactConfetti from 'react-confetti'
-import { LEVEL_NAMES } from '../../config/constants'
+import { LEVEL_NAMES, LEVEL_THRESHOLDS } from '../../config/constants'
 import { Trophy, Sparkles } from 'lucide-react'
 
 export default function LevelUpOverlay({ level, onClose }) {
   const [visible, setVisible] = useState(false)
   const [showConfetti, setShowConfetti] = useState(true)
 
+  const dismiss = useCallback(() => {
+    setVisible(false)
+    setTimeout(onClose, 400)
+  }, [onClose])
+
   useEffect(() => {
     setTimeout(() => setVisible(true), 100)
     const confettiTimer = setTimeout(() => setShowConfetti(false), 4000)
-    const closeTimer = setTimeout(() => {
-      setVisible(false)
-      setTimeout(onClose, 400)
-    }, 4000)
+    const closeTimer = setTimeout(dismiss, 4000)
     return () => {
       clearTimeout(confettiTimer)
       clearTimeout(closeTimer)
     }
-  }, [onClose])
+  }, [dismiss])
+
+  // Keyboard: Enter/Escape/Space to dismiss
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
+        e.preventDefault()
+        dismiss()
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [dismiss])
 
   const levelName = LEVEL_NAMES[level - 1] || LEVEL_NAMES[0]
+  const nextLevelName = LEVEL_NAMES[level] || null
+  const nextXP = LEVEL_THRESHOLDS[level] || null
   const isHighLevel = level >= 5
 
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center bg-bg-base/80 backdrop-blur-md transition-opacity duration-400 ${visible ? 'opacity-100' : 'opacity-0'}`}
-      onClick={() => { setVisible(false); setTimeout(onClose, 400) }}
+      onClick={dismiss}
+      role="dialog"
+      aria-label={`עלית לרמה ${level} — ${levelName}`}
     >
       {showConfetti && (
         <ReactConfetti
@@ -63,7 +81,14 @@ export default function LevelUpOverlay({ level, onClose }) {
           <p className="text-gold text-lg font-bold">{levelName}</p>
         </div>
 
-        <p className="text-frost-white/30 text-xs mt-6 animate-fade-in" style={{ animationDelay: '1s' }}>
+        {/* Next level preview */}
+        {nextLevelName && nextXP && (
+          <p className="text-frost-white/20 text-[10px] mt-3 animate-fade-in" style={{ animationDelay: '0.8s' }}>
+            הרמה הבאה: {nextLevelName} ({nextXP.toLocaleString()} XP)
+          </p>
+        )}
+
+        <p className="text-frost-white/30 text-xs mt-4 animate-fade-in" style={{ animationDelay: '1s' }}>
           לחץ בכל מקום להמשך
         </p>
       </div>

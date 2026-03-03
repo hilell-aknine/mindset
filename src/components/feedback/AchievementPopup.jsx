@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Sparkles } from 'lucide-react'
 import { RARITY } from '../../lib/achievements'
 
@@ -9,23 +9,42 @@ export default function AchievementPopup({ achievement, onClose }) {
   const rarity = RARITY[achievement.rarity || 'common']
   const isSpecial = achievement.rarity === 'epic' || achievement.rarity === 'legendary'
 
+  const dismiss = useCallback(() => {
+    setVisible(false)
+    setTimeout(onClose, 400)
+  }, [onClose])
+
   useEffect(() => {
     setTimeout(() => setVisible(true), 100)
     setTimeout(() => setShowParticles(true), 300)
-    const timer = setTimeout(() => {
-      setVisible(false)
-      setTimeout(onClose, 400)
-    }, isSpecial ? 5000 : 3500)
+    const timer = setTimeout(dismiss, isSpecial ? 5000 : 3500)
     return () => clearTimeout(timer)
-  }, [onClose, isSpecial])
+  }, [dismiss, isSpecial])
+
+  // Keyboard: Enter/Escape to dismiss early
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
+        e.preventDefault()
+        dismiss()
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [dismiss])
 
   return (
     <div
       className={`fixed top-20 left-1/2 -translate-x-1/2 z-50 transition-all duration-400 ${
         visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
       }`}
+      role="alert"
+      aria-live="assertive"
     >
-      <div className={`glass-card px-6 py-4 flex items-center gap-4 shadow-lg relative overflow-hidden ${rarity.border}`}>
+      <div
+        className={`glass-card px-6 py-4 flex items-center gap-4 shadow-lg relative overflow-hidden cursor-pointer ${rarity.border}`}
+        onClick={dismiss}
+      >
         {/* Shimmer overlay */}
         <div className="absolute inset-0 progress-shimmer pointer-events-none opacity-30" />
 
