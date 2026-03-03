@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../contexts/ToastContext'
 import {
   Brain, BookOpen, Gamepad2, Sparkles, Flame, Heart, Zap,
   RotateCcw, Check, X, ChevronDown, Mail, User, Loader2,
-  Star, Trophy, Target, MessageCircle, HelpCircle, Clock, Users
+  Star, Trophy, Target, MessageCircle, HelpCircle, Clock, Users,
+  Play, Award, Shield, TrendingUp
 } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
@@ -29,6 +30,9 @@ const EXERCISE_TYPES = [
   { name: 'שיפור', icon: '💡' },
   { name: 'זיהוי', icon: '🔍' },
 ]
+
+// Rotating words for hero
+const HERO_WORDS = ['לשחק', 'להבין', 'לזכור', 'לחוות']
 
 // Animated counter hook
 function useCountUp(target, duration = 1500) {
@@ -104,6 +108,140 @@ function CounterStat({ target, label, icon: Icon }) {
       <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-gold mb-0.5 sm:mb-1" />
       <span className="font-display text-xl sm:text-3xl font-bold text-frost-white">{count}</span>
       <span className="text-[11px] sm:text-xs text-frost-white/40">{label}</span>
+    </div>
+  )
+}
+
+// Rotating hero word
+function useRotatingWord(words, interval = 2800) {
+  const [index, setIndex] = useState(0)
+  const [visible, setVisible] = useState(true)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setVisible(false)
+      setTimeout(() => {
+        setIndex(i => (i + 1) % words.length)
+        setVisible(true)
+      }, 400)
+    }, interval)
+    return () => clearInterval(timer)
+  }, [words, interval])
+  return { word: words[index], visible }
+}
+
+// Simulated live users
+function useLiveUsers() {
+  const [count, setCount] = useState(() => 12 + Math.floor(Math.random() * 8))
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCount(c => {
+        const delta = Math.random() > 0.5 ? 1 : -1
+        return Math.max(8, Math.min(35, c + delta))
+      })
+    }, 5000 + Math.random() * 3000)
+    return () => clearInterval(timer)
+  }, [])
+  return count
+}
+
+// Interactive exercise demo
+function InteractiveDemo() {
+  const [selected, setSelected] = useState(null)
+  const [showFeedback, setShowFeedback] = useState(false)
+  const correctAnswer = 0 // "שיפור של פי 37"
+
+  const handleSelect = (i) => {
+    if (showFeedback) return
+    setSelected(i)
+    setTimeout(() => setShowFeedback(true), 500)
+  }
+
+  const reset = () => {
+    setSelected(null)
+    setShowFeedback(false)
+  }
+
+  const options = [
+    'שיפור של פי 37',
+    'שיפור של 365%',
+    'אין הבדל משמעותי',
+  ]
+
+  return (
+    <div className="max-w-md mx-auto">
+      <div className="glass-card p-5 sm:p-6 border-gold/10">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs text-gold flex items-center gap-1.5">
+            <Target className="w-3.5 h-3.5" />
+            נסה בעצמך — בחירה מרובה
+          </p>
+          {showFeedback && (
+            <button onClick={reset} className="text-[10px] text-frost-white/30 hover:text-frost-white/60 transition-colors flex items-center gap-1">
+              <RotateCcw className="w-3 h-3" />
+              נסה שוב
+            </button>
+          )}
+        </div>
+        <p className="text-sm text-frost-white leading-relaxed mb-4">
+          מה קורה כש-1% שיפור מצטבר לאורך שנה שלמה?
+        </p>
+
+        <div className="space-y-2">
+          {options.map((opt, i) => {
+            let classes = 'border-white/8 text-frost-white/60 hover:border-white/20 cursor-pointer'
+            if (selected === i && !showFeedback) {
+              classes = 'border-gold/40 bg-gold/10 text-gold'
+            }
+            if (showFeedback && i === correctAnswer) {
+              classes = 'border-success/40 bg-success/10 text-success'
+            }
+            if (showFeedback && selected === i && i !== correctAnswer) {
+              classes = 'border-danger/40 bg-danger/10 text-danger animate-shake'
+            }
+            if (showFeedback && selected !== i && i !== correctAnswer) {
+              classes = 'border-white/5 text-frost-white/20'
+            }
+
+            return (
+              <button
+                key={i}
+                onClick={() => handleSelect(i)}
+                className={`w-full p-3 rounded-xl border text-sm text-right flex items-center justify-between transition-all duration-300 ${classes}`}
+              >
+                <span>{opt}</span>
+                {showFeedback && i === correctAnswer && <Check className="w-4 h-4 shrink-0" />}
+                {showFeedback && selected === i && i !== correctAnswer && <X className="w-4 h-4 shrink-0" />}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Feedback */}
+        <div className={`transition-all duration-300 overflow-hidden ${showFeedback ? 'max-h-24 opacity-100 mt-3' : 'max-h-0 opacity-0'}`}>
+          {selected === correctAnswer ? (
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-success/5 border border-success/20">
+              <Check className="w-4 h-4 text-success shrink-0" />
+              <p className="text-xs text-frost-white/50">מעולה! 1% ביום = פי 37 בשנה. זה כוח הריבית דריבית.</p>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-danger/5 border border-danger/20">
+              <X className="w-4 h-4 text-danger shrink-0" />
+              <p className="text-xs text-frost-white/50">לא בדיוק... התשובה היא פי 37. 1.01^365 = 37.78</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Star rating display
+function StarRating({ count = 5 }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {Array.from({ length: count }).map((_, i) => (
+        <Star key={i} className="w-3 h-3 text-gold fill-gold" />
+      ))}
     </div>
   )
 }
@@ -255,12 +393,18 @@ export default function LandingPage() {
   const [loading, setLoading] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [showMobileCTA, setShowMobileCTA] = useState(false)
+  const [scrollProgress, setScrollProgress] = useState(0)
   const ctaRef = useRef(null)
   const heroRef = useRef(null)
+  const { word: heroWord, visible: heroWordVisible } = useRotatingWord(HERO_WORDS)
+  const liveUsers = useLiveUsers()
 
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 40)
+      // Scroll progress
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight
+      setScrollProgress(docHeight > 0 ? Math.min(window.scrollY / docHeight, 1) : 0)
       // Show mobile CTA after scrolling past hero
       const heroBottom = heroRef.current?.getBoundingClientRect()?.bottom ?? 0
       const ctaTop = ctaRef.current?.getBoundingClientRect()?.top ?? Infinity
@@ -312,6 +456,13 @@ export default function LandingPage() {
 
       {/* ─── Navbar ─── */}
       <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 safe-top ${scrolled ? 'bg-bg-base/90 backdrop-blur-xl border-b border-white/5 shadow-lg shadow-black/20' : ''}`}>
+        {/* Scroll progress bar */}
+        <div className="absolute bottom-0 inset-x-0 h-[2px] bg-transparent">
+          <div
+            className="h-full bg-gradient-to-l from-gold to-dusty-aqua transition-[width] duration-150 ease-out"
+            style={{ width: `${scrollProgress * 100}%` }}
+          />
+        </div>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center">
@@ -319,12 +470,19 @@ export default function LandingPage() {
             </div>
             <span className="font-display font-bold text-base sm:text-lg text-frost-white">MindSet</span>
           </div>
-          <button
-            onClick={openAuth}
-            className="px-4 sm:px-5 py-2 rounded-xl bg-gold/10 border border-gold/30 text-gold text-sm font-medium hover:bg-gold/20 transition-colors no-touch-delay"
-          >
-            התחבר
-          </button>
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Live users indicator */}
+            <div className={`items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-success/5 border border-success/20 transition-opacity duration-300 hidden sm:flex ${scrolled ? 'opacity-100' : 'opacity-0'}`}>
+              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+              <span className="text-[10px] text-success/80 font-medium">{liveUsers} לומדים עכשיו</span>
+            </div>
+            <button
+              onClick={openAuth}
+              className="px-4 sm:px-5 py-2 rounded-xl bg-gold/10 border border-gold/30 text-gold text-sm font-medium hover:bg-gold/20 transition-colors no-touch-delay"
+            >
+              התחבר
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -363,8 +521,11 @@ export default function LandingPage() {
               </div>
               <h1 className="font-display text-[28px] sm:text-5xl lg:text-6xl font-black leading-[1.2] sm:leading-tight mb-3 sm:mb-5">
                 מה אם יכולת{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-l from-gold to-dusty-aqua">
-                  לשחק
+                <span
+                  className={`inline-block text-transparent bg-clip-text bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-400 ${heroWordVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}
+                  style={{ minWidth: '2.5em' }}
+                >
+                  {heroWord}
                 </span>{' '}
                 ספר
                 <br />
@@ -388,6 +549,11 @@ export default function LandingPage() {
                   <ChevronDown className="w-4 h-4" />
                   גלה עוד
                 </button>
+              </div>
+              {/* Live users - mobile */}
+              <div className="flex items-center justify-center gap-1.5 mt-4 sm:hidden">
+                <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                <span className="text-[11px] text-frost-white/40">{liveUsers} לומדים עכשיו</span>
               </div>
             </div>
 
@@ -497,32 +663,44 @@ export default function LandingPage() {
           <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
             {BOOKS.map((book, i) => {
               const totalLessons = book.chapters.reduce((acc, ch) => acc + ch.lessons.length, 0)
+              const totalExercises = book.chapters.reduce((acc, ch) => acc + ch.lessons.reduce((a2, l) => a2 + (l.exercises?.length || 0), 0), 0)
               return (
                 <RevealSection key={book.slug} delay={i * 100}>
-                  <div className="glass-card p-4 sm:p-5 flex items-center gap-3 sm:gap-4 group hover:border-gold/20 transition-all no-touch-delay tap-bounce">
+                  <div className="glass-card p-4 sm:p-5 flex items-start gap-3 sm:gap-4 group hover:border-gold/20 transition-all no-touch-delay tap-bounce relative overflow-hidden">
+                    {/* Subtle glow on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-gold/0 to-gold/0 group-hover:from-gold/[0.03] group-hover:to-transparent transition-all pointer-events-none" />
                     {bookImages[book.slug] ? (
                       <img
                         src={bookImages[book.slug]}
                         alt={book.title}
-                        className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl object-cover shrink-0 group-hover:scale-105 transition-transform"
+                        className="w-16 h-16 sm:w-18 sm:h-18 rounded-xl sm:rounded-2xl object-cover shrink-0 group-hover:scale-105 transition-transform shadow-lg shadow-black/30"
                       />
                     ) : (
-                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-2xl sm:text-3xl shrink-0 group-hover:scale-105 transition-transform">
+                      <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-xl sm:rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-2xl sm:text-3xl shrink-0 group-hover:scale-105 transition-transform">
                         {book.icon}
                       </div>
                     )}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-display text-base sm:text-lg font-bold text-frost-white truncate">{book.title}</h3>
+                    <div className="flex-1 min-w-0 relative z-10">
+                      <h3 className="font-display text-[15px] sm:text-lg font-bold text-frost-white leading-tight">{book.title}</h3>
                       <p className="text-[11px] sm:text-xs text-frost-white/40 mt-0.5">{book.author}</p>
-                      <div className="flex items-center gap-2 mt-2 sm:mt-2.5 flex-wrap">
+                      <div className="flex items-center gap-3 mt-2 text-[10px] text-frost-white/30">
+                        <span className="flex items-center gap-1">
+                          <BookOpen className="w-3 h-3" />
+                          {book.chapters.length} פרקים
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Target className="w-3 h-3" />
+                          {totalExercises} תרגילים
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-2 sm:mt-2.5">
                         <span className="px-2 py-0.5 rounded-full bg-success/10 border border-success/20 text-success text-[10px] font-medium">
                           פרק ראשון חינם
                         </span>
-                        <span className="text-[10px] text-frost-white/30">
-                          {book.chapters.length} פרקים · {totalLessons} שיעורים
-                        </span>
                       </div>
                     </div>
+                    {/* Arrow indicator */}
+                    <ChevronDown className="w-4 h-4 text-frost-white/15 -rotate-90 shrink-0 mt-1 group-hover:text-gold/40 transition-colors" />
                   </div>
                 </RevealSection>
               )
@@ -565,26 +743,9 @@ export default function LandingPage() {
             </div>
           </RevealSection>
 
-          {/* Mini exercise demo */}
+          {/* Interactive exercise demo */}
           <RevealSection delay={200}>
-            <div className="max-w-md mx-auto">
-              <div className="glass-card p-5 sm:p-6 border-gold/10">
-                <p className="text-xs text-gold mb-3 flex items-center gap-1.5">
-                  <Target className="w-3.5 h-3.5" />
-                  תרגיל לדוגמה — השלמת חסר
-                </p>
-                <p className="text-sm text-frost-white leading-relaxed mb-4">
-                  לפי עקרון הריבית דריבית, שיפור של 1% בכל יום לאורך שנה שלמה יוביל לשיפור כולל של פי{' '}
-                  <span className="inline-flex items-center gap-1 px-3 py-0.5 rounded-lg bg-gold/15 border border-gold/30 text-gold font-bold text-sm mx-0.5">
-                    37
-                  </span>
-                </p>
-                <div className="flex items-center gap-2 p-3 rounded-xl bg-success/5 border border-success/20">
-                  <Check className="w-4 h-4 text-success shrink-0" />
-                  <p className="text-xs text-frost-white/50">מעולה! זו בדיוק התשובה. עכשיו תזכור את זה לתמיד.</p>
-                </div>
-              </div>
-            </div>
+            <InteractiveDemo />
           </RevealSection>
         </div>
       </section>
@@ -638,6 +799,7 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto">
           <RevealSection className="text-center mb-6 sm:mb-10">
             <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">מה אומרים הלומדים</h2>
+            <p className="text-frost-white/40 text-xs sm:text-sm">הצטרפו לקהילה של לומדים שכבר שינו את הדרך שבה הם קולטים ידע</p>
           </RevealSection>
 
           <div className="grid sm:grid-cols-3 gap-3 sm:gap-4">
@@ -647,32 +809,49 @@ export default function LandingPage() {
                 avatar: '/avatars/noam.png',
                 text: '5 דקות ביום בדרך לעבודה — ואני מפנים את החומר הרבה יותר טוב מקריאה רגילה.',
                 streak: 14,
+                book: 'הרגלים אטומים',
+                level: 'רמה 8',
               },
               {
                 name: 'שירה מ.',
                 avatar: '/avatars/shira.png',
                 text: 'הליגות והאירועים גורמים לי לחזור כל יום. כבר 30 ימים רצף!',
                 streak: 30,
+                book: 'גלה את החוזקות שלך',
+                level: 'רמה 14',
               },
               {
                 name: 'יונתן ק.',
                 avatar: '/avatars/yonatan.png',
                 text: 'המאמן AI עזר לי להבין רעיונות שלא תפסתי בקריאה הראשונה. שווה כל שקל.',
                 streak: 7,
+                book: 'הכימיקלים של האושר',
+                level: 'רמה 5',
               },
             ].map((t, i) => (
               <RevealSection key={t.name} delay={i * 100}>
-                <div className="glass-card p-4 sm:p-5">
+                <div className="glass-card p-4 sm:p-5 group hover:border-gold/15 transition-all">
                   <div className="flex items-center gap-3 mb-3">
-                    <img src={t.avatar} alt={t.name} className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-gold/30" />
-                    <div>
-                      <p className="text-sm font-bold text-frost-white">{t.name}</p>
-                      <p className="text-[10px] text-warning">🔥 רצף {t.streak} ימים</p>
+                    <img src={t.avatar} alt={t.name} className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-gold/30 group-hover:border-gold/60 transition-colors" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-bold text-frost-white">{t.name}</p>
+                        <StarRating />
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[10px] text-warning">🔥 רצף {t.streak} ימים</span>
+                        <span className="text-[9px] text-frost-white/20">·</span>
+                        <span className="text-[10px] text-frost-white/30">{t.level}</span>
+                      </div>
                     </div>
                   </div>
-                  <p className="text-xs sm:text-sm text-frost-white/60 leading-relaxed italic">
+                  <p className="text-xs sm:text-sm text-frost-white/60 leading-relaxed italic mb-2.5">
                     &ldquo;{t.text}&rdquo;
                   </p>
+                  <div className="flex items-center gap-1.5 pt-2.5 border-t border-white/5">
+                    <BookOpen className="w-3 h-3 text-dusty-aqua/50" />
+                    <span className="text-[10px] text-frost-white/30">לומד: {t.book}</span>
+                  </div>
                 </div>
               </RevealSection>
             ))}
@@ -958,13 +1137,18 @@ export default function LandingPage() {
       {/* ─── Sticky Mobile CTA ─── */}
       {showMobileCTA && !authMode && (
         <div className="fixed bottom-0 inset-x-0 z-40 sm:hidden animate-slide-up-cta safe-bottom">
-          <div className="bg-bg-base/95 backdrop-blur-xl border-t border-white/10 px-4 py-3">
+          <div className="bg-bg-base/95 backdrop-blur-xl border-t border-white/10 px-4 py-2.5">
             <button
               onClick={openAuth}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base font-bold text-sm no-touch-delay tap-bounce active:scale-[0.98] transition-transform"
+              className="w-full py-3 rounded-xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base font-bold text-sm no-touch-delay tap-bounce active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
             >
+              <Play className="w-4 h-4 fill-current" />
               התחל ללמוד בחינם
             </button>
+            <div className="flex items-center justify-center gap-1.5 mt-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+              <span className="text-[10px] text-frost-white/30">{liveUsers} לומדים עכשיו · בלי כרטיס אשראי</span>
+            </div>
           </div>
         </div>
       )}
