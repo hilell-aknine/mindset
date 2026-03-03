@@ -1,7 +1,22 @@
 import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useToast } from '../../contexts/ToastContext'
-import { Brain, Mail, User, Loader2 } from 'lucide-react'
+import { Brain, Mail, User, Loader2, Eye, EyeOff, AlertCircle } from 'lucide-react'
+
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
+function getPasswordStrength(pw) {
+  if (!pw) return { level: 0, text: '', color: '' }
+  if (pw.length < 6) return { level: 1, text: 'חלשה מדי', color: 'text-danger' }
+  if (pw.length < 8) return { level: 2, text: 'בינונית', color: 'text-warning' }
+  const hasUpper = /[A-Z]/.test(pw)
+  const hasNum = /[0-9]/.test(pw)
+  if (hasUpper && hasNum && pw.length >= 10) return { level: 4, text: 'חזקה מאוד', color: 'text-success' }
+  if (hasNum || hasUpper) return { level: 3, text: 'טובה', color: 'text-dusty-aqua' }
+  return { level: 2, text: 'בינונית', color: 'text-warning' }
+}
 
 export default function AuthScreen() {
   const { loginWithGoogle, loginWithEmail, registerWithEmail, continueAsGuest } = useAuth()
@@ -10,6 +25,8 @@ export default function AuthScreen() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [emailError, setEmailError] = useState('')
 
   const handleGoogle = async () => {
     try {
@@ -24,6 +41,14 @@ export default function AuthScreen() {
   const handleEmailSubmit = async (e) => {
     e.preventDefault()
     if (!email || !password) return toast.error('נא למלא את כל השדות')
+    if (!validateEmail(email)) {
+      setEmailError('כתובת אימייל לא תקינה')
+      return
+    }
+    if (mode === 'email-register' && password.length < 6) {
+      return toast.error('סיסמה חייבת להיות לפחות 6 תווים')
+    }
+    setEmailError('')
     try {
       setLoading(true)
       if (mode === 'email-login') {
@@ -38,6 +63,8 @@ export default function AuthScreen() {
       setLoading(false)
     }
   }
+
+  const passwordStrength = mode === 'email-register' ? getPasswordStrength(password) : null
 
   const handleGuest = () => {
     continueAsGuest()
@@ -112,27 +139,72 @@ export default function AuthScreen() {
         )}
 
         {(mode === 'email-login' || mode === 'email-register') && (
-          <form onSubmit={handleEmailSubmit} className="space-y-3">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="אימייל"
-              className="w-full px-4 py-3 rounded-xl bg-bg-card border border-white/10 text-frost-white placeholder:text-frost-white/30 text-sm focus:border-gold/50 focus:outline-none transition-colors"
-              dir="ltr"
-            />
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="סיסמה"
-              className="w-full px-4 py-3 rounded-xl bg-bg-card border border-white/10 text-frost-white placeholder:text-frost-white/30 text-sm focus:border-gold/50 focus:outline-none transition-colors"
-              dir="ltr"
-            />
+          <form onSubmit={handleEmailSubmit} className="space-y-3" aria-label={mode === 'email-login' ? 'טופס התחברות' : 'טופס הרשמה'}>
+            <div>
+              <label htmlFor="auth-email" className="sr-only">אימייל</label>
+              <input
+                id="auth-email"
+                type="email"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setEmailError('') }}
+                placeholder="אימייל"
+                autoComplete="email"
+                aria-invalid={!!emailError}
+                className={`w-full px-4 py-3 rounded-xl bg-bg-card border text-frost-white placeholder:text-frost-white/30 text-sm focus:outline-none transition-colors ${
+                  emailError ? 'border-danger/50 focus:border-danger' : 'border-white/10 focus:border-gold/50'
+                }`}
+                dir="ltr"
+              />
+              {emailError && (
+                <p className="flex items-center gap-1 mt-1 text-[10px] text-danger" role="alert">
+                  <AlertCircle className="w-3 h-3" />
+                  {emailError}
+                </p>
+              )}
+            </div>
+            <div>
+              <label htmlFor="auth-password" className="sr-only">סיסמה</label>
+              <div className="relative">
+                <input
+                  id="auth-password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="סיסמה"
+                  autoComplete={mode === 'email-login' ? 'current-password' : 'new-password'}
+                  className="w-full px-4 py-3 pl-10 rounded-xl bg-bg-card border border-white/10 text-frost-white placeholder:text-frost-white/30 text-sm focus:border-gold/50 focus:outline-none transition-colors"
+                  dir="ltr"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-frost-white/30 hover:text-frost-white/60 transition-colors"
+                  aria-label={showPassword ? 'הסתר סיסמה' : 'הצג סיסמה'}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              {/* Password strength indicator for registration */}
+              {passwordStrength && password.length > 0 && (
+                <div className="flex items-center gap-2 mt-1.5">
+                  <div className="flex gap-1 flex-1">
+                    {[1, 2, 3, 4].map(i => (
+                      <div key={i} className={`h-1 flex-1 rounded-full ${i <= passwordStrength.level ? (
+                        passwordStrength.level <= 1 ? 'bg-danger' :
+                        passwordStrength.level <= 2 ? 'bg-warning' :
+                        passwordStrength.level <= 3 ? 'bg-dusty-aqua' :
+                        'bg-success'
+                      ) : 'bg-white/10'}`} />
+                    ))}
+                  </div>
+                  <span className={`text-[9px] font-bold ${passwordStrength.color}`}>{passwordStrength.text}</span>
+                </div>
+              )}
+            </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3.5 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="w-full px-6 py-3.5 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-50 active:scale-[0.98]"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin mx-auto" />
@@ -142,7 +214,7 @@ export default function AuthScreen() {
             <div className="flex justify-between text-xs text-frost-white/40">
               <button
                 type="button"
-                onClick={() => setMode(mode === 'email-login' ? 'email-register' : 'email-login')}
+                onClick={() => { setMode(mode === 'email-login' ? 'email-register' : 'email-login'); setEmailError('') }}
                 className="hover:text-gold transition-colors"
               >
                 {mode === 'email-login' ? 'עדיין אין לך חשבון? הירשם' : 'יש לך חשבון? התחבר'}

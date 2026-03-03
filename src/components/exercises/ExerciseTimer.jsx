@@ -48,9 +48,13 @@ export default function ExerciseTimer({ active, onTimeUp, exerciseKey }) {
   const progress = (timeLeft / TIMER_DURATION) * 100
   const isLow = timeLeft <= 10
   const isCritical = timeLeft <= 5
+  const isPanic = timeLeft <= 3 && timeLeft > 0
+
+  // Speed bonus preview
+  const bonus = timeLeft >= 20 ? 5 : timeLeft >= 15 ? 3 : timeLeft >= 10 ? 1 : 0
 
   return (
-    <div className="flex items-center gap-2">
+    <div className={`flex items-center gap-2 ${isPanic ? 'animate-shake' : ''}`} role="timer" aria-label={`נותרו ${timeLeft} שניות`}>
       <Timer className={`w-3.5 h-3.5 ${
         isCritical ? 'text-danger animate-pulse' :
         isLow ? 'text-warning' :
@@ -73,6 +77,11 @@ export default function ExerciseTimer({ active, onTimeUp, exerciseKey }) {
       }`}>
         {timeLeft}
       </span>
+      {bonus > 0 && started && (
+        <span className="text-[8px] font-bold text-gold/50 min-w-[28px]" aria-label={`בונוס מהירות: +${bonus} XP`}>
+          +{bonus}
+        </span>
+      )}
     </div>
   )
 }

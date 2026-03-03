@@ -110,6 +110,7 @@ export default function Onboarding({ onComplete }) {
 
   const goNext = () => {
     if (isLast) {
+      if (!selectedBook) return
       updatePlayer(prev => ({ ...prev, onboardingComplete: true }))
       onComplete(selectedBook)
       return
@@ -130,22 +131,38 @@ export default function Onboarding({ onComplete }) {
     }, 250)
   }
 
+  // Keyboard navigation: arrows + Enter
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') goNext()
+      if (e.key === 'ArrowRight' || e.key === 'ArrowUp') goBack()
+      if (e.key === 'Enter') goNext()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [step, selectedBook])
+
   return (
     <div className="min-h-dvh flex flex-col bg-bg-base relative overflow-hidden">
       {/* Background orbs */}
       <div className="absolute top-20 right-0 w-[400px] h-[400px] rounded-full bg-deep-petrol/20 blur-[100px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full bg-gold/8 blur-[80px] pointer-events-none" />
 
-      {/* Progress dots */}
-      <div className="flex items-center justify-center gap-2 pt-8 pb-4 relative z-10">
-        {STEPS.map((_, i) => (
-          <div
-            key={i}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              i === step ? 'w-8 bg-gold' : i < step ? 'w-4 bg-gold/40' : 'w-4 bg-white/10'
-            }`}
-          />
-        ))}
+      {/* Progress dots + step counter */}
+      <div className="flex flex-col items-center pt-8 pb-4 relative z-10 gap-2">
+        <div className="flex items-center gap-2" role="navigation" aria-label="שלבי הדרכה">
+          {STEPS.map((s, i) => (
+            <div
+              key={i}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === step ? 'w-8 bg-gold' : i < step ? 'w-4 bg-gold/40' : 'w-4 bg-white/10'
+              }`}
+              aria-current={i === step ? 'step' : undefined}
+              aria-label={`שלב ${i + 1}: ${s.title}`}
+            />
+          ))}
+        </div>
+        <span className="text-[9px] text-frost-white/20">{step + 1} / {STEPS.length}</span>
       </div>
 
       {/* Content */}
