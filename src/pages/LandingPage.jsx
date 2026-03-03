@@ -597,6 +597,7 @@ export default function LandingPage() {
             <p className="text-frost-white/50 text-sm sm:text-base">שלושה צעדים לידע אמיתי</p>
           </RevealSection>
 
+          {/* Steps - vertical compact on mobile, 3-col on desktop */}
           <div className="grid sm:grid-cols-3 gap-4 sm:gap-8">
             {[
               {
@@ -619,18 +620,24 @@ export default function LandingPage() {
               },
             ].map(({ step, img, title, desc }, i) => (
               <RevealSection key={step} delay={i * 120}>
-                <div className="glass-card p-4 sm:p-6 text-center relative group">
+                {/* Mobile: horizontal card layout */}
+                <div className="glass-card p-4 sm:p-6 sm:text-center relative group">
                   {/* Step number */}
-                  <div className="absolute -top-3 sm:-top-4 right-1/2 translate-x-1/2 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-gold to-gold/70 flex items-center justify-center text-bg-base font-bold text-xs sm:text-sm">
+                  <div className="absolute -top-3 sm:-top-4 right-4 sm:right-1/2 sm:translate-x-1/2 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-gold to-gold/70 flex items-center justify-center text-bg-base font-bold text-xs sm:text-sm shadow-lg shadow-gold/20">
                     {step}
                   </div>
-                  <img
-                    src={img}
-                    alt={title}
-                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover mx-auto mt-2 sm:mt-3 mb-3 sm:mb-4 group-hover:scale-110 transition-transform"
-                  />
-                  <h3 className="font-display text-lg sm:text-xl font-bold mb-1.5 sm:mb-2">{title}</h3>
-                  <p className="text-xs sm:text-sm text-frost-white/50 leading-relaxed">{desc}</p>
+                  {/* Mobile: flex row / Desktop: stacked */}
+                  <div className="flex sm:flex-col items-center sm:items-center gap-3 sm:gap-0">
+                    <img
+                      src={img}
+                      alt={title}
+                      className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl object-cover shrink-0 sm:mt-3 sm:mb-4 group-hover:scale-110 transition-transform"
+                    />
+                    <div className="flex-1 sm:text-center">
+                      <h3 className="font-display text-base sm:text-xl font-bold mb-0.5 sm:mb-2">{title}</h3>
+                      <p className="text-xs sm:text-sm text-frost-white/50 leading-relaxed">{desc}</p>
+                    </div>
+                  </div>
                 </div>
               </RevealSection>
             ))}
@@ -730,13 +737,14 @@ export default function LandingPage() {
           </RevealSection>
 
           <RevealSection delay={100}>
-            <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 mb-10">
+            {/* Horizontal scroll on mobile, wrap on desktop */}
+            <div className="flex sm:flex-wrap items-center sm:justify-center gap-2 sm:gap-3 mb-8 sm:mb-10 overflow-x-auto mobile-scroll-x pb-2 sm:pb-0 px-1">
               {EXERCISE_TYPES.map(({ name, icon }) => (
                 <div
                   key={name}
-                  className="glass-card px-4 py-2.5 flex items-center gap-2 text-sm text-frost-white/70 hover:border-gold/20 hover:text-frost-white transition-all cursor-default"
+                  className="glass-card px-3.5 sm:px-4 py-2 sm:py-2.5 flex items-center gap-1.5 sm:gap-2 text-[13px] sm:text-sm text-frost-white/70 hover:border-gold/20 hover:text-frost-white transition-all cursor-default whitespace-nowrap shrink-0"
                 >
-                  <span className="text-base">{icon}</span>
+                  <span className="text-sm sm:text-base">{icon}</span>
                   {name}
                 </div>
               ))}
@@ -873,6 +881,7 @@ export default function LandingPage() {
                 icon: MessageCircle,
                 color: 'text-dusty-aqua',
                 bg: 'bg-dusty-aqua/10',
+                border: 'group-hover:border-dusty-aqua/20',
                 title: 'מאמן AI אישי',
                 desc: 'שאל שאלות על החומר וקבל תשובות מותאמות אישית — כאילו יש לך מרצה פרטי',
               },
@@ -880,6 +889,7 @@ export default function LandingPage() {
                 icon: Flame,
                 color: 'text-warning',
                 bg: 'bg-warning/10',
+                border: 'group-hover:border-warning/20',
                 title: 'רצף ימים',
                 desc: 'מערכת Streak כמו Duolingo — כל יום שאתה לומד מחזק את הרצף ואת המוטיבציה',
               },
@@ -887,6 +897,7 @@ export default function LandingPage() {
                 icon: RotateCcw,
                 color: 'text-gold',
                 bg: 'bg-gold/10',
+                border: 'group-hover:border-gold/20',
                 title: 'חזרה מרווחת',
                 desc: 'המערכת מזהה תרגילים שטעית בהם ומחזירה אותם בזמן הנכון לזיכרון ארוך טווח',
               },
@@ -894,6 +905,7 @@ export default function LandingPage() {
                 icon: Heart,
                 color: 'text-danger',
                 bg: 'bg-danger/10',
+                border: 'group-hover:border-danger/20',
                 title: '5 לבבות',
                 desc: 'כל טעות עולה לב — כמו במשחק אמיתי. זה יוצר ריכוז, לחץ חיובי ולמידה עמוקה',
               },
@@ -901,6 +913,7 @@ export default function LandingPage() {
                 icon: Trophy,
                 color: 'text-gold',
                 bg: 'bg-gold/10',
+                border: 'group-hover:border-gold/20',
                 title: 'הישגים ורמות',
                 desc: 'צבור XP, עלה רמות, פתח הישגים — מ"מתחיל סקרן" עד "אגדת MindSet"',
               },
@@ -908,18 +921,19 @@ export default function LandingPage() {
                 icon: Zap,
                 color: 'text-dusty-aqua',
                 bg: 'bg-dusty-aqua/10',
+                border: 'group-hover:border-dusty-aqua/20',
                 title: 'טוקנים יומיים',
                 desc: '3 שאילתות AI בחינם כל יום — מספיק כדי לטעום את הכוח של לימוד מונחה',
               },
-            ].map(({ icon: Icon, color, bg, title, desc }, i) => (
+            ].map(({ icon: Icon, color, bg, border, title, desc }, i) => (
               <RevealSection key={title} delay={i * 80}>
-                <div className="glass-card p-4 sm:p-5 flex gap-3 sm:gap-4 group hover:border-gold/15 transition-all">
-                  <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl ${bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
-                    <Icon className={`w-5 h-5 ${color}`} />
+                <div className={`glass-card p-3.5 sm:p-5 flex gap-3 sm:gap-4 group ${border} transition-all`}>
+                  <div className={`w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl ${bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
+                    <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${color}`} />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="font-display text-sm sm:text-base font-bold mb-0.5 sm:mb-1">{title}</h3>
-                    <p className="text-xs sm:text-sm text-frost-white/45 leading-relaxed">{desc}</p>
+                    <h3 className="font-display text-[13px] sm:text-base font-bold mb-0.5">{title}</h3>
+                    <p className="text-[11px] sm:text-sm text-frost-white/45 leading-relaxed">{desc}</p>
                   </div>
                 </div>
               </RevealSection>
@@ -1019,8 +1033,13 @@ export default function LandingPage() {
               </div>
             </RevealSection>
           </div>
-          {/* Scroll hint on mobile */}
-          <p className="text-center text-[10px] text-frost-white/20 mt-2 sm:hidden px-4">החלק לצדדים לראות את כל התוכניות</p>
+          {/* Scroll dots on mobile */}
+          <div className="flex items-center justify-center gap-1.5 mt-3 sm:hidden px-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-frost-white/20" />
+            <span className="w-1.5 h-1.5 rounded-full bg-frost-white/20" />
+            <span className="w-1.5 h-1.5 rounded-full bg-gold/50" />
+            <span className="text-[10px] text-frost-white/20 mr-2">החלק לצדדים</span>
+          </div>
         </div>
       </section>
 
@@ -1126,7 +1145,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Footer ─── */}
-      <footer className="py-5 text-center border-t border-white/5 pb-20 sm:pb-5">
+      <footer className="py-5 text-center border-t border-white/5 pb-24 sm:pb-5">
         <p className="text-[11px] text-frost-white/25 px-4">
           מדריך לא רשמי. אינו קשור למחברים המקוריים.
           <span className="mx-2">|</span>
