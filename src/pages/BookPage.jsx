@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
-import { ArrowRight, Lock, Check, Play, Clock, Star, Zap, Trophy, RotateCcw } from 'lucide-react'
+import { ArrowRight, Lock, Check, Play, Clock, Star, Zap, Trophy, RotateCcw, FileText } from 'lucide-react'
 import PurchaseModal from '../components/modals/PurchaseModal'
 import AICoachButton from '../components/ai/AICoachButton'
 import strengthsFinder from '../data/books/strengths-finder.json'
@@ -318,6 +318,23 @@ export default function BookPage() {
           })}
         </div>
       </div>
+
+      {/* Workbook link for premium users */}
+      {(player.isPremium || player.premiumBooks.includes(slug)) && (
+        <button
+          onClick={() => navigate(`/workbook/${slug}`)}
+          className="w-full glass-card p-3 mt-4 flex items-center gap-3 border-dusty-aqua/10 hover:border-dusty-aqua/25 transition-all animate-fade-in"
+          style={{ animationDelay: '0.5s' }}
+        >
+          <div className="w-8 h-8 rounded-lg bg-dusty-aqua/15 flex items-center justify-center">
+            <FileText className="w-4 h-4 text-dusty-aqua" />
+          </div>
+          <div className="flex-1 text-right">
+            <p className="text-xs font-bold text-frost-white/70">חוברת עבודה</p>
+            <p className="text-[10px] text-frost-white/30">הדפס תרגילים לתרגול נוסף</p>
+          </div>
+        </button>
+      )}
 
       {/* AI Coach floating button */}
       <AICoachButton bookSlug={slug} systemPrompt={book.systemPrompt} />

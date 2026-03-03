@@ -139,9 +139,10 @@ export default function HomePage() {
 
       {/* Streak banner with next milestone */}
       {player.currentStreak > 1 && (() => {
+        /* data-spotlight="streak" for feature spotlight targeting */
         const nextMilestone = STREAK_MILESTONES.find(m => m.days > player.currentStreak)
         return (
-          <div className="glass-card p-4 mb-4 animate-fade-in border-warning/10" style={{ animationDelay: '0.1s' }}>
+          <div className="glass-card p-4 mb-4 animate-fade-in border-warning/10" data-spotlight="streak" style={{ animationDelay: '0.1s' }}>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-warning/20 flex items-center justify-center">
                 <Flame className="w-5 h-5 text-warning" />
@@ -178,6 +179,7 @@ export default function HomePage() {
 
       {/* Daily Challenge Card */}
       <button
+        data-spotlight="daily"
         onClick={() => setShowDailyChallenge(true)}
         className={`w-full glass-card p-4 mb-6 flex items-center gap-3 animate-fade-in transition-all hover:border-gold/20 ${
           dailyCompleted ? 'border-success/20' : 'border-gold/10 animate-pulse-glow'
@@ -214,7 +216,7 @@ export default function HomePage() {
       </div>
 
       {/* Books grid */}
-      <div className="grid gap-4">
+      <div className="grid gap-4" data-spotlight="books">
         {BOOKS.map((book, idx) => {
           const totalLessons = book.chapters.reduce((acc, ch) => acc + ch.lessons.length, 0)
           const completedCount = book.chapters.reduce((acc, ch) =>
@@ -314,17 +316,25 @@ export default function HomePage() {
       </div>
 
       {/* Stats summary */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-4">
+      <div className="grid grid-cols-4 gap-2 sm:gap-3 mt-4" data-spotlight="xp">
         <div className="glass-card p-3 text-center animate-fade-in" style={{ animationDelay: '0.55s' }}>
-          <p className="text-2xl font-bold text-gold">{player.xp}</p>
+          <p className="text-2xl font-bold text-gold">{player.xp.toLocaleString()}</p>
           <p className="text-[10px] text-frost-white/40 mt-1">XP</p>
         </div>
         <div className="glass-card p-3 text-center animate-fade-in" style={{ animationDelay: '0.6s' }}>
           <p className="text-2xl font-bold text-success">{player.totalCorrect}</p>
-          <p className="text-[10px] text-frost-white/40 mt-1">תשובות נכונות</p>
+          <p className="text-[10px] text-frost-white/40 mt-1">נכונות</p>
+        </div>
+        <div className="glass-card p-3 text-center animate-fade-in" style={{ animationDelay: '0.63s' }}>
+          <p className="text-2xl font-bold text-dusty-aqua">
+            {(player.totalCorrect + player.totalWrong) > 0
+              ? Math.round((player.totalCorrect / (player.totalCorrect + player.totalWrong)) * 100)
+              : 0}%
+          </p>
+          <p className="text-[10px] text-frost-white/40 mt-1">דיוק</p>
         </div>
         <div className="glass-card p-3 text-center animate-fade-in" style={{ animationDelay: '0.65s' }}>
-          <p className="text-2xl font-bold text-dusty-aqua">{Object.keys(player.completedLessons).length}</p>
+          <p className="text-2xl font-bold text-frost-white">{Object.keys(player.completedLessons).length}</p>
           <p className="text-[10px] text-frost-white/40 mt-1">שיעורים</p>
         </div>
       </div>
