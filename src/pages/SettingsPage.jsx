@@ -4,7 +4,10 @@ import { useAuth } from '../contexts/AuthContext'
 import { usePlayer } from '../contexts/PlayerContext'
 import { useSound } from '../hooks/useSound'
 import { WEEKLY_GOALS } from '../lib/events'
-import { ArrowRight, Volume2, VolumeX, Trash2, LogOut, User, Target, Timer, Bell } from 'lucide-react'
+import {
+  ArrowRight, Volume2, VolumeX, Trash2, LogOut, User, Target,
+  Download, Shield, Info, ChevronDown, BookOpen, Zap, Crown
+} from 'lucide-react'
 
 export default function SettingsPage() {
   const navigate = useNavigate()
@@ -13,6 +16,7 @@ export default function SettingsPage() {
   const { toggle, isEnabled } = useSound()
   const [soundOn, setSoundOn] = useState(isEnabled())
   const [confirmReset, setConfirmReset] = useState(false)
+  const [expandedSection, setExpandedSection] = useState(null)
 
   const handleToggleSound = () => {
     const newState = toggle()
@@ -21,6 +25,31 @@ export default function SettingsPage() {
 
   const handleSetWeeklyGoal = (xp) => {
     updatePlayer(prev => ({ ...prev, weeklyXPGoal: xp }))
+  }
+
+  const handleExportData = () => {
+    const data = {
+      exportDate: new Date().toISOString(),
+      player: {
+        level: player.level,
+        xp: player.xp,
+        totalCorrect: player.totalCorrect,
+        totalWrong: player.totalWrong,
+        currentStreak: player.currentStreak,
+        longestStreak: player.longestStreak,
+        perfectLessons: player.perfectLessons,
+        completedLessons: player.completedLessons,
+        achievements: player.achievements,
+        weeklyXP: player.weeklyXP,
+      }
+    }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `mindset-progress-${new Date().toISOString().split('T')[0]}.json`
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   const handleResetProgress = () => {
@@ -42,6 +71,16 @@ export default function SettingsPage() {
     setConfirmReset(false)
   }
 
+  const toggleSection = (section) => {
+    setExpandedSection(expandedSection === section ? null : section)
+  }
+
+  // Stats summary for profile
+  const totalLessons = Object.values(player.completedLessons || {}).flat().length
+  const accuracy = player.totalCorrect + player.totalWrong > 0
+    ? Math.round((player.totalCorrect / (player.totalCorrect + player.totalWrong)) * 100)
+    : 0
+
   return (
     <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
       {/* Header */}
@@ -49,17 +88,23 @@ export default function SettingsPage() {
         <button
           onClick={() => navigate('/home')}
           className="p-2 rounded-xl hover:bg-white/5 transition-colors"
+          aria-label="חזרה לדף הבית"
         >
           <ArrowRight className="w-5 h-5 text-frost-white/60" />
         </button>
         <h2 className="font-display text-xl font-bold text-frost-white">הגדרות</h2>
       </div>
 
-      {/* Profile */}
+      {/* Profile card with stats */}
       <div className="glass-card p-5 mb-4 animate-fade-in" style={{ animationDelay: '0.05s' }}>
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center">
-            <User className="w-6 h-6 text-frost-white" />
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center relative">
+            <User className="w-7 h-7 text-frost-white" />
+            {player.isPremium && (
+              <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gold flex items-center justify-center">
+                <Crown className="w-3 h-3 text-bg-base" />
+              </div>
+            )}
           </div>
           <div>
             <p className="font-semibold text-frost-white text-sm">
@@ -68,6 +113,21 @@ export default function SettingsPage() {
             <p className="text-xs text-frost-white/40">
               {isGuest ? 'מצב אורח — ההתקדמות נשמרת מקומית' : 'חשבון מחובר'}
             </p>
+          </div>
+        </div>
+        {/* Mini stats */}
+        <div className="grid grid-cols-3 gap-2">
+          <div className="bg-white/5 rounded-xl p-2.5 text-center">
+            <span className="text-gold font-bold text-sm block">{player.level}</span>
+            <span className="text-[10px] text-frost-white/30">רמה</span>
+          </div>
+          <div className="bg-white/5 rounded-xl p-2.5 text-center">
+            <span className="text-dusty-aqua font-bold text-sm block">{totalLessons}</span>
+            <span className="text-[10px] text-frost-white/30">שיעורים</span>
+          </div>
+          <div className="bg-white/5 rounded-xl p-2.5 text-center">
+            <span className="text-success font-bold text-sm block">{accuracy}%</span>
+            <span className="text-[10px] text-frost-white/30">דיוק</span>
           </div>
         </div>
       </div>
@@ -133,9 +193,12 @@ export default function SettingsPage() {
         {/* Premium status */}
         <div
           className="glass-card w-full p-4 flex items-center justify-between animate-fade-in"
-          style={{ animationDelay: '0.15s' }}
+          style={{ animationDelay: '0.12s' }}
         >
-          <span className="text-sm text-frost-white">סטטוס</span>
+          <div className="flex items-center gap-3">
+            <Crown className={`w-5 h-5 ${player.isPremium ? 'text-gold' : 'text-frost-white/30'}`} />
+            <span className="text-sm text-frost-white">סטטוס</span>
+          </div>
           <span className={`text-xs font-bold px-3 py-1 rounded-full ${
             player.isPremium
               ? 'bg-gold/20 text-gold'
@@ -143,6 +206,93 @@ export default function SettingsPage() {
           }`}>
             {player.isPremium ? 'פרימיום' : 'חינם'}
           </span>
+        </div>
+
+        {/* Learning stats section (collapsible) */}
+        <div className="glass-card overflow-hidden animate-fade-in" style={{ animationDelay: '0.14s' }}>
+          <button
+            onClick={() => toggleSection('stats')}
+            className="w-full p-4 flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <BookOpen className="w-5 h-5 text-dusty-aqua" />
+              <span className="text-sm text-frost-white">סטטיסטיקות למידה</span>
+            </div>
+            <ChevronDown className={`w-4 h-4 text-frost-white/30 transition-transform ${expandedSection === 'stats' ? 'rotate-180' : ''}`} />
+          </button>
+          {expandedSection === 'stats' && (
+            <div className="px-4 pb-4 space-y-2 border-t border-white/5 pt-3 animate-fade-in">
+              <div className="flex justify-between text-xs">
+                <span className="text-frost-white/40">XP כולל</span>
+                <span className="text-frost-white/70 font-medium">{player.xp?.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-frost-white/40">תשובות נכונות</span>
+                <span className="text-success font-medium">{player.totalCorrect}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-frost-white/40">שגיאות</span>
+                <span className="text-danger font-medium">{player.totalWrong}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-frost-white/40">שיעורים מושלמים</span>
+                <span className="text-gold font-medium">{player.perfectLessons || 0}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-frost-white/40">רצף נוכחי</span>
+                <span className="text-warning font-medium">{player.currentStreak} ימים</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-frost-white/40">רצף שיא</span>
+                <span className="text-frost-white/70 font-medium">{player.longestStreak} ימים</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-frost-white/40">הישגים</span>
+                <span className="text-frost-white/70 font-medium">{player.achievements?.length || 0}</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Data & Privacy section (collapsible) */}
+        <div className="glass-card overflow-hidden animate-fade-in" style={{ animationDelay: '0.16s' }}>
+          <button
+            onClick={() => toggleSection('data')}
+            className="w-full p-4 flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <Shield className="w-5 h-5 text-muted-teal" />
+              <span className="text-sm text-frost-white">נתונים ופרטיות</span>
+            </div>
+            <ChevronDown className={`w-4 h-4 text-frost-white/30 transition-transform ${expandedSection === 'data' ? 'rotate-180' : ''}`} />
+          </button>
+          {expandedSection === 'data' && (
+            <div className="px-4 pb-4 space-y-3 border-t border-white/5 pt-3 animate-fade-in">
+              <p className="text-[11px] text-frost-white/30 leading-relaxed">
+                הנתונים שלך נשמרים {isGuest ? 'מקומית על המכשיר' : 'בענן בצורה מאובטחת'}.
+                אתה יכול לייצא את כל ההתקדמות שלך בכל רגע.
+              </p>
+              <button
+                onClick={handleExportData}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm text-frost-white/60 hover:bg-white/10 transition-colors"
+              >
+                <Download className="w-4 h-4" />
+                ייצא את ההתקדמות שלי (JSON)
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* AI Coach info */}
+        <div className="glass-card w-full p-4 flex items-center justify-between animate-fade-in" style={{ animationDelay: '0.18s' }}>
+          <div className="flex items-center gap-3">
+            <Zap className="w-5 h-5 text-gold" />
+            <div>
+              <span className="text-sm text-frost-white block">טוקני AI</span>
+              <span className="text-[10px] text-frost-white/30">מתחדשים כל יום</span>
+            </div>
+          </div>
+          <span className="text-sm font-bold text-gold">{player.tokens || 0}</span>
         </div>
 
         {/* Reset progress */}
@@ -158,7 +308,7 @@ export default function SettingsPage() {
             </span>
           </div>
           {confirmReset && (
-            <span className="text-xs text-danger">בטוח?</span>
+            <span className="text-xs text-danger font-bold">בטוח?</span>
           )}
         </button>
 
@@ -166,17 +316,23 @@ export default function SettingsPage() {
         <button
           onClick={logout}
           className="glass-card w-full p-4 flex items-center gap-3 animate-fade-in"
-          style={{ animationDelay: '0.25s' }}
+          style={{ animationDelay: '0.22s' }}
         >
           <LogOut className="w-5 h-5 text-frost-white/40" />
           <span className="text-sm text-frost-white">התנתק</span>
         </button>
       </div>
 
-      {/* Version */}
-      <p className="text-center text-[10px] text-frost-white/20 mt-8 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-        MindSet v1.0.0
-      </p>
+      {/* App info */}
+      <div className="mt-8 text-center animate-fade-in" style={{ animationDelay: '0.3s' }}>
+        <div className="flex items-center justify-center gap-1.5 mb-1">
+          <Info className="w-3 h-3 text-frost-white/15" />
+          <p className="text-[10px] text-frost-white/20">MindSet v1.0.0</p>
+        </div>
+        <p className="text-[9px] text-frost-white/10">
+          מדריך לא רשמי. אינו קשור למחברים המקוריים.
+        </p>
+      </div>
     </main>
   )
 }

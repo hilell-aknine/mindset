@@ -8,6 +8,7 @@ import Footer from './components/layout/Footer'
 import Toast from './components/shared/Toast'
 import Spinner from './components/shared/Spinner'
 import Onboarding from './components/Onboarding'
+import ErrorBoundary from './components/ErrorBoundary'
 
 // Lazy-loaded pages for code splitting
 const HomePage = lazy(() => import('./pages/HomePage'))
@@ -18,6 +19,7 @@ const StatsPage = lazy(() => import('./pages/StatsPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const WorkbookPage = lazy(() => import('./pages/WorkbookPage'))
 const LeaderboardPage = lazy(() => import('./pages/LeaderboardPage'))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function PageSuspense({ children }) {
   return (
@@ -107,7 +109,7 @@ export default function App() {
   const { isAuthenticated, loading } = useAuth()
 
   return (
-    <>
+    <ErrorBoundary>
       <Toast />
       <Routes>
         <Route
@@ -195,8 +197,8 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<PageSuspense><NotFoundPage /></PageSuspense>} />
       </Routes>
-    </>
+    </ErrorBoundary>
   )
 }

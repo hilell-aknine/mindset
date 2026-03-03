@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { usePlayer } from '../../contexts/PlayerContext'
 import { useToast } from '../../contexts/ToastContext'
-import { X, Send, Loader2, Bot, User } from 'lucide-react'
+import { X, Send, Loader2, Bot, User, Zap, Crown } from 'lucide-react'
 
 export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
   const { player, spendToken } = usePlayer()
@@ -17,10 +17,13 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
     messagesEnd.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  const tokensLeft = player.tokens || 0
+  const isOutOfTokens = tokensLeft <= 0
+
   const handleSend = async () => {
     if (!input.trim() || loading) return
 
-    if (player.tokens <= 0) {
+    if (isOutOfTokens) {
       toast.error('נגמרו הטוקנים! חזור מחר או שדרג לפרימיום')
       return
     }
@@ -33,7 +36,6 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
     spendToken()
 
     try {
-      // Try the API proxy first
       const res = await fetch('/api/ai-coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -51,7 +53,6 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
         throw new Error('API unavailable')
       }
     } catch {
-      // Fallback: local response
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: 'המאמן לא זמין כרגע. נסה שוב מאוחר יותר, או שאל שאלה אחרת. (חיבור ל-API נדרש)'
@@ -71,10 +72,15 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
           </div>
           <div>
             <p className="text-sm font-bold text-frost-white">מאמן AI</p>
-            <p className="text-[10px] text-frost-white/30">{player.tokens} טוקנים נותרו</p>
+            <div className="flex items-center gap-1">
+              <Zap className={`w-2.5 h-2.5 ${tokensLeft > 0 ? 'text-gold' : 'text-frost-white/20'}`} />
+              <p className={`text-[10px] ${tokensLeft > 0 ? 'text-frost-white/30' : 'text-danger/60'}`}>
+                {tokensLeft > 0 ? `${tokensLeft} טוקנים נותרו` : 'אין טוקנים'}
+              </p>
+            </div>
           </div>
         </div>
-        <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/5 transition-colors">
+        <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/5 transition-colors" aria-label="סגור צ'אט">
           <X className="w-5 h-5 text-frost-white/40" />
         </button>
       </div>
@@ -102,13 +108,32 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
             <div className="w-7 h-7 rounded-lg bg-dusty-aqua/20 flex items-center justify-center">
               <Bot className="w-3.5 h-3.5 text-dusty-aqua" />
             </div>
-            <div className="px-3 py-2 rounded-xl bg-white/5 border border-white/5">
-              <Loader2 className="w-4 h-4 text-frost-white/30 animate-spin" />
+            <div className="px-3 py-2 rounded-xl bg-white/5 border border-white/5 flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 bg-frost-white/30 rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
+              <div className="w-1.5 h-1.5 bg-frost-white/30 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }} />
+              <div className="w-1.5 h-1.5 bg-frost-white/30 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }} />
             </div>
           </div>
         )}
         <div ref={messagesEnd} />
       </div>
+
+      {/* Out of tokens CTA */}
+      {isOutOfTokens && !loading && (
+        <div className="px-4 py-3 border-t border-white/5 bg-gold/5 animate-fade-in">
+          <div className="flex items-center gap-2 mb-2">
+            <Zap className="w-4 h-4 text-gold" />
+            <span className="text-xs font-bold text-gold">נגמרו הטוקנים</span>
+          </div>
+          <p className="text-[11px] text-frost-white/40 mb-2">
+            3 טוקנים חינמיים מתחדשים כל יום. שדרג לפרימיום לטוקנים ללא הגבלה.
+          </p>
+          <button className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base text-xs font-bold hover:brightness-110 transition-all">
+            <Crown className="w-3.5 h-3.5" />
+            שדרג לפרימיום
+          </button>
+        </div>
+      )}
 
       {/* Input */}
       <div className="p-3 border-t border-white/5">
@@ -117,15 +142,24 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="שאל שאלה..."
-            className="flex-1 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm text-frost-white placeholder:text-frost-white/20 focus:border-gold/30 focus:outline-none"
+            placeholder={isOutOfTokens ? 'נגמרו הטוקנים...' : 'שאל שאלה...'}
+            disabled={isOutOfTokens}
+            className="flex-1 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm text-frost-white placeholder:text-frost-white/20 focus:border-gold/30 focus:outline-none disabled:opacity-40"
+            aria-label="הקלד שאלה למאמן"
           />
           <button
             onClick={handleSend}
-            disabled={!input.trim() || loading}
-            className="px-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white disabled:opacity-30 hover:opacity-90 transition-opacity"
+            disabled={!input.trim() || loading || isOutOfTokens}
+            className="px-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white disabled:opacity-30 hover:opacity-90 transition-opacity relative"
+            aria-label="שלח הודעה"
           >
             <Send className="w-4 h-4" />
+            {/* Token cost indicator */}
+            {tokensLeft > 0 && input.trim() && (
+              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-gold text-bg-base text-[8px] font-bold flex items-center justify-center">
+                -1
+              </span>
+            )}
           </button>
         </div>
       </div>
