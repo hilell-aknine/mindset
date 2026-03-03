@@ -14,6 +14,7 @@ import nextFiveMoves from '../data/books/next-five-moves.json'
 const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves]
 
 const bookImages = {
+  'atomic-habits': '/books/atomic-habits.png',
   'strengths-finder': '/books/strengths-finder.png',
   'happy-chemicals': '/books/happy-chemicals.png',
   'next-five-moves': '/books/next-five-moves.png',
