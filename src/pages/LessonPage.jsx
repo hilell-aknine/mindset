@@ -273,10 +273,16 @@ export default function LessonPage() {
       {/* Top bar */}
       <div className="sticky top-0 z-40 bg-bg-base/90 backdrop-blur-lg px-4 py-3 border-b border-white/5">
         <div className="max-w-2xl mx-auto space-y-2">
+          {/* Lesson title */}
+          <div className="flex items-center gap-2 px-1">
+            <span className="text-sm">{book.icon}</span>
+            <p className="text-[10px] text-frost-white/30 truncate">{chapter?.title} — {lesson.title}</p>
+          </div>
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate(`/book/${bookSlug}`)}
               className="p-1.5 rounded-lg hover:bg-white/5 transition-colors"
+              aria-label="חזרה לספר"
             >
               <X className="w-5 h-5 text-frost-white/40" />
             </button>
