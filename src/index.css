@@ -267,3 +267,23 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
+
+/* Safe area padding for mobile notches */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+}
+
+/* Touch action for better mobile scrolling */
+.no-touch-delay {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Print styles */
+@media print {
+  .glass-card { background: white !important; border-color: #e5e7eb !important; }
+  .glass-card:hover { background: white !important; }
+  body { background: white !important; color: black !important; }
+}

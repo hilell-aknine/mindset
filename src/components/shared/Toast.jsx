@@ -1,15 +1,17 @@
 import { useToast } from '../../contexts/ToastContext'
-import { CheckCircle, XCircle, Info, X } from 'lucide-react'
+import { CheckCircle, XCircle, Info, AlertTriangle, X } from 'lucide-react'
 
 const icons = {
   success: CheckCircle,
   error: XCircle,
+  warning: AlertTriangle,
   info: Info,
 }
 
 const colors = {
   success: 'bg-success/20 border-success/30 text-success',
   error: 'bg-danger/20 border-danger/30 text-danger',
+  warning: 'bg-warning/20 border-warning/30 text-warning',
   info: 'bg-dusty-aqua/20 border-dusty-aqua/30 text-dusty-aqua',
 }
 

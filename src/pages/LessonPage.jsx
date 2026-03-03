@@ -390,6 +390,7 @@ export default function LessonPage() {
           explanation={feedback.explanation}
           onContinue={handleContinue}
           comboStreak={comboStreak}
+          speedBonus={feedback.correct && timerEnabled ? getSpeedBonus(timerTimeLeft.current) : 0}
         />
       )}
 
