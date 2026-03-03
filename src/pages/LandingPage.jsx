@@ -315,6 +315,19 @@ export default function LandingPage() {
 
       {/* ─── Hero ─── */}
       <section className="relative pt-28 sm:pt-36 pb-16 sm:pb-24 px-4">
+        {/* Background video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none"
+          aria-hidden="true"
+        >
+          <source src="/hero-bg.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-bg-base/40 via-transparent to-bg-base pointer-events-none" />
+
         {/* Background orbs */}
         <div className="absolute top-10 right-0 w-[500px] h-[500px] rounded-full bg-deep-petrol/25 blur-[120px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-gold/8 blur-[100px] pointer-events-none" />
