@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import ReactConfetti from 'react-confetti'
-import { Star, Trophy, ArrowLeft, Sparkles, Zap, Timer } from 'lucide-react'
+import { Star, Trophy, ArrowLeft, Sparkles, Zap, Timer, Share2 } from 'lucide-react'
 import { XP_LESSON_COMPLETE, XP_PERFECT_LESSON } from '../../config/constants'
 import { getActiveEvent, getXPMultiplier } from '../../lib/events'
 
-export default function LessonComplete({ mistakes, totalExercises, onContinue, speedBonus = 0 }) {
+export default function LessonComplete({ mistakes, totalExercises, onContinue, speedBonus = 0, nextLesson = null, onNextLesson = null }) {
   const [showConfetti, setShowConfetti] = useState(true)
   const [starsRevealed, setStarsRevealed] = useState(0)
   const [showBreakdown, setShowBreakdown] = useState(false)
@@ -131,15 +131,47 @@ export default function LessonComplete({ mistakes, totalExercises, onContinue, s
           )}
         </div>
 
-        {/* Continue button */}
+        {/* Next lesson CTA */}
+        {nextLesson && onNextLesson && (
+          <button
+            onClick={onNextLesson}
+            className="w-full max-w-xs mx-auto flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base font-bold text-sm hover:brightness-110 transition-all active:scale-[0.98] animate-bounce-in mb-3"
+            style={{ animationDelay: '0.7s' }}
+          >
+            שיעור הבא: {nextLesson.title}
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+        )}
+
+        {/* Continue (back to book) button */}
         <button
           onClick={onContinue}
-          className="w-full max-w-xs mx-auto flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-bold text-sm hover:opacity-90 transition-all active:scale-[0.98] animate-bounce-in"
-          style={{ animationDelay: '0.7s' }}
+          className={`w-full max-w-xs mx-auto flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm transition-all active:scale-[0.98] animate-bounce-in ${
+            nextLesson ? 'bg-white/5 text-frost-white/60 hover:bg-white/10' : 'bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90'
+          }`}
+          style={{ animationDelay: nextLesson ? '0.8s' : '0.7s' }}
         >
-          המשך
+          {nextLesson ? 'חזרה לספר' : 'המשך'}
           <ArrowLeft className="w-4 h-4" />
         </button>
+
+        {/* Share button */}
+        {isPerfect && navigator.share && (
+          <button
+            onClick={() => {
+              navigator.share({
+                title: 'MindSet - שיעור מושלם!',
+                text: `סיימתי שיעור ב-MindSet עם ${stars} כוכבים ו-${xpEarned} XP! 🧠`,
+                url: window.location.origin,
+              }).catch(() => {})
+            }}
+            className="flex items-center justify-center gap-1.5 mx-auto mt-3 text-xs text-frost-white/30 hover:text-frost-white/50 transition-colors animate-fade-in"
+            style={{ animationDelay: '1s' }}
+          >
+            <Share2 className="w-3.5 h-3.5" />
+            שתף את ההישג
+          </button>
+        )}
       </div>
     </div>
   )

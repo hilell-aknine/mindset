@@ -251,6 +251,22 @@ export default function LessonPage() {
     )
   }
 
+  // Find next lesson in this book
+  const nextLessonInfo = (() => {
+    const ci = parseInt(chapterIndex)
+    const li = parseInt(lessonIndex)
+    // Try next lesson in same chapter
+    if (chapter?.lessons[li + 1]) {
+      return { title: chapter.lessons[li + 1].title, ci, li: li + 1 }
+    }
+    // Try first lesson in next chapter (if unlocked)
+    const nextChapter = book?.chapters[ci + 1]
+    if (nextChapter && (player.isPremium || player.premiumBooks?.includes(bookSlug) || ci + 1 === 0)) {
+      return { title: nextChapter.lessons[0]?.title, ci: ci + 1, li: 0 }
+    }
+    return null
+  })()
+
   if (isComplete) {
     return (
       <LessonComplete
@@ -258,6 +274,8 @@ export default function LessonPage() {
         totalExercises={exercises.length}
         onContinue={() => navigate(`/book/${bookSlug}`)}
         speedBonus={totalSpeedBonus}
+        nextLesson={nextLessonInfo}
+        onNextLesson={nextLessonInfo ? () => navigate(`/lesson/${bookSlug}/${nextLessonInfo.ci}/${nextLessonInfo.li}`) : null}
       />
     )
   }

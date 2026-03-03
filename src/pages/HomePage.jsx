@@ -63,15 +63,28 @@ export default function HomePage() {
   const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000)
   const dailyQuote = DAILY_QUOTES[dayOfYear % DAILY_QUOTES.length]
 
+  // Smart greeting based on time + streak
+  const hour = new Date().getHours()
+  const timeGreeting = hour < 6 ? 'לילה טוב' : hour < 12 ? 'בוקר טוב' : hour < 18 ? 'צהריים טובים' : 'ערב טוב'
+  const streakMotivation = player.currentStreak >= 30
+    ? 'אתה אגדה! תמשיך ככה.'
+    : player.currentStreak >= 14
+      ? 'שבועיים ברצף — אין עליך!'
+      : player.currentStreak >= 7
+        ? 'שבוע שלם! המומנטום שלך מדהים.'
+        : player.currentStreak >= 3
+          ? `${player.currentStreak} ימים ברצף! תמשיך.`
+          : 'מה תרצה ללמוד היום?'
+
   return (
     <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6 overflow-hidden">
       {/* Welcome */}
       <div className="mb-6 animate-fade-in">
         <h2 className="font-display text-2xl font-bold text-frost-white mb-1 truncate">
-          שלום! 👋
+          {timeGreeting}! 👋
         </h2>
         <p className="text-frost-white/50 text-sm">
-          מה תרצה ללמוד היום?
+          {streakMotivation}
         </p>
       </div>
 
