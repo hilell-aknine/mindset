@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { checkAnswer, shuffleArray } from '../../lib/gameEngine'
 
 export default function FillBlank({ exercise, onAnswer, disabled }) {
@@ -13,7 +13,6 @@ export default function FillBlank({ exercise, onAnswer, disabled }) {
 
   const handleSelect = (originalIndex) => {
     if (disabled) return
-    // Toggle selection
     setSelected(selected === originalIndex ? null : originalIndex)
   }
 
@@ -23,6 +22,16 @@ export default function FillBlank({ exercise, onAnswer, disabled }) {
     onAnswer(correct, exercise.explanation)
   }
 
+  // Keyboard: Enter to check
+  useEffect(() => {
+    if (disabled) return
+    const handler = (e) => {
+      if (e.key === 'Enter' && selected !== null) handleCheck()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [disabled, selected])
+
   return (
     <div className="animate-fade-in">
       <h3 className="font-display text-lg font-bold text-frost-white mb-4 leading-relaxed">
@@ -30,7 +39,7 @@ export default function FillBlank({ exercise, onAnswer, disabled }) {
       </h3>
 
       {/* Template with blank */}
-      <div className="glass-card p-5 mb-6 text-sm leading-loose text-frost-white/80">
+      <div className="glass-card p-5 mb-6 text-sm leading-loose text-frost-white/80" aria-live="polite">
         {filledTemplate.split('___').map((part, i, arr) => (
           <span key={i}>
             {part}
@@ -53,7 +62,7 @@ export default function FillBlank({ exercise, onAnswer, disabled }) {
 
       {/* Word bank */}
       <p className="text-[10px] text-frost-white/30 mb-2">בחר מילה:</p>
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-6" role="group" aria-label="בנק מילים">
         {shuffledOptions.map(({ text, originalIndex }) => {
           const isSelected = selected === originalIndex
           const isCorrectAnswer = disabled && originalIndex === exercise.correct
@@ -64,6 +73,8 @@ export default function FillBlank({ exercise, onAnswer, disabled }) {
               key={originalIndex}
               onClick={() => handleSelect(originalIndex)}
               disabled={disabled}
+              aria-pressed={isSelected}
+              aria-label={`מילה: ${text}`}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                 isCorrectAnswer ? 'bg-success/20 text-success border border-success/30 scale-105' :
                 isWrongSelection ? 'bg-danger/20 text-danger border border-danger/30' :
@@ -81,7 +92,7 @@ export default function FillBlank({ exercise, onAnswer, disabled }) {
         <button
           onClick={handleCheck}
           disabled={selected === null}
-          className="w-full py-3.5 rounded-xl font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90"
+          className="w-full py-3.5 rounded-xl font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 active:scale-[0.98]"
         >
           בדוק
         </button>

@@ -3,6 +3,8 @@
  */
 
 export function checkAnswer(exercise, userAnswer) {
+  if (!exercise || userAnswer == null) return false
+
   switch (exercise.type) {
     case 'multiple-choice':
     case 'fill-blank':
@@ -19,6 +21,7 @@ export function checkAnswer(exercise, userAnswer) {
     }
 
     case 'order':
+      if (!Array.isArray(userAnswer) || !Array.isArray(exercise.correctOrder)) return false
       return JSON.stringify(userAnswer) === JSON.stringify(exercise.correctOrder)
 
     case 'match':
