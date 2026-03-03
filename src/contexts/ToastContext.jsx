@@ -7,7 +7,11 @@ export function ToastProvider({ children }) {
 
   const addToast = useCallback((message, type = 'info', duration = 3000) => {
     const id = Date.now()
-    setToasts(prev => [...prev, { id, message, type }])
+    // Limit to 3 toasts max — remove oldest
+    setToasts(prev => {
+      const next = [...prev, { id, message, type }]
+      return next.length > 3 ? next.slice(-3) : next
+    })
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id))
     }, duration)
@@ -19,10 +23,11 @@ export function ToastProvider({ children }) {
 
   const success = useCallback((msg) => addToast(msg, 'success'), [addToast])
   const error = useCallback((msg) => addToast(msg, 'error'), [addToast])
+  const warning = useCallback((msg) => addToast(msg, 'warning'), [addToast])
   const info = useCallback((msg) => addToast(msg, 'info'), [addToast])
 
   return (
-    <ToastContext.Provider value={{ toasts, addToast, dismiss, success, error, info }}>
+    <ToastContext.Provider value={{ toasts, addToast, dismiss, success, error, warning, info }}>
       {children}
     </ToastContext.Provider>
   )

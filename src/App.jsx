@@ -1,7 +1,8 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
 import { usePlayer } from './contexts/PlayerContext'
+import { useToast } from './contexts/ToastContext'
 import LandingPage from './pages/LandingPage'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
@@ -105,12 +106,39 @@ function PageLayout({ children }) {
   )
 }
 
+function OfflineDetector() {
+  const toast = useToast()
+  const [wasOffline, setWasOffline] = useState(false)
+
+  useEffect(() => {
+    const handleOffline = () => {
+      setWasOffline(true)
+      toast.error('אין חיבור לאינטרנט — המשחק עובד במצב לא מקוון')
+    }
+    const handleOnline = () => {
+      if (wasOffline) {
+        toast.success('החיבור חזר!')
+        setWasOffline(false)
+      }
+    }
+    window.addEventListener('offline', handleOffline)
+    window.addEventListener('online', handleOnline)
+    return () => {
+      window.removeEventListener('offline', handleOffline)
+      window.removeEventListener('online', handleOnline)
+    }
+  }, [toast, wasOffline])
+
+  return null
+}
+
 export default function App() {
   const { isAuthenticated, loading } = useAuth()
 
   return (
     <ErrorBoundary>
       <Toast />
+      <OfflineDetector />
       <Routes>
         <Route
           path="/"

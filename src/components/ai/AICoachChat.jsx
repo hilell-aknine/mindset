@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { usePlayer } from '../../contexts/PlayerContext'
 import { useToast } from '../../contexts/ToastContext'
 import { X, Send, Loader2, Bot, User, Zap, Crown } from 'lucide-react'
@@ -12,10 +12,21 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const messagesEnd = useRef(null)
+  const inputRef = useRef(null)
 
   useEffect(() => {
     messagesEnd.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Escape to close, auto-focus input
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', handler)
+    inputRef.current?.focus()
+    return () => window.removeEventListener('keydown', handler)
+  }, [onClose])
 
   const tokensLeft = player.tokens || 0
   const isOutOfTokens = tokensLeft <= 0
@@ -63,7 +74,7 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex flex-col bg-bg-base/95 backdrop-blur-lg animate-slide-up sm:inset-auto sm:bottom-6 sm:left-6 sm:w-96 sm:h-[500px] sm:rounded-2xl sm:border sm:border-white/10 sm:shadow-2xl">
+    <div className="fixed inset-0 z-40 flex flex-col bg-bg-base/95 backdrop-blur-lg animate-slide-up sm:inset-auto sm:bottom-6 sm:left-6 sm:w-96 sm:h-[500px] sm:rounded-2xl sm:border sm:border-white/10 sm:shadow-2xl" role="dialog" aria-label="מאמן AI">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
         <div className="flex items-center gap-2">
@@ -139,6 +150,7 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
       <div className="p-3 border-t border-white/5">
         <div className="flex gap-2">
           <input
+            ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
