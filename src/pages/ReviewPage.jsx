@@ -215,12 +215,22 @@ export default function ReviewPage() {
       {/* Exercise */}
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
         {current && (
-          <ExerciseRouter
-            key={currentIndex}
-            exercise={current}
-            onAnswer={handleAnswer}
-            disabled={!!feedback}
-          />
+          <>
+            {/* Source info */}
+            {current._meta && (
+              <div className="flex items-center gap-2 mb-3 animate-fade-in">
+                <span className="text-[10px] text-frost-white/25">
+                  מתוך: {BOOKS[current._meta.bookSlug]?.title || current._meta.bookSlug}
+                </span>
+              </div>
+            )}
+            <ExerciseRouter
+              key={currentIndex}
+              exercise={current}
+              onAnswer={handleAnswer}
+              disabled={!!feedback}
+            />
+          </>
         )}
       </div>
 

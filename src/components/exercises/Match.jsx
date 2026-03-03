@@ -61,15 +61,15 @@ export default function Match({ exercise, onAnswer, disabled }) {
   const allMatched = matchedPairs.length === exercise.pairs.length
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in" role="region" aria-label="תרגיל התאמה">
       <h3 className="font-display text-lg font-bold text-frost-white mb-2 leading-relaxed">
         {exercise.question}
       </h3>
 
       {/* Instructions + undo */}
       <div className="flex items-center justify-between mb-4">
-        <p className="text-xs text-frost-white/40">
-          {selectedLeft !== null ? 'עכשיו בחר מהצד השמאלי' : 'בחר פריט מהצד הימני'}
+        <p className="text-xs text-frost-white/40" aria-live="polite">
+          {allMatched ? 'כל הזוגות חוברו!' : selectedLeft !== null ? 'עכשיו בחר מהצד השמאלי' : 'בחר פריט מהצד הימני'}
         </p>
         {matchedPairs.length > 0 && !disabled && (
           <button
@@ -96,7 +96,7 @@ export default function Match({ exercise, onAnswer, disabled }) {
 
       <div className="grid grid-cols-2 gap-3 mb-6">
         {/* Left column */}
-        <div className="space-y-2">
+        <div className="space-y-2" role="group" aria-label="צד ימין — בחר ראשון">
           {exercise.pairs.map((pair, i) => {
             const matched = isLeftMatched(i)
             const style = getMatchStyle(i, 'left')
@@ -106,6 +106,8 @@ export default function Match({ exercise, onAnswer, disabled }) {
                 key={i}
                 onClick={() => handleLeftClick(i)}
                 disabled={disabled || matched}
+                aria-pressed={selectedLeft === i}
+                aria-label={`${pair.left}${matched ? ' — מחובר' : ''}`}
                 className={`w-full px-3 py-3 rounded-xl border text-sm text-right transition-all relative ${
                   style ? `${style.border} ${style.bg}` :
                   selectedLeft === i ? 'border-gold bg-gold/10 text-gold scale-[1.02]' :
@@ -123,7 +125,7 @@ export default function Match({ exercise, onAnswer, disabled }) {
         </div>
 
         {/* Right column */}
-        <div className="space-y-2">
+        <div className="space-y-2" role="group" aria-label="צד שמאל — בחר שני">
           {shuffledRight.map(({ text, originalIndex }) => {
             const matched = isRightMatched(originalIndex)
             const style = getMatchStyle(originalIndex, 'right')
@@ -133,6 +135,7 @@ export default function Match({ exercise, onAnswer, disabled }) {
                 key={originalIndex}
                 onClick={() => handleRightClick(originalIndex)}
                 disabled={disabled || matched || selectedLeft === null}
+                aria-label={`${text}${matched ? ' — מחובר' : ''}`}
                 className={`w-full px-3 py-3 rounded-xl border text-sm text-right transition-all relative ${
                   style ? `${style.border} ${style.bg}` :
                   selectedLeft !== null && !matched

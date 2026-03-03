@@ -4,7 +4,7 @@ import { usePlayer } from '../contexts/PlayerContext'
 import { LEVEL_NAMES, getXPProgress, LEVEL_THRESHOLDS } from '../config/constants'
 import { ACHIEVEMENTS, RARITY, CATEGORIES, getAchievementsByCategory } from '../lib/achievements'
 import { getActiveEvent, WEEKLY_GOALS, STREAK_MILESTONES } from '../lib/events'
-import { ArrowRight, Trophy, Target, Flame, Brain, Heart, Zap, TrendingUp, BookOpen, Calendar, Award } from 'lucide-react'
+import { ArrowRight, Trophy, Target, Flame, Brain, Heart, Zap, TrendingUp, BookOpen, Calendar, Award, Share2 } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
@@ -110,10 +110,25 @@ export default function StatsPage() {
         <button
           onClick={() => navigate('/home')}
           className="p-2 rounded-xl hover:bg-white/5 transition-colors"
+          aria-label="חזרה לדף הבית"
         >
           <ArrowRight className="w-5 h-5 text-frost-white/60" />
         </button>
-        <h2 className="font-display text-xl font-bold text-frost-white">הסטטיסטיקות שלי</h2>
+        <h2 className="font-display text-xl font-bold text-frost-white flex-1">הסטטיסטיקות שלי</h2>
+        {typeof navigator.share === 'function' && (
+          <button
+            onClick={() => {
+              navigator.share({
+                title: 'הסטטיסטיקות שלי ב-MindSet',
+                text: `רמה ${player.level} (${levelName}) | ${player.xp} XP | דיוק ${accuracy}% | רצף ${player.currentStreak} ימים`,
+              }).catch(() => {})
+            }}
+            className="p-2 rounded-xl hover:bg-white/5 transition-colors text-frost-white/30 hover:text-frost-white/60"
+            aria-label="שתף סטטיסטיקות"
+          >
+            <Share2 className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Level card with ring */}
@@ -141,7 +156,9 @@ export default function StatsPage() {
           { icon: Flame, color: 'text-warning', bg: 'bg-warning/10', value: player.longestStreak, label: 'רצף שיא' },
           { icon: Heart, color: 'text-danger', bg: 'bg-danger/10', value: player.totalCorrect, label: 'תשובות נכונות' },
           { icon: Zap, color: 'text-gold', bg: 'bg-gold/10', value: completedCount, label: 'שיעורים' },
+          { icon: BookOpen, color: 'text-dusty-aqua', bg: 'bg-dusty-aqua/10', value: player.reviewsCompleted || 0, label: 'חזרות' },
           { icon: Trophy, color: 'text-gold', bg: 'bg-gold/10', value: `${earnedAchievements}/${totalAchievements}`, label: 'הישגים' },
+          { icon: Calendar, color: 'text-warning', bg: 'bg-warning/10', value: player.dailyChallengesCompleted || 0, label: 'אתגרים יומיים' },
         ].map((stat, i) => (
           <div
             key={i}

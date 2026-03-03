@@ -53,6 +53,34 @@ export function getXPMultiplier() {
 }
 
 /**
+ * Get all events with their current status — for displaying upcoming/active events
+ */
+export function getAllEventsStatus() {
+  return EVENTS.map(e => ({
+    ...e,
+    active: e.isActive(),
+  }))
+}
+
+/**
+ * Get next upcoming event if none is active
+ */
+export function getNextEvent() {
+  const active = getActiveEvent()
+  if (active) return { event: active, status: 'active' }
+
+  const hour = new Date().getHours()
+  const day = new Date().getDay()
+
+  // Check what's coming next
+  if (hour < 6) return { event: EVENTS[1], status: 'upcoming', hint: 'מתחיל ב-06:00' } // morning boost
+  if (hour >= 9 && hour < 18 && day === 5) return { event: EVENTS[0], status: 'upcoming', hint: 'מתחיל ב-18:00' } // double xp weekend
+  if (hour >= 9 && hour < 22) return { event: EVENTS[2], status: 'upcoming', hint: 'מתחיל ב-22:00' } // night owl
+
+  return null
+}
+
+/**
  * Streak Milestones — celebrations at key streak counts
  * Research: "Users 2.3x more likely to engage daily after 7+ day streak"
  */
