@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react'
 import ReactConfetti from 'react-confetti'
-import { Star, Trophy, ArrowLeft, Sparkles } from 'lucide-react'
+import { Star, Trophy, ArrowLeft, Sparkles, Zap, Timer } from 'lucide-react'
 import { XP_LESSON_COMPLETE, XP_PERFECT_LESSON } from '../../config/constants'
 import { getActiveEvent, getXPMultiplier } from '../../lib/events'
 
 export default function LessonComplete({ mistakes, totalExercises, onContinue, speedBonus = 0 }) {
   const [showConfetti, setShowConfetti] = useState(true)
   const [starsRevealed, setStarsRevealed] = useState(0)
+  const [showBreakdown, setShowBreakdown] = useState(false)
   const isPerfect = mistakes === 0
   const stars = mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1
   const multiplier = getXPMultiplier()
   const activeEvent = getActiveEvent()
   const baseXP = XP_LESSON_COMPLETE + (isPerfect ? XP_PERFECT_LESSON : 0)
   const xpEarned = Math.round(baseXP * multiplier) + speedBonus
+  const accuracy = Math.round(((totalExercises - mistakes) / totalExercises) * 100)
 
   useEffect(() => {
     const timer = setTimeout(() => setShowConfetti(false), isPerfect ? 6000 : 4000)
@@ -25,6 +27,7 @@ export default function LessonComplete({ mistakes, totalExercises, onContinue, s
     for (let i = 1; i <= stars; i++) {
       timers.push(setTimeout(() => setStarsRevealed(i), 300 + i * 350))
     }
+    timers.push(setTimeout(() => setShowBreakdown(true), 300 + stars * 350 + 300))
     return () => timers.forEach(clearTimeout)
   }, [stars])
 
@@ -72,28 +75,60 @@ export default function LessonComplete({ mistakes, totalExercises, onContinue, s
         <h2 className="font-display text-3xl sm:text-4xl font-bold text-frost-white mb-2 animate-bounce-in" style={{ animationDelay: '0.3s' }}>
           {isPerfect ? 'מושלם!' : 'כל הכבוד!'}
         </h2>
-        <p className="text-frost-white/50 text-sm mb-8">
+        <p className="text-frost-white/50 text-sm mb-6">
           {isPerfect
             ? 'סיימת את השיעור בלי שגיאות!'
             : `סיימת את השיעור עם ${mistakes} ${mistakes === 1 ? 'שגיאה' : 'שגיאות'} מתוך ${totalExercises} שאלות`
           }
         </p>
 
-        {/* XP earned card */}
-        <div className="glass-card inline-flex items-center gap-3 px-6 py-3.5 mb-8 animate-bounce-in border-gold/20" style={{ animationDelay: '0.5s' }}>
-          <Trophy className="w-6 h-6 text-gold" />
-          <div className="text-right">
-            <span className="text-gold font-bold text-lg">+{xpEarned} XP</span>
-            {isPerfect && (
-              <span className="block text-[10px] text-gold/60">כולל בונוס מושלם +{XP_PERFECT_LESSON}</span>
-            )}
-            {multiplier > 1 && activeEvent && (
-              <span className="block text-[10px] text-warning/60">{activeEvent.emoji} {activeEvent.name} x{multiplier}</span>
-            )}
-            {speedBonus > 0 && (
-              <span className="block text-[10px] text-dusty-aqua/60">בונוס מהירות +{speedBonus}</span>
-            )}
+        {/* XP earned card with breakdown */}
+        <div className="glass-card inline-block px-6 py-4 mb-6 animate-bounce-in border-gold/20" style={{ animationDelay: '0.5s' }}>
+          <div className="flex items-center gap-3 justify-center mb-3">
+            <Trophy className="w-6 h-6 text-gold" />
+            <span className="text-gold font-bold text-2xl">+{xpEarned} XP</span>
           </div>
+
+          {/* Detailed breakdown */}
+          {showBreakdown && (
+            <div className="space-y-1.5 border-t border-white/5 pt-3 animate-fade-in">
+              <div className="flex items-center justify-between gap-4 text-xs">
+                <span className="text-frost-white/40">השלמת שיעור</span>
+                <span className="text-frost-white/60 font-medium">+{XP_LESSON_COMPLETE}</span>
+              </div>
+              {isPerfect && (
+                <div className="flex items-center justify-between gap-4 text-xs">
+                  <span className="text-frost-white/40 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-gold" />
+                    בונוס מושלם
+                  </span>
+                  <span className="text-gold font-medium">+{XP_PERFECT_LESSON}</span>
+                </div>
+              )}
+              {speedBonus > 0 && (
+                <div className="flex items-center justify-between gap-4 text-xs">
+                  <span className="text-frost-white/40 flex items-center gap-1">
+                    <Timer className="w-3 h-3 text-dusty-aqua" />
+                    בונוס מהירות
+                  </span>
+                  <span className="text-dusty-aqua font-medium">+{speedBonus}</span>
+                </div>
+              )}
+              {multiplier > 1 && activeEvent && (
+                <div className="flex items-center justify-between gap-4 text-xs">
+                  <span className="text-frost-white/40 flex items-center gap-1">
+                    <Zap className="w-3 h-3 text-warning" />
+                    {activeEvent.emoji} {activeEvent.name}
+                  </span>
+                  <span className="text-warning font-medium">x{multiplier}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between gap-4 text-xs pt-1 border-t border-white/5">
+                <span className="text-frost-white/40">דיוק</span>
+                <span className="text-frost-white/60 font-medium">{accuracy}%</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Continue button */}

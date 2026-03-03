@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { usePlayer } from '../contexts/PlayerContext'
-import { Brain, BookOpen, Gamepad2, Sparkles, ArrowLeft, ChevronLeft } from 'lucide-react'
+import { Brain, BookOpen, Gamepad2, Sparkles, ArrowLeft, ChevronLeft, Zap, Flame, Trophy } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
@@ -22,12 +22,14 @@ const STEPS = [
     icon: Gamepad2,
     title: 'איך זה עובד?',
     subtitle: '3 צעדים פשוטים',
-    items: [
-      { emoji: '📖', text: 'בחר ספר מהספרייה' },
-      { emoji: '🎮', text: 'שחק שיעורים עם 7 סוגי תרגילים' },
-      { emoji: '🧠', text: 'צבור XP, עלה רמות ותקבע ידע' },
-    ],
-    visual: 'steps',
+    visual: 'demo',
+  },
+  {
+    id: 'gamification',
+    icon: Trophy,
+    title: 'תשחק, תרוויח, תתקדם',
+    subtitle: 'מערכת גיימיפיקציה שלמה',
+    visual: 'gamification',
   },
   {
     id: 'pick',
@@ -37,6 +39,65 @@ const STEPS = [
     visual: 'books',
   },
 ]
+
+// Mini exercise demo - simulates a multiple choice question
+function ExerciseDemo() {
+  const [selected, setSelected] = useState(null)
+  const [checked, setChecked] = useState(false)
+
+  const options = [
+    { label: 'א', text: 'לחשוב על מה חסר לך', correct: false },
+    { label: 'ב', text: 'לזהות ולפתח את החוזקות שלך', correct: true },
+    { label: 'ג', text: 'לתקן את החולשות', correct: false },
+  ]
+
+  useEffect(() => {
+    // Auto-demo: select correct answer after delay
+    const t1 = setTimeout(() => setSelected(1), 1200)
+    const t2 = setTimeout(() => setChecked(true), 2200)
+    const t3 = setTimeout(() => {
+      setSelected(null)
+      setChecked(false)
+    }, 4500)
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
+  }, [])
+
+  return (
+    <div className="glass-card p-4 max-w-xs w-full mx-auto animate-fade-in">
+      <p className="text-xs text-frost-white/50 mb-1">מתוך: חוזקות</p>
+      <p className="text-sm text-frost-white font-semibold mb-3">מה העיקרון המרכזי של גישת החוזקות?</p>
+      <div className="space-y-2">
+        {options.map((opt, i) => (
+          <div
+            key={i}
+            className={`flex items-center gap-2 p-2.5 rounded-xl border transition-all text-sm ${
+              checked && i === selected && opt.correct
+                ? 'border-success/40 bg-success/10 text-success'
+                : checked && i === selected && !opt.correct
+                  ? 'border-danger/40 bg-danger/10 text-danger'
+                  : i === selected
+                    ? 'border-gold/40 bg-gold/5 text-frost-white'
+                    : 'border-white/5 text-frost-white/60'
+            }`}
+          >
+            <span className={`w-6 h-6 rounded-lg text-[10px] font-bold flex items-center justify-center shrink-0 ${
+              i === selected ? 'bg-gold/20 text-gold' : 'bg-white/5 text-frost-white/30'
+            }`}>
+              {opt.label}
+            </span>
+            <span className="text-xs">{opt.text}</span>
+          </div>
+        ))}
+      </div>
+      {checked && (
+        <div className="mt-2 flex items-center gap-1 text-success animate-fade-in">
+          <Sparkles className="w-3 h-3" />
+          <span className="text-[10px] font-bold">+10 XP נכון!</span>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function Onboarding({ onComplete }) {
   const { updatePlayer } = usePlayer()
@@ -125,16 +186,49 @@ export default function Onboarding({ onComplete }) {
           </div>
         )}
 
-        {current.visual === 'steps' && (
-          <div className="max-w-sm w-full space-y-3">
-            {current.items.map((item, i) => (
+        {current.visual === 'demo' && (
+          <div className="max-w-sm w-full space-y-4">
+            <div className="flex items-center gap-3 mb-2">
+              {[
+                { emoji: '📖', text: 'בחר ספר', delay: '0s' },
+                { emoji: '🎮', text: 'שחק תרגילים', delay: '0.1s' },
+                { emoji: '🧠', text: 'צבור XP', delay: '0.2s' },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="flex-1 glass-card p-2.5 text-center animate-fade-in"
+                  style={{ animationDelay: item.delay }}
+                >
+                  <span className="text-lg block">{item.emoji}</span>
+                  <p className="text-[10px] text-frost-white/60 mt-1">{item.text}</p>
+                </div>
+              ))}
+            </div>
+            {/* Live exercise demo */}
+            <ExerciseDemo />
+          </div>
+        )}
+
+        {current.visual === 'gamification' && (
+          <div className="max-w-sm w-full grid grid-cols-2 gap-2.5">
+            {[
+              { icon: '🔥', title: 'רצפים', desc: 'למד כל יום', delay: '0s' },
+              { icon: '⚡', title: 'XP בונוסים', desc: 'ענה מהר', delay: '0.05s' },
+              { icon: '🏆', title: 'הישגים', desc: '28 הישגים', delay: '0.1s' },
+              { icon: '👑', title: 'ליגות', desc: 'התחרה בטבלה', delay: '0.15s' },
+              { icon: '💡', title: 'רמזים AI', desc: 'מאמן אישי', delay: '0.2s' },
+              { icon: '📊', title: 'סטטיסטיקות', desc: 'עקוב אחרי ההתקדמות', delay: '0.25s' },
+            ].map((item, i) => (
               <div
                 key={i}
-                className="glass-card p-4 flex items-center gap-4 animate-fade-in"
-                style={{ animationDelay: `${i * 0.15}s` }}
+                className="glass-card p-3 flex items-center gap-2.5 animate-fade-in"
+                style={{ animationDelay: item.delay }}
               >
-                <span className="text-2xl">{item.emoji}</span>
-                <p className="text-sm text-frost-white/80">{item.text}</p>
+                <span className="text-xl shrink-0">{item.icon}</span>
+                <div>
+                  <p className="text-xs font-bold text-frost-white">{item.title}</p>
+                  <p className="text-[10px] text-frost-white/40">{item.desc}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -178,6 +272,7 @@ export default function Onboarding({ onComplete }) {
             <button
               onClick={goBack}
               className="p-3 rounded-xl border border-white/10 text-frost-white/50 hover:text-frost-white hover:border-white/20 transition-all"
+              aria-label="חזור"
             >
               <ChevronLeft className="w-5 h-5 rotate-180" />
             </button>

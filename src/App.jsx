@@ -29,17 +29,35 @@ function PageSuspense({ children }) {
 
 function LoadingSkeleton() {
   return (
-    <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-6 animate-pulse">
-      <div className="h-8 w-48 bg-white/5 rounded-xl mb-6" />
+    <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
+      {/* Title skeleton */}
+      <div className="mb-6 animate-fade-in">
+        <div className="h-8 w-48 bg-white/5 rounded-xl mb-2 animate-pulse" />
+        <div className="h-4 w-32 bg-white/3 rounded-lg animate-pulse" />
+      </div>
+      {/* Card skeletons with stagger */}
       <div className="space-y-4">
-        {[1, 2, 3].map(i => (
-          <div key={i} className="glass-card p-4 flex items-center gap-3">
-            <div className="w-14 h-14 rounded-2xl bg-white/5 shrink-0" />
+        {[1, 2, 3, 4].map(i => (
+          <div
+            key={i}
+            className="glass-card p-4 flex items-center gap-3 animate-fade-in"
+            style={{ animationDelay: `${i * 0.1}s` }}
+          >
+            <div className="w-14 h-14 rounded-2xl bg-white/5 shrink-0 animate-pulse" />
             <div className="flex-1 space-y-2">
-              <div className="h-4 w-3/4 bg-white/5 rounded-lg" />
-              <div className="h-3 w-1/2 bg-white/5 rounded-lg" />
-              <div className="h-1.5 w-full bg-white/5 rounded-full" />
+              <div className="h-4 w-3/4 bg-white/5 rounded-lg animate-pulse" />
+              <div className="h-3 w-1/2 bg-white/3 rounded-lg animate-pulse" style={{ animationDelay: '0.1s' }} />
+              <div className="h-1.5 w-full bg-white/5 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
             </div>
+          </div>
+        ))}
+      </div>
+      {/* Quick actions skeleton */}
+      <div className="grid grid-cols-4 gap-2 mt-6">
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className="glass-card p-3 animate-fade-in" style={{ animationDelay: `${0.5 + i * 0.05}s` }}>
+            <div className="w-9 h-9 rounded-xl bg-white/5 mx-auto mb-2 animate-pulse" />
+            <div className="h-2.5 w-12 bg-white/3 rounded mx-auto animate-pulse" />
           </div>
         ))}
       </div>
