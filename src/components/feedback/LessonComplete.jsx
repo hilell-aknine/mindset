@@ -2,13 +2,17 @@ import { useEffect, useState } from 'react'
 import ReactConfetti from 'react-confetti'
 import { Star, Trophy, ArrowLeft, Sparkles } from 'lucide-react'
 import { XP_LESSON_COMPLETE, XP_PERFECT_LESSON } from '../../config/constants'
+import { getActiveEvent, getXPMultiplier } from '../../lib/events'
 
 export default function LessonComplete({ mistakes, totalExercises, onContinue, speedBonus = 0 }) {
   const [showConfetti, setShowConfetti] = useState(true)
   const [starsRevealed, setStarsRevealed] = useState(0)
   const isPerfect = mistakes === 0
   const stars = mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1
-  const xpEarned = XP_LESSON_COMPLETE + (isPerfect ? XP_PERFECT_LESSON : 0) + speedBonus
+  const multiplier = getXPMultiplier()
+  const activeEvent = getActiveEvent()
+  const baseXP = XP_LESSON_COMPLETE + (isPerfect ? XP_PERFECT_LESSON : 0)
+  const xpEarned = Math.round(baseXP * multiplier) + speedBonus
 
   useEffect(() => {
     const timer = setTimeout(() => setShowConfetti(false), isPerfect ? 6000 : 4000)
@@ -82,6 +86,9 @@ export default function LessonComplete({ mistakes, totalExercises, onContinue, s
             <span className="text-gold font-bold text-lg">+{xpEarned} XP</span>
             {isPerfect && (
               <span className="block text-[10px] text-gold/60">כולל בונוס מושלם +{XP_PERFECT_LESSON}</span>
+            )}
+            {multiplier > 1 && activeEvent && (
+              <span className="block text-[10px] text-warning/60">{activeEvent.emoji} {activeEvent.name} x{multiplier}</span>
             )}
             {speedBonus > 0 && (
               <span className="block text-[10px] text-dusty-aqua/60">בונוס מהירות +{speedBonus}</span>

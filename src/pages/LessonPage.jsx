@@ -5,6 +5,7 @@ import { useToast } from '../contexts/ToastContext'
 import { useSound } from '../hooks/useSound'
 import { checkNewAchievements } from '../lib/achievements'
 import { getComboBonus, getComboLabel, XP_CORRECT_ANSWER } from '../config/constants'
+import { getActiveEvent, getXPMultiplier } from '../lib/events'
 import ExerciseRouter from '../components/exercises/ExerciseRouter'
 import ExerciseTimer, { getSpeedBonus, TIMER_DURATION } from '../components/exercises/ExerciseTimer'
 import FeedbackPanel from '../components/feedback/FeedbackPanel'
@@ -57,12 +58,17 @@ function MiniConfetti({ active }) {
 }
 
 // Floating XP indicator
-function XPFloat({ xp, combo, speedBonus }) {
+function XPFloat({ xp, combo, speedBonus, eventMultiplier }) {
   if (!xp) return null
   return (
     <div className="fixed top-1/3 left-1/2 -translate-x-1/2 z-50 pointer-events-none animate-xp-float">
       <div className="text-center">
         <span className="text-gold font-bold text-2xl drop-shadow-lg">+{xp} XP</span>
+        {eventMultiplier > 1 && (
+          <span className="block text-xs text-warning font-bold mt-0.5 animate-combo-scale">
+            x{eventMultiplier} אירוע!
+          </span>
+        )}
         {combo >= 3 && (
           <span className="block text-sm text-warning font-bold mt-0.5 animate-combo-scale">
             {getComboLabel(combo)} x{combo}
@@ -138,11 +144,12 @@ export default function LessonPage() {
     if (isCorrect) {
       play('correct')
 
-      // Calculate XP earned for display
+      // Calculate XP earned for display (with event multiplier)
       const newCombo = (player.comboStreak || 0) + 1
       const bonus = getComboBonus(newCombo)
       const speedBonus = timerEnabled ? getSpeedBonus(timerTimeLeft.current) : 0
-      const totalXP = XP_CORRECT_ANSWER + bonus + speedBonus
+      const multiplier = getXPMultiplier()
+      const totalXP = Math.round((XP_CORRECT_ANSWER + bonus) * multiplier) + speedBonus
 
       if (speedBonus > 0) {
         setTotalSpeedBonus(prev => prev + speedBonus)
@@ -156,7 +163,7 @@ export default function LessonPage() {
       setTimeout(() => setShowConfetti(false), 700)
 
       // Show floating XP
-      setFloatingXP({ xp: totalXP, combo: newCombo, speedBonus })
+      setFloatingXP({ xp: totalXP, combo: newCombo, speedBonus, eventMultiplier: multiplier })
       setTimeout(() => setFloatingXP(null), 1300)
     } else {
       play('wrong')
@@ -256,7 +263,7 @@ export default function LessonPage() {
       <MiniConfetti active={showConfetti} />
 
       {/* Floating XP indicator */}
-      {floatingXP && <XPFloat xp={floatingXP.xp} combo={floatingXP.combo} speedBonus={floatingXP.speedBonus} />}
+      {floatingXP && <XPFloat xp={floatingXP.xp} combo={floatingXP.combo} speedBonus={floatingXP.speedBonus} eventMultiplier={floatingXP.eventMultiplier} />}
 
       {/* Top bar */}
       <div className="sticky top-0 z-40 bg-bg-base/90 backdrop-blur-lg px-4 py-3 border-b border-white/5">
@@ -309,6 +316,14 @@ export default function LessonPage() {
               <span className="text-xs font-bold">{player.hearts}</span>
             </div>
           </div>
+
+          {/* Active event mini-banner */}
+          {getActiveEvent() && (
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-warning/10 border border-warning/20">
+              <span className="text-sm">{getActiveEvent().emoji}</span>
+              <span className="text-[10px] font-bold text-warning">{getActiveEvent().name} x{getActiveEvent().multiplier}</span>
+            </div>
+          )}
 
           {/* Timer bar */}
           {timerEnabled && !feedback && (

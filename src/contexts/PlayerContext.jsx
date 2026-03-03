@@ -6,6 +6,7 @@ import {
   HEART_RECOVERY_MINUTES, getLevelForXP, XP_CORRECT_ANSWER,
   XP_LESSON_COMPLETE, XP_PERFECT_LESSON, getComboBonus
 } from '../config/constants'
+import { getXPMultiplier, checkStreakMilestone } from '../lib/events'
 
 const PlayerContext = createContext(null)
 const STORAGE_KEY = 'mindset_player'
@@ -15,6 +16,7 @@ export function PlayerProvider({ children }) {
   const { user, isGuest, isAuthenticated } = useAuth()
   const [player, setPlayer] = useState(DEFAULT_PLAYER)
   const [loaded, setLoaded] = useState(false)
+  const [streakMilestone, setStreakMilestone] = useState(null)
   const saveTimeout = useRef(null)
 
   // Load player data
@@ -57,6 +59,8 @@ export function PlayerProvider({ children }) {
     recoverHearts()
     // Check daily token reset
     resetDailyTokens()
+    // Reset weekly XP on Sunday
+    resetWeeklyXP()
 
     setLoaded(true)
   }
@@ -72,15 +76,40 @@ export function PlayerProvider({ children }) {
       if (prev.lastLoginDate === yesterday) {
         newStreak += 1
       } else if (prev.lastLoginDate !== today) {
-        newStreak = 1
+        // Check if streak freeze was active
+        const freezeDate = prev.streakFreezeDate
+        if (freezeDate === yesterday && prev.currentStreak > 0) {
+          newStreak = prev.currentStreak // preserved by freeze
+        } else {
+          newStreak = 1
+        }
+      }
+
+      // Check for streak milestone
+      const milestone = checkStreakMilestone(newStreak)
+      if (milestone) {
+        setStreakMilestone(milestone)
       }
 
       return {
         ...prev,
         currentStreak: newStreak,
         longestStreak: Math.max(newStreak, prev.longestStreak),
-        lastLoginDate: today
+        lastLoginDate: today,
+        // Award milestone XP bonus
+        xp: milestone ? prev.xp + milestone.xpBonus : prev.xp,
       }
+    })
+  }
+
+  const resetWeeklyXP = () => {
+    setPlayer(prev => {
+      const now = new Date()
+      const day = now.getDay() // 0 = Sunday
+      if (day !== 0) return prev
+      const today = now.toDateString()
+      if (prev.lastWeekReset === today) return prev
+      return { ...prev, weeklyXP: 0, lastWeekReset: today }
     })
   }
 
@@ -140,11 +169,15 @@ export function PlayerProvider({ children }) {
     updatePlayer(prev => {
       const newCombo = (prev.comboStreak || 0) + 1
       const comboBonus = getComboBonus(newCombo)
+      const multiplier = getXPMultiplier()
+      const baseXP = XP_CORRECT_ANSWER + comboBonus
+      const earnedXP = Math.round(baseXP * multiplier)
       return {
         ...prev,
-        xp: prev.xp + XP_CORRECT_ANSWER + comboBonus,
+        xp: prev.xp + earnedXP,
         totalCorrect: prev.totalCorrect + 1,
         comboStreak: newCombo,
+        weeklyXP: (prev.weeklyXP || 0) + earnedXP,
       }
     })
   }, [updatePlayer])
@@ -172,11 +205,15 @@ export function PlayerProvider({ children }) {
   const completeLesson = useCallback((bookSlug, chapterId, lessonId, mistakes) => {
     updatePlayer(prev => {
       const key = `${bookSlug}:${chapterId}:${lessonId}`
+      const multiplier = getXPMultiplier()
+      const baseXP = XP_LESSON_COMPLETE + (mistakes === 0 ? XP_PERFECT_LESSON : 0)
+      const earnedXP = Math.round(baseXP * multiplier)
       return {
         ...prev,
-        xp: prev.xp + XP_LESSON_COMPLETE + (mistakes === 0 ? XP_PERFECT_LESSON : 0),
+        xp: prev.xp + earnedXP,
         completedLessons: { ...prev.completedLessons, [key]: true },
         perfectLessons: mistakes === 0 ? (prev.perfectLessons || 0) + 1 : (prev.perfectLessons || 0),
+        weeklyXP: (prev.weeklyXP || 0) + earnedXP,
       }
     })
   }, [updatePlayer])
@@ -184,7 +221,8 @@ export function PlayerProvider({ children }) {
   return (
     <PlayerContext.Provider value={{
       player, loaded, updatePlayer,
-      onCorrectAnswer, onWrongAnswer, spendToken, completeLesson
+      onCorrectAnswer, onWrongAnswer, spendToken, completeLesson,
+      streakMilestone, clearStreakMilestone: () => setStreakMilestone(null)
     }}>
       {children}
     </PlayerContext.Provider>
@@ -220,6 +258,9 @@ function mapFromDB(row) {
     reviewQueue: row.review_queue ?? [],
     perfectLessons: row.perfect_lessons ?? 0,
     comboStreak: row.combo_streak ?? 0,
+    weeklyXP: row.weekly_xp ?? 0,
+    weeklyXPGoal: row.weekly_xp_goal ?? 250,
+    lastWeekReset: row.last_week_reset ?? null,
   }
 }
 
@@ -245,5 +286,8 @@ function mapToDB(player) {
     review_queue: player.reviewQueue,
     perfect_lessons: player.perfectLessons,
     combo_streak: player.comboStreak,
+    weekly_xp: player.weeklyXP,
+    weekly_xp_goal: player.weeklyXPGoal,
+    last_week_reset: player.lastWeekReset,
   }
 }

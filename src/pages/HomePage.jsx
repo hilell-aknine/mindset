@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
-import { BookOpen, Trophy, Flame, RotateCcw, BarChart2, Settings, Zap, Target, Crown } from 'lucide-react'
+import { BookOpen, Trophy, Flame, RotateCcw, BarChart2, Settings, Zap, Target, Crown, X } from 'lucide-react'
 import DailyChallenge from '../components/DailyChallenge'
 import StreakFreeze from '../components/StreakFreeze'
+import { getActiveEvent } from '../lib/events'
+import { WEEKLY_GOALS } from '../lib/events'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
@@ -23,12 +25,32 @@ const DAILY_QUOTES = [
 
 export default function HomePage() {
   const navigate = useNavigate()
-  const { player } = usePlayer()
+  const { player, streakMilestone, clearStreakMilestone } = usePlayer()
   const [showDailyChallenge, setShowDailyChallenge] = useState(false)
+  const [showMilestone, setShowMilestone] = useState(false)
 
   const reviewCount = (player.reviewQueue || []).length
   const today = new Date().toDateString()
   const dailyCompleted = player.dailyChallengeCompleted === today
+  const activeEvent = getActiveEvent()
+
+  // Weekly XP progress
+  const weeklyXP = player.weeklyXP || 0
+  const weeklyGoal = player.weeklyXPGoal || 250
+  const weeklyProgress = Math.min((weeklyXP / weeklyGoal) * 100, 100)
+  const currentGoal = WEEKLY_GOALS.find(g => g.xp === weeklyGoal) || WEEKLY_GOALS[1]
+
+  // Streak milestone popup
+  useEffect(() => {
+    if (streakMilestone) {
+      setShowMilestone(true)
+      const t = setTimeout(() => {
+        setShowMilestone(false)
+        clearStreakMilestone()
+      }, 5000)
+      return () => clearTimeout(t)
+    }
+  }, [streakMilestone])
 
   // Daily rotating quote
   const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000)
@@ -44,6 +66,55 @@ export default function HomePage() {
         <p className="text-frost-white/50 text-sm">
           מה תרצה ללמוד היום?
         </p>
+      </div>
+
+      {/* Streak Milestone Popup */}
+      {showMilestone && streakMilestone && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={() => { setShowMilestone(false); clearStreakMilestone() }}>
+          <div className="glass-card p-8 text-center max-w-sm mx-4 border-gold/30 animate-bounce-in">
+            <div className="text-6xl mb-4">{streakMilestone.emoji}</div>
+            <h3 className="font-display text-2xl font-bold text-gold mb-2">{streakMilestone.title}</h3>
+            <p className="text-frost-white/60 text-sm mb-3">{streakMilestone.reward}</p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/15 border border-gold/30">
+              <Zap className="w-4 h-4 text-gold" />
+              <span className="text-gold font-bold">+{streakMilestone.xpBonus} XP</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Active XP Event Banner */}
+      {activeEvent && (
+        <div className="glass-card p-3 mb-4 flex items-center gap-3 animate-fade-in border-warning/20 bg-warning/5" style={{ animationDelay: '0.05s' }}>
+          <span className="text-2xl">{activeEvent.emoji}</span>
+          <div className="flex-1">
+            <p className="text-sm font-bold text-warning">{activeEvent.name}</p>
+            <p className="text-[10px] text-frost-white/40">{activeEvent.description}</p>
+          </div>
+          <div className="px-2.5 py-1 rounded-lg bg-warning/15 border border-warning/30">
+            <span className="text-xs font-bold text-warning">x{activeEvent.multiplier}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Weekly XP Goal */}
+      <div className="glass-card p-3 mb-4 animate-fade-in" style={{ animationDelay: '0.08s' }}>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <span className="text-base">{currentGoal.emoji}</span>
+            <span className="text-xs font-semibold text-frost-white/70">יעד שבועי: {currentGoal.label}</span>
+          </div>
+          <span className="text-[10px] text-frost-white/40">{weeklyXP}/{weeklyGoal} XP</span>
+        </div>
+        <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+          <div
+            className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-700"
+            style={{ width: `${weeklyProgress}%` }}
+          />
+        </div>
+        {weeklyXP >= weeklyGoal && (
+          <p className="text-[10px] text-success font-bold mt-1.5">הושלם! כל הכבוד!</p>
+        )}
       </div>
 
       {/* Streak banner */}

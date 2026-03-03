@@ -52,6 +52,9 @@ export const DEFAULT_PLAYER = {
   reviewQueue: [],
   perfectLessons: 0,
   comboStreak: 0,
+  weeklyXP: 0,
+  weeklyXPGoal: 250,
+  lastWeekReset: null,
 }
 
 export const getLevelForXP = (xp) => {
