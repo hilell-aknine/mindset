@@ -273,6 +273,36 @@
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom, 0);
   }
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+}
+
+/* Sticky mobile CTA */
+@keyframes slideUpCTA {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.animate-slide-up-cta {
+  animation: slideUpCTA 0.35s ease-out forwards;
+}
+
+/* Mobile pricing horizontal scroll */
+.mobile-scroll-x {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.mobile-scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+/* Snap scroll for pricing cards */
+.snap-x-mandatory {
+  scroll-snap-type: x mandatory;
+}
+.snap-center {
+  scroll-snap-align: center;
 }
 
 /* Touch action for better mobile scrolling */

@@ -100,9 +100,9 @@ function RevealSection({ children, className = '', delay = 0 }) {
 function CounterStat({ target, label, icon: Icon }) {
   const { count, ref } = useCountUp(target)
   return (
-    <div ref={ref} className="flex flex-col items-center gap-1">
-      <Icon className="w-5 h-5 text-gold mb-1" />
-      <span className="font-display text-2xl sm:text-3xl font-bold text-frost-white">{count}</span>
+    <div ref={ref} className="flex flex-col items-center gap-0.5 sm:gap-1">
+      <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-gold mb-0.5 sm:mb-1" />
+      <span className="font-display text-xl sm:text-3xl font-bold text-frost-white">{count}</span>
       <span className="text-[11px] sm:text-xs text-frost-white/40">{label}</span>
     </div>
   )
@@ -254,10 +254,18 @@ export default function LandingPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [showMobileCTA, setShowMobileCTA] = useState(false)
   const ctaRef = useRef(null)
+  const heroRef = useRef(null)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
+    const onScroll = () => {
+      setScrolled(window.scrollY > 40)
+      // Show mobile CTA after scrolling past hero
+      const heroBottom = heroRef.current?.getBoundingClientRect()?.bottom ?? 0
+      const ctaTop = ctaRef.current?.getBoundingClientRect()?.top ?? Infinity
+      setShowMobileCTA(heroBottom < -100 && ctaTop > window.innerHeight + 100)
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
@@ -303,17 +311,17 @@ export default function LandingPage() {
     <div className="min-h-dvh bg-bg-base text-frost-white overflow-x-hidden">
 
       {/* ─── Navbar ─── */}
-      <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? 'bg-bg-base/90 backdrop-blur-xl border-b border-white/5 shadow-lg shadow-black/20' : ''}`}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center">
-              <Brain className="w-5 h-5 text-frost-white" />
+      <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 safe-top ${scrolled ? 'bg-bg-base/90 backdrop-blur-xl border-b border-white/5 shadow-lg shadow-black/20' : ''}`}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center">
+              <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-frost-white" />
             </div>
-            <span className="font-display font-bold text-lg text-frost-white">MindSet</span>
+            <span className="font-display font-bold text-base sm:text-lg text-frost-white">MindSet</span>
           </div>
           <button
             onClick={openAuth}
-            className="px-5 py-2 rounded-xl bg-gold/10 border border-gold/30 text-gold text-sm font-medium hover:bg-gold/20 transition-colors"
+            className="px-4 sm:px-5 py-2 rounded-xl bg-gold/10 border border-gold/30 text-gold text-sm font-medium hover:bg-gold/20 transition-colors no-touch-delay"
           >
             התחבר
           </button>
@@ -321,33 +329,33 @@ export default function LandingPage() {
       </nav>
 
       {/* ─── Hero ─── */}
-      <section className="relative pt-28 sm:pt-36 pb-16 sm:pb-24 px-4">
-        {/* Background video */}
+      <section ref={heroRef} className="relative pt-20 sm:pt-36 pb-10 sm:pb-24 px-4">
+        {/* Background video - hidden on mobile to save battery */}
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none"
+          className="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none hidden sm:block"
           aria-hidden="true"
         >
           <source src="/hero-bg.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-bg-base/40 via-transparent to-bg-base pointer-events-none" />
 
-        {/* Background orbs */}
-        <div className="absolute top-10 right-0 w-[500px] h-[500px] rounded-full bg-deep-petrol/25 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-gold/8 blur-[100px] pointer-events-none" />
+        {/* Background orbs - smaller on mobile */}
+        <div className="absolute top-10 right-0 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] rounded-full bg-deep-petrol/25 blur-[80px] sm:blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] rounded-full bg-gold/8 blur-[60px] sm:blur-[100px] pointer-events-none" />
 
         <div className="max-w-6xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             {/* Text */}
             <div className="text-center lg:text-right animate-fade-in">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold/10 border border-gold/20 text-gold text-xs font-medium mb-6">
-                <Sparkles className="w-3.5 h-3.5" />
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gold/10 border border-gold/20 text-gold text-[11px] sm:text-xs font-medium mb-4 sm:mb-6">
+                <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 פרק ראשון חינם — בלי כרטיס אשראי
               </div>
-              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-5">
+              <h1 className="font-display text-[28px] sm:text-5xl lg:text-6xl font-black leading-[1.2] sm:leading-tight mb-3 sm:mb-5">
                 מה אם יכולת{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-l from-gold to-dusty-aqua">
                   לשחק
@@ -356,20 +364,20 @@ export default function LandingPage() {
                 <br />
                 במקום לקרוא אותו?
               </h1>
-              <p className="text-frost-white/60 text-base sm:text-lg leading-relaxed max-w-lg mx-auto lg:mx-0 mb-8">
+              <p className="text-frost-white/60 text-sm sm:text-lg leading-relaxed max-w-lg mx-auto lg:mx-0 mb-5 sm:mb-8">
                 MindSet הופך ספרי פיתוח אישי לשיעורים אינטראקטיביים עם תרגילים, ניקוד ומאמן AI —
                 כמו Duolingo, רק לספרים.
               </p>
-              <div className="flex flex-col sm:flex-row items-center gap-3 justify-center lg:justify-start">
+              <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-3 justify-center lg:justify-start">
                 <button
                   onClick={openAuth}
-                  className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base font-bold text-base hover:brightness-110 transition-all animate-pulse-glow"
+                  className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-2xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base font-bold text-sm sm:text-base hover:brightness-110 transition-all animate-pulse-glow no-touch-delay tap-bounce"
                 >
                   התחל ללמוד בחינם
                 </button>
                 <button
                   onClick={scrollToCTA}
-                  className="w-full sm:w-auto px-8 py-4 rounded-2xl border border-white/10 text-frost-white/70 text-sm hover:border-white/20 hover:text-frost-white transition-all flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-2xl border border-white/10 text-frost-white/70 text-sm hover:border-white/20 hover:text-frost-white transition-all flex items-center justify-center gap-2 no-touch-delay tap-bounce"
                 >
                   <ChevronDown className="w-4 h-4" />
                   גלה עוד
@@ -377,8 +385,8 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Animated Phone mockup */}
-            <div className="animate-fade-in flex justify-center" style={{ animationDelay: '0.2s' }}>
+            {/* Animated Phone mockup - hidden on small mobile, shown on tablet+ */}
+            <div className="animate-fade-in justify-center hidden md:flex" style={{ animationDelay: '0.2s' }}>
               <PhoneMockup />
             </div>
           </div>
@@ -388,36 +396,36 @@ export default function LandingPage() {
       {/* ─── Social proof strip ─── */}
       <RevealSection>
         <div className="border-y border-white/5 bg-white/[0.02]">
-          <div className="max-w-6xl mx-auto px-4 py-6 grid grid-cols-4 gap-4 text-center">
+          <div className="max-w-6xl mx-auto px-4 py-5 sm:py-6 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-4 text-center">
             <CounterStat target={4} label="ספרים זמינים" icon={BookOpen} />
             <CounterStat target={7} label="סוגי תרגילים" icon={Target} />
             <CounterStat target={360} label="תרגילים" icon={Flame} />
             <CounterStat target={5} label="דקות ביום" icon={Clock} />
           </div>
           {/* Trust badges */}
-          <div className="flex items-center justify-center gap-4 pb-5 flex-wrap">
-            <span className="flex items-center gap-1.5 text-[10px] text-frost-white/25">
-              <Check className="w-3 h-3 text-success/50" /> בלי כרטיס אשראי
+          <div className="flex items-center justify-center gap-3 sm:gap-4 pb-4 sm:pb-5 flex-wrap px-4">
+            <span className="flex items-center gap-1.5 text-[11px] sm:text-[10px] text-frost-white/30">
+              <Check className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-success/50" /> בלי כרטיס אשראי
             </span>
-            <span className="flex items-center gap-1.5 text-[10px] text-frost-white/25">
-              <Check className="w-3 h-3 text-success/50" /> פרק ראשון חינם
+            <span className="flex items-center gap-1.5 text-[11px] sm:text-[10px] text-frost-white/30">
+              <Check className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-success/50" /> פרק ראשון חינם
             </span>
-            <span className="flex items-center gap-1.5 text-[10px] text-frost-white/25">
-              <Check className="w-3 h-3 text-success/50" /> עובד על כל מכשיר
+            <span className="flex items-center gap-1.5 text-[11px] sm:text-[10px] text-frost-white/30">
+              <Check className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-success/50" /> עובד על כל מכשיר
             </span>
           </div>
         </div>
       </RevealSection>
 
       {/* ─── How It Works ─── */}
-      <section className="py-16 sm:py-24 px-4">
+      <section className="py-12 sm:py-24 px-4">
         <div className="max-w-4xl mx-auto">
-          <RevealSection className="text-center mb-12">
-            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">איך זה עובד?</h2>
+          <RevealSection className="text-center mb-8 sm:mb-12">
+            <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">איך זה עובד?</h2>
             <p className="text-frost-white/50 text-sm sm:text-base">שלושה צעדים לידע אמיתי</p>
           </RevealSection>
 
-          <div className="grid sm:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid sm:grid-cols-3 gap-4 sm:gap-8">
             {[
               {
                 step: 1,
@@ -439,16 +447,16 @@ export default function LandingPage() {
               },
             ].map(({ step, icon: Icon, title, desc }, i) => (
               <RevealSection key={step} delay={i * 120}>
-                <div className="glass-card p-6 text-center relative group">
+                <div className="glass-card p-4 sm:p-6 text-center relative group">
                   {/* Step number */}
-                  <div className="absolute -top-4 right-1/2 translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-br from-gold to-gold/70 flex items-center justify-center text-bg-base font-bold text-sm">
+                  <div className="absolute -top-3 sm:-top-4 right-1/2 translate-x-1/2 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-gold to-gold/70 flex items-center justify-center text-bg-base font-bold text-xs sm:text-sm">
                     {step}
                   </div>
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center mx-auto mt-3 mb-4 group-hover:scale-110 transition-transform">
-                    <Icon className="w-7 h-7 text-frost-white" />
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center mx-auto mt-2 sm:mt-3 mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
+                    <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-frost-white" />
                   </div>
-                  <h3 className="font-display text-xl font-bold mb-2">{title}</h3>
-                  <p className="text-sm text-frost-white/50 leading-relaxed">{desc}</p>
+                  <h3 className="font-display text-lg sm:text-xl font-bold mb-1.5 sm:mb-2">{title}</h3>
+                  <p className="text-xs sm:text-sm text-frost-white/50 leading-relaxed">{desc}</p>
                 </div>
               </RevealSection>
             ))}
@@ -457,48 +465,48 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Book Showcase ─── */}
-      <section className="py-16 sm:py-24 px-4 relative overflow-hidden">
+      <section className="py-12 sm:py-24 px-4 relative overflow-hidden">
+        {/* Background video - hidden on mobile to save battery */}
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
+          className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none hidden sm:block"
           aria-hidden="true"
         >
           <source src="/books-bg.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-bg-base via-transparent to-bg-base pointer-events-none" />
-        <div className="absolute top-1/2 left-0 w-[400px] h-[400px] rounded-full bg-deep-petrol/15 blur-[100px] pointer-events-none -translate-y-1/2" />
+        <div className="absolute top-1/2 left-0 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] rounded-full bg-deep-petrol/15 blur-[60px] sm:blur-[100px] pointer-events-none -translate-y-1/2" />
 
         <div className="max-w-5xl mx-auto relative z-10">
-          <RevealSection className="text-center mb-12">
-            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">הספרים שלנו</h2>
+          <RevealSection className="text-center mb-8 sm:mb-12">
+            <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">הספרים שלנו</h2>
             <p className="text-frost-white/50 text-sm sm:text-base">4 ספרים. 5 דקות ביום. ידע שנשאר.</p>
           </RevealSection>
 
-          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
             {BOOKS.map((book, i) => {
               const totalLessons = book.chapters.reduce((acc, ch) => acc + ch.lessons.length, 0)
-              const freeChapter = book.chapters.find(ch => ch.isFree)
               return (
                 <RevealSection key={book.slug} delay={i * 100}>
-                  <div className="glass-card p-5 flex items-start gap-4 group hover:border-gold/20 transition-all">
+                  <div className="glass-card p-4 sm:p-5 flex items-center gap-3 sm:gap-4 group hover:border-gold/20 transition-all no-touch-delay tap-bounce">
                     {bookImages[book.slug] ? (
                       <img
                         src={bookImages[book.slug]}
                         alt={book.title}
-                        className="w-16 h-16 rounded-2xl object-cover shrink-0 group-hover:scale-105 transition-transform"
+                        className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl object-cover shrink-0 group-hover:scale-105 transition-transform"
                       />
                     ) : (
-                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-3xl shrink-0 group-hover:scale-105 transition-transform">
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-2xl sm:text-3xl shrink-0 group-hover:scale-105 transition-transform">
                         {book.icon}
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-display text-lg font-bold text-frost-white truncate">{book.title}</h3>
-                      <p className="text-xs text-frost-white/40 mt-0.5">{book.author}</p>
-                      <div className="flex items-center gap-2 mt-2.5 flex-wrap">
+                      <h3 className="font-display text-base sm:text-lg font-bold text-frost-white truncate">{book.title}</h3>
+                      <p className="text-[11px] sm:text-xs text-frost-white/40 mt-0.5">{book.author}</p>
+                      <div className="flex items-center gap-2 mt-2 sm:mt-2.5 flex-wrap">
                         <span className="px-2 py-0.5 rounded-full bg-success/10 border border-success/20 text-success text-[10px] font-medium">
                           פרק ראשון חינם
                         </span>
@@ -516,16 +524,16 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Exercise Types Preview ─── */}
-      <section className="py-16 sm:py-24 px-4 bg-white/[0.01] border-y border-white/5">
+      <section className="py-12 sm:py-24 px-4 bg-white/[0.01] border-y border-white/5">
         <div className="max-w-5xl mx-auto">
-          <RevealSection className="text-center mb-10">
-            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">
+          <RevealSection className="text-center mb-8 sm:mb-10">
+            <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">
               לא קריאה פסיבית —{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-l from-gold to-dusty-aqua">
                 למידה פעילה
               </span>
             </h2>
-            <p className="text-frost-white/50 text-sm sm:text-base">7 סוגי תרגילים שמפעילים את המוח ומבטיחים שהידע נקלט</p>
+            <p className="text-frost-white/50 text-xs sm:text-base">7 סוגי תרגילים שמפעילים את המוח ומבטיחים שהידע נקלט</p>
           </RevealSection>
 
           <RevealSection delay={100}>
@@ -567,20 +575,20 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Gamification Features ─── */}
-      <section className="py-16 sm:py-24 px-4">
+      <section className="py-12 sm:py-24 px-4">
         <div className="max-w-5xl mx-auto">
-          <RevealSection className="text-center mb-12">
-            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">
+          <RevealSection className="text-center mb-8 sm:mb-12">
+            <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">
               מערכת{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-l from-gold to-dusty-aqua">
                 גיימיפיקציה
               </span>{' '}
               מלאה
             </h2>
-            <p className="text-frost-white/50 text-sm sm:text-base">כל הכלים שגורמים לך לחזור ללמוד — כל יום</p>
+            <p className="text-frost-white/50 text-xs sm:text-base">כל הכלים שגורמים לך לחזור ללמוד — כל יום</p>
           </RevealSection>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
             {[
               { emoji: '🏆', title: '10 ליגות', desc: 'מברונזה ועד יהלום' },
               { emoji: '⚡', title: 'אירועי XP', desc: 'XP כפול בסופ"ש' },
@@ -592,10 +600,10 @@ export default function LandingPage() {
               { emoji: '📊', title: 'סטטיסטיקות', desc: 'עקוב אחרי ההתקדמות' },
             ].map(({ emoji, title, desc }, i) => (
               <RevealSection key={title} delay={i * 60}>
-                <div className="glass-card p-4 text-center group hover:border-gold/20 transition-all">
-                  <span className="text-2xl block mb-2 group-hover:scale-110 transition-transform inline-block">{emoji}</span>
-                  <h4 className="text-sm font-bold text-frost-white mb-0.5">{title}</h4>
-                  <p className="text-[10px] text-frost-white/40">{desc}</p>
+                <div className="glass-card p-3 sm:p-4 text-center group hover:border-gold/20 transition-all no-touch-delay">
+                  <span className="text-xl sm:text-2xl block mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform inline-block">{emoji}</span>
+                  <h4 className="text-xs sm:text-sm font-bold text-frost-white mb-0.5">{title}</h4>
+                  <p className="text-[10px] text-frost-white/40 leading-relaxed">{desc}</p>
                 </div>
               </RevealSection>
             ))}
@@ -604,13 +612,13 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Testimonials ─── */}
-      <section className="py-16 sm:py-24 px-4 bg-white/[0.01] border-y border-white/5">
+      <section className="py-12 sm:py-24 px-4 bg-white/[0.01] border-y border-white/5">
         <div className="max-w-5xl mx-auto">
-          <RevealSection className="text-center mb-10">
-            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">מה אומרים הלומדים</h2>
+          <RevealSection className="text-center mb-6 sm:mb-10">
+            <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">מה אומרים הלומדים</h2>
           </RevealSection>
 
-          <div className="grid sm:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-3 gap-3 sm:gap-4">
             {[
               {
                 name: 'נועם ר.',
@@ -651,14 +659,14 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Features ─── */}
-      <section className="py-16 sm:py-24 px-4">
+      <section className="py-12 sm:py-24 px-4">
         <div className="max-w-5xl mx-auto">
-          <RevealSection className="text-center mb-12">
-            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">למה MindSet?</h2>
-            <p className="text-frost-white/50 text-sm sm:text-base">כל מה שצריך כדי באמת ללמוד ספר — לא רק לקרוא אותו</p>
+          <RevealSection className="text-center mb-8 sm:mb-12">
+            <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">למה MindSet?</h2>
+            <p className="text-frost-white/50 text-xs sm:text-base">כל מה שצריך כדי באמת ללמוד ספר — לא רק לקרוא אותו</p>
           </RevealSection>
 
-          <div className="grid sm:grid-cols-2 gap-4 sm:gap-5">
+          <div className="grid sm:grid-cols-2 gap-3 sm:gap-5">
             {[
               {
                 icon: MessageCircle,
@@ -704,13 +712,13 @@ export default function LandingPage() {
               },
             ].map(({ icon: Icon, color, bg, title, desc }, i) => (
               <RevealSection key={title} delay={i * 80}>
-                <div className="glass-card p-5 flex gap-4 group hover:border-gold/15 transition-all">
-                  <div className={`w-11 h-11 rounded-xl ${bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
+                <div className="glass-card p-4 sm:p-5 flex gap-3 sm:gap-4 group hover:border-gold/15 transition-all">
+                  <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl ${bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
                     <Icon className={`w-5 h-5 ${color}`} />
                   </div>
-                  <div>
-                    <h3 className="font-display text-base font-bold mb-1">{title}</h3>
-                    <p className="text-sm text-frost-white/45 leading-relaxed">{desc}</p>
+                  <div className="min-w-0">
+                    <h3 className="font-display text-sm sm:text-base font-bold mb-0.5 sm:mb-1">{title}</h3>
+                    <p className="text-xs sm:text-sm text-frost-white/45 leading-relaxed">{desc}</p>
                   </div>
                 </div>
               </RevealSection>
@@ -720,34 +728,35 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Pricing ─── */}
-      <section className="py-16 sm:py-24 px-4 bg-white/[0.01] border-y border-white/5">
+      <section className="py-12 sm:py-24 px-0 sm:px-4 bg-white/[0.01] border-y border-white/5">
         <div className="max-w-4xl mx-auto">
-          <RevealSection className="text-center mb-12">
-            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">תוכניות ומחירים</h2>
-            <p className="text-frost-white/50 text-sm sm:text-base">התחל בחינם — שדרג כשתרצה</p>
+          <RevealSection className="text-center mb-8 sm:mb-12 px-4">
+            <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">תוכניות ומחירים</h2>
+            <p className="text-frost-white/50 text-xs sm:text-base">התחל בחינם — שדרג כשתרצה</p>
           </RevealSection>
 
-          <div className="grid sm:grid-cols-3 gap-4 sm:gap-5">
+          {/* Horizontal scroll on mobile, grid on desktop */}
+          <div className="flex sm:grid sm:grid-cols-3 gap-3 sm:gap-5 overflow-x-auto mobile-scroll-x snap-x-mandatory px-4 pb-2 sm:pb-0">
             {/* Free */}
-            <RevealSection delay={0}>
-              <div className="glass-card p-6 text-center h-full flex flex-col">
-                <div className="w-12 h-12 rounded-2xl bg-frost-white/5 flex items-center justify-center mx-auto mb-4">
-                  <BookOpen className="w-6 h-6 text-frost-white/60" />
+            <RevealSection delay={0} className="min-w-[280px] sm:min-w-0 snap-center">
+              <div className="glass-card p-5 sm:p-6 text-center h-full flex flex-col">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-frost-white/5 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                  <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-frost-white/60" />
                 </div>
-                <h3 className="font-display text-xl font-bold mb-1">חינם</h3>
-                <p className="text-3xl font-bold text-frost-white mb-1">₪0</p>
-                <p className="text-xs text-frost-white/40 mb-5">לתמיד</p>
-                <ul className="space-y-2.5 text-sm text-frost-white/60 text-right mb-6 flex-1">
+                <h3 className="font-display text-lg sm:text-xl font-bold mb-1">חינם</h3>
+                <p className="text-2xl sm:text-3xl font-bold text-frost-white mb-1">₪0</p>
+                <p className="text-[11px] sm:text-xs text-frost-white/40 mb-4 sm:mb-5">לתמיד</p>
+                <ul className="space-y-2 sm:space-y-2.5 text-xs sm:text-sm text-frost-white/60 text-right mb-5 sm:mb-6 flex-1">
                   {['פרק ראשון מכל ספר', '3 שאילתות AI ביום', 'מערכת חזרה מרווחת', 'הישגים ורמות'].map(item => (
                     <li key={item} className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-success shrink-0" />
+                      <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-success shrink-0" />
                       {item}
                     </li>
                   ))}
                 </ul>
                 <button
                   onClick={openAuth}
-                  className="w-full py-3 rounded-xl border border-white/10 text-frost-white/70 text-sm font-medium hover:border-white/20 hover:text-frost-white transition-all"
+                  className="w-full py-3 rounded-xl border border-white/10 text-frost-white/70 text-sm font-medium hover:border-white/20 hover:text-frost-white transition-all no-touch-delay tap-bounce"
                 >
                   התחל בחינם
                 </button>
@@ -755,25 +764,25 @@ export default function LandingPage() {
             </RevealSection>
 
             {/* Single book */}
-            <RevealSection delay={120}>
-              <div className="glass-card p-6 text-center h-full flex flex-col">
-                <div className="w-12 h-12 rounded-2xl bg-dusty-aqua/10 flex items-center justify-center mx-auto mb-4">
-                  <BookOpen className="w-6 h-6 text-dusty-aqua" />
+            <RevealSection delay={120} className="min-w-[280px] sm:min-w-0 snap-center">
+              <div className="glass-card p-5 sm:p-6 text-center h-full flex flex-col">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-dusty-aqua/10 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                  <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-dusty-aqua" />
                 </div>
-                <h3 className="font-display text-xl font-bold mb-1">ספר בודד</h3>
-                <p className="text-3xl font-bold text-frost-white mb-1">₪37</p>
-                <p className="text-xs text-frost-white/40 mb-5">חד פעמי</p>
-                <ul className="space-y-2.5 text-sm text-frost-white/60 text-right mb-6 flex-1">
+                <h3 className="font-display text-lg sm:text-xl font-bold mb-1">ספר בודד</h3>
+                <p className="text-2xl sm:text-3xl font-bold text-frost-white mb-1">₪37</p>
+                <p className="text-[11px] sm:text-xs text-frost-white/40 mb-4 sm:mb-5">חד פעמי</p>
+                <ul className="space-y-2 sm:space-y-2.5 text-xs sm:text-sm text-frost-white/60 text-right mb-5 sm:mb-6 flex-1">
                   {['כל הפרקים של ספר אחד', '50 שאילתות AI', 'חזרה מרווחת מלאה', 'חוברת עבודה'].map(item => (
                     <li key={item} className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-success shrink-0" />
+                      <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-success shrink-0" />
                       {item}
                     </li>
                   ))}
                 </ul>
                 <button
                   onClick={openAuth}
-                  className="w-full py-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white text-sm font-medium hover:opacity-90 transition-opacity"
+                  className="w-full py-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white text-sm font-medium hover:opacity-90 transition-opacity no-touch-delay tap-bounce"
                 >
                   בחר ספר
                 </button>
@@ -781,42 +790,44 @@ export default function LandingPage() {
             </RevealSection>
 
             {/* Bundle */}
-            <RevealSection delay={240}>
-              <div className="glass-card p-6 text-center relative border-gold/30 h-full flex flex-col">
-                <div className="absolute -top-3 right-1/2 translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-l from-gold to-[#e8c84a] text-bg-base text-[11px] font-bold whitespace-nowrap">
+            <RevealSection delay={240} className="min-w-[280px] sm:min-w-0 snap-center">
+              <div className="glass-card p-5 sm:p-6 text-center relative border-gold/30 h-full flex flex-col">
+                <div className="absolute -top-3 right-1/2 translate-x-1/2 px-3 sm:px-4 py-1 rounded-full bg-gradient-to-l from-gold to-[#e8c84a] text-bg-base text-[10px] sm:text-[11px] font-bold whitespace-nowrap">
                   הכי משתלם
                 </div>
-                <div className="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center mx-auto mb-4">
-                  <Star className="w-6 h-6 text-gold" />
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gold/10 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                  <Star className="w-5 h-5 sm:w-6 sm:h-6 text-gold" />
                 </div>
-                <h3 className="font-display text-xl font-bold mb-1">באנדל מאסטר</h3>
-                <p className="text-3xl font-bold text-gold mb-1">₪97</p>
-                <p className="text-xs text-frost-white/40 mb-5">חד פעמי — כל הספרים</p>
-                <ul className="space-y-2.5 text-sm text-frost-white/60 text-right mb-6 flex-1">
+                <h3 className="font-display text-lg sm:text-xl font-bold mb-1">באנדל מאסטר</h3>
+                <p className="text-2xl sm:text-3xl font-bold text-gold mb-1">₪97</p>
+                <p className="text-[11px] sm:text-xs text-frost-white/40 mb-4 sm:mb-5">חד פעמי — כל הספרים</p>
+                <ul className="space-y-2 sm:space-y-2.5 text-xs sm:text-sm text-frost-white/60 text-right mb-5 sm:mb-6 flex-1">
                   {['כל הספרים (4+)', 'AI ללא הגבלה', 'חוברות עבודה', 'עדכונים וספרים חדשים'].map(item => (
                     <li key={item} className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-gold shrink-0" />
+                      <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gold shrink-0" />
                       {item}
                     </li>
                   ))}
                 </ul>
                 <button
                   onClick={openAuth}
-                  className="w-full py-3 rounded-xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base font-bold text-sm hover:brightness-110 transition-all"
+                  className="w-full py-3 rounded-xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base font-bold text-sm hover:brightness-110 transition-all no-touch-delay tap-bounce"
                 >
                   קנה באנדל
                 </button>
               </div>
             </RevealSection>
           </div>
+          {/* Scroll hint on mobile */}
+          <p className="text-center text-[10px] text-frost-white/20 mt-2 sm:hidden px-4">החלק לצדדים לראות את כל התוכניות</p>
         </div>
       </section>
 
       {/* ─── FAQ ─── */}
-      <section className="py-16 sm:py-24 px-4">
+      <section className="py-12 sm:py-24 px-4">
         <div className="max-w-3xl mx-auto">
-          <RevealSection className="text-center mb-10">
-            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">שאלות נפוצות</h2>
+          <RevealSection className="text-center mb-6 sm:mb-10">
+            <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">שאלות נפוצות</h2>
           </RevealSection>
 
           <div className="space-y-3">
@@ -851,17 +862,17 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Final CTA + Auth ─── */}
-      <section ref={ctaRef} className="py-16 sm:py-24 px-4 relative">
-        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] rounded-full bg-deep-petrol/20 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] rounded-full bg-gold/8 blur-[100px] pointer-events-none" />
+      <section ref={ctaRef} className="py-12 sm:py-24 px-4 relative">
+        <div className="absolute top-0 right-1/4 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] rounded-full bg-deep-petrol/20 blur-[80px] sm:blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] rounded-full bg-gold/8 blur-[60px] sm:blur-[100px] pointer-events-none" />
 
         <div className="max-w-sm mx-auto relative z-10 text-center">
           <RevealSection>
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua mb-5">
-              <Brain className="w-8 h-8 text-frost-white" />
+            <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua mb-4 sm:mb-5">
+              <Brain className="w-7 h-7 sm:w-8 sm:h-8 text-frost-white" />
             </div>
-            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">מוכן להתחיל?</h2>
-            <p className="text-frost-white/50 text-sm mb-8">הצטרף בחינם ותתחיל לשחק את הספר הראשון שלך עוד היום</p>
+            <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">מוכן להתחיל?</h2>
+            <p className="text-frost-white/50 text-xs sm:text-sm mb-6 sm:mb-8">הצטרף בחינם ותתחיל לשחק את הספר הראשון שלך עוד היום</p>
 
             {/* Inline auth */}
             <div className="space-y-3">
@@ -914,7 +925,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Footer ─── */}
-      <footer className="py-5 text-center border-t border-white/5">
+      <footer className="py-5 text-center border-t border-white/5 pb-20 sm:pb-5">
         <p className="text-[11px] text-frost-white/25 px-4">
           מדריך לא רשמי. אינו קשור למחברים המקוריים.
           <span className="mx-2">|</span>
@@ -922,14 +933,28 @@ export default function LandingPage() {
         </p>
       </footer>
 
+      {/* ─── Sticky Mobile CTA ─── */}
+      {showMobileCTA && !authMode && (
+        <div className="fixed bottom-0 inset-x-0 z-40 sm:hidden animate-slide-up-cta safe-bottom">
+          <div className="bg-bg-base/95 backdrop-blur-xl border-t border-white/10 px-4 py-3">
+            <button
+              onClick={openAuth}
+              className="w-full py-3.5 rounded-xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base font-bold text-sm no-touch-delay tap-bounce active:scale-[0.98] transition-transform"
+            >
+              התחל ללמוד בחינם
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ─── Auth Modal (triggered by navbar "התחבר") ─── */}
       {authMode && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4">
           {/* Backdrop */}
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeAuth} />
 
-          <div className="relative z-10 w-full max-w-sm animate-slide-up">
-            <div className="glass-card p-6 border-white/10 bg-bg-base/95 backdrop-blur-xl">
+          <div className="relative z-10 w-full sm:max-w-sm animate-slide-up">
+            <div className="glass-card p-6 border-white/10 bg-bg-base/95 backdrop-blur-xl rounded-b-none sm:rounded-b-2xl safe-bottom">
               {/* Close */}
               <button onClick={closeAuth} className="absolute top-4 left-4 text-frost-white/40 hover:text-frost-white transition-colors">
                 <X className="w-5 h-5" />
