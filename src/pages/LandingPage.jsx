@@ -13,6 +13,12 @@ import nextFiveMoves from '../data/books/next-five-moves.json'
 
 const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves]
 
+const bookImages = {
+  'strengths-finder': '/books/strengths-finder.png',
+  'happy-chemicals': '/books/happy-chemicals.png',
+  'next-five-moves': '/books/next-five-moves.png',
+}
+
 const EXERCISE_TYPES = [
   { name: 'בחירה מרובה', icon: '🎯' },
   { name: 'השלמת חסר', icon: '✏️' },
@@ -477,9 +483,17 @@ export default function LandingPage() {
               return (
                 <RevealSection key={book.slug} delay={i * 100}>
                   <div className="glass-card p-5 flex items-start gap-4 group hover:border-gold/20 transition-all">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-3xl shrink-0 group-hover:scale-105 transition-transform">
-                      {book.icon}
-                    </div>
+                    {bookImages[book.slug] ? (
+                      <img
+                        src={bookImages[book.slug]}
+                        alt={book.title}
+                        className="w-16 h-16 rounded-2xl object-cover shrink-0 group-hover:scale-105 transition-transform"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-3xl shrink-0 group-hover:scale-105 transition-transform">
+                        {book.icon}
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <h3 className="font-display text-lg font-bold text-frost-white truncate">{book.title}</h3>
                       <p className="text-xs text-frost-white/40 mt-0.5">{book.author}</p>
