@@ -83,7 +83,7 @@ export default function AuthScreen() {
             <Brain className="w-10 h-10 text-frost-white" />
           </div>
           <h1 className="font-display text-3xl font-bold text-frost-white mb-2">MindSet</h1>
-          <p className="text-frost-white/60 text-sm">למד ספר ב-15 דקות</p>
+          <p className="text-frost-white/60 text-sm">5 דקות ביום — ידע של ספר שלם</p>
         </div>
 
         {mode === 'main' && (

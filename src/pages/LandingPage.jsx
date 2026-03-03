@@ -385,7 +385,7 @@ export default function LandingPage() {
             <CounterStat target={4} label="ספרים זמינים" icon={BookOpen} />
             <CounterStat target={7} label="סוגי תרגילים" icon={Target} />
             <CounterStat target={360} label="תרגילים" icon={Flame} />
-            <CounterStat target={15} label="דקות לספר" icon={Clock} />
+            <CounterStat target={5} label="דקות ביום" icon={Clock} />
           </div>
           {/* Trust badges */}
           <div className="flex items-center justify-center gap-4 pb-5 flex-wrap">
@@ -467,7 +467,7 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto relative z-10">
           <RevealSection className="text-center mb-12">
             <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">הספרים שלנו</h2>
-            <p className="text-frost-white/50 text-sm sm:text-base">4 ספרים. 15 דקות כל אחד. ידע אמיתי.</p>
+            <p className="text-frost-white/50 text-sm sm:text-base">4 ספרים. 5 דקות ביום. ידע שנשאר.</p>
           </RevealSection>
 
           <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
@@ -600,7 +600,7 @@ export default function LandingPage() {
               {
                 name: 'נועם ר.',
                 avatar: '👨‍💻',
-                text: 'נגמר לי ספר הרגלים אטומים ב-15 דקות. אני מפנים את החומר הרבה יותר טוב מקריאה רגילה.',
+                text: '5 דקות ביום בדרך לעבודה — ואני מפנים את החומר הרבה יותר טוב מקריאה רגילה.',
                 streak: 14,
               },
               {
@@ -808,7 +808,7 @@ export default function LandingPage() {
             {[
               {
                 q: 'מה בדיוק MindSet?',
-                a: 'MindSet הופך ספרי פיתוח אישי לשיעורים אינטראקטיביים קצרים — עם תרגילים, ניקוד ומאמן AI. במקום לקרוא ספר שלם, אתה משחק אותו ב-15 דקות ומפנים את העקרונות.',
+                a: 'MindSet הופך ספרי פיתוח אישי לחוויית למידה אינטראקטיבית — עם תרגילים, ניקוד ומאמן AI. גם 5 דקות ביום מספיקות כדי להפנים עקרונות של ספר שלם.',
               },
               {
                 q: 'האם אני צריך לקרוא את הספר לפני?',
@@ -816,7 +816,7 @@ export default function LandingPage() {
               },
               {
                 q: 'כמה זמן לוקח כל שיעור?',
-                a: 'שיעור ממוצע לוקח 3-5 דקות. ספר שלם ניתן לסיים ב-15 דקות. אתה יכול ללמוד בקצב שלך — גם דקה ביום עושה הבדל.',
+                a: 'שיעור ממוצע לוקח 3-5 דקות. אתה לומד בקצב שלך — גם 5 דקות ביום מספיקות כדי להתקדם ולהפנים את החומר לעומק.',
               },
               {
                 q: 'מה כלול בחינם?',
