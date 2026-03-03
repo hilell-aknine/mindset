@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
 import { LEVEL_NAMES, getXPProgress, LEVEL_THRESHOLDS } from '../config/constants'
 import { ACHIEVEMENTS } from '../lib/achievements'
-import { ArrowRight, Trophy, Target, Flame, Brain, Heart, Zap, TrendingUp, BookOpen } from 'lucide-react'
+import { getActiveEvent, WEEKLY_GOALS, STREAK_MILESTONES } from '../lib/events'
+import { ArrowRight, Trophy, Target, Flame, Brain, Heart, Zap, TrendingUp, BookOpen, Calendar, Award } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
@@ -154,6 +155,65 @@ export default function StatsPage() {
             <p className="text-xs text-frost-white/40 mt-1">{stat.label}</p>
           </div>
         ))}
+      </div>
+
+      {/* Weekly XP Progress */}
+      <div className="glass-card p-5 mb-4 animate-fade-in" style={{ animationDelay: '0.33s' }}>
+        <div className="flex items-center gap-2 mb-3">
+          <Calendar className="w-4 h-4 text-gold" />
+          <h3 className="font-display text-sm font-bold text-frost-white">יעד שבועי</h3>
+        </div>
+        {(() => {
+          const weeklyXP = player.weeklyXP || 0
+          const weeklyGoal = player.weeklyXPGoal || 250
+          const currentGoal = WEEKLY_GOALS.find(g => g.xp === weeklyGoal) || WEEKLY_GOALS[1]
+          const progress = Math.min((weeklyXP / weeklyGoal) * 100, 100)
+          return (
+            <>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs text-frost-white/50">{currentGoal.emoji} {currentGoal.label}</span>
+                <span className="text-xs font-bold text-gold">{weeklyXP}/{weeklyGoal} XP</span>
+              </div>
+              <div className="h-3 rounded-full bg-white/5 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-700 relative"
+                  style={{ width: `${progress}%` }}
+                >
+                  <div className="absolute inset-0 progress-shimmer rounded-full" />
+                </div>
+              </div>
+              {weeklyXP >= weeklyGoal && (
+                <p className="text-xs text-success font-bold mt-2 text-center">יעד הושלם! כל הכבוד!</p>
+              )}
+            </>
+          )
+        })()}
+      </div>
+
+      {/* Streak Milestones */}
+      <div className="glass-card p-5 mb-6 animate-fade-in" style={{ animationDelay: '0.34s' }}>
+        <div className="flex items-center gap-2 mb-3">
+          <Award className="w-4 h-4 text-warning" />
+          <h3 className="font-display text-sm font-bold text-frost-white">אבני דרך ברצף</h3>
+        </div>
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+          {STREAK_MILESTONES.map(m => {
+            const reached = player.currentStreak >= m.days
+            return (
+              <div
+                key={m.days}
+                className={`flex-shrink-0 w-16 p-2 rounded-xl text-center transition-all ${
+                  reached ? 'bg-warning/10 border border-warning/20' : 'bg-white/3 border border-white/5 opacity-40'
+                }`}
+              >
+                <span className="text-lg block">{m.emoji}</span>
+                <span className={`text-[10px] font-bold block mt-0.5 ${reached ? 'text-warning' : 'text-frost-white/40'}`}>
+                  {m.days} ימים
+                </span>
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       {/* Book progress chart */}

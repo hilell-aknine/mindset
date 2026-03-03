@@ -4,8 +4,7 @@ import { usePlayer } from '../contexts/PlayerContext'
 import { BookOpen, Trophy, Flame, RotateCcw, BarChart2, Settings, Zap, Target, Crown, X } from 'lucide-react'
 import DailyChallenge from '../components/DailyChallenge'
 import StreakFreeze from '../components/StreakFreeze'
-import { getActiveEvent } from '../lib/events'
-import { WEEKLY_GOALS } from '../lib/events'
+import { getActiveEvent, WEEKLY_GOALS, STREAK_MILESTONES } from '../lib/events'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
@@ -117,19 +116,44 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* Streak banner */}
-      {player.currentStreak > 1 && (
-        <div className="glass-card p-4 mb-4 flex items-center gap-3 animate-fade-in border-warning/10" style={{ animationDelay: '0.1s' }}>
-          <div className="w-10 h-10 rounded-xl bg-warning/20 flex items-center justify-center">
-            <Flame className="w-5 h-5 text-warning" />
+      {/* Streak banner with next milestone */}
+      {player.currentStreak > 1 && (() => {
+        const nextMilestone = STREAK_MILESTONES.find(m => m.days > player.currentStreak)
+        return (
+          <div className="glass-card p-4 mb-4 animate-fade-in border-warning/10" style={{ animationDelay: '0.1s' }}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-warning/20 flex items-center justify-center">
+                <Flame className="w-5 h-5 text-warning" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-frost-white">רצף של {player.currentStreak} ימים!</p>
+                {nextMilestone ? (
+                  <p className="text-[10px] text-frost-white/40">
+                    עוד {nextMilestone.days - player.currentStreak} ימים ל{nextMilestone.emoji} {nextMilestone.title} (+{nextMilestone.xpBonus} XP)
+                  </p>
+                ) : (
+                  <p className="text-[10px] text-frost-white/40">המשך ללמוד כדי לשמור על הרצף</p>
+                )}
+              </div>
+              <div className="text-2xl font-bold text-warning">{player.currentStreak}</div>
+            </div>
+            {/* Milestone progress bar */}
+            {nextMilestone && (() => {
+              const prevMilestone = [...STREAK_MILESTONES].reverse().find(m => m.days <= player.currentStreak)
+              const from = prevMilestone ? prevMilestone.days : 0
+              const pct = ((player.currentStreak - from) / (nextMilestone.days - from)) * 100
+              return (
+                <div className="mt-2 h-1.5 rounded-full bg-white/5 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-warning/60 transition-all"
+                    style={{ width: `${Math.min(pct, 100)}%` }}
+                  />
+                </div>
+              )
+            })()}
           </div>
-          <div className="flex-1">
-            <p className="text-sm font-semibold text-frost-white">רצף של {player.currentStreak} ימים!</p>
-            <p className="text-xs text-frost-white/40">המשך ללמוד כדי לשמור על הרצף</p>
-          </div>
-          <div className="text-2xl font-bold text-warning">{player.currentStreak}</div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* Daily Challenge Card */}
       <button

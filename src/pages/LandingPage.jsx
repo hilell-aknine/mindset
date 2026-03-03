@@ -490,6 +490,90 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ─── Gamification Features ─── */}
+      <section className="py-16 sm:py-24 px-4">
+        <div className="max-w-5xl mx-auto">
+          <RevealSection className="text-center mb-12">
+            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">
+              מערכת{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-l from-gold to-dusty-aqua">
+                גיימיפיקציה
+              </span>{' '}
+              מלאה
+            </h2>
+            <p className="text-frost-white/50 text-sm sm:text-base">כל הכלים שגורמים לך לחזור ללמוד — כל יום</p>
+          </RevealSection>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+            {[
+              { emoji: '🏆', title: '10 ליגות', desc: 'מברונזה ועד יהלום' },
+              { emoji: '⚡', title: 'אירועי XP', desc: 'XP כפול בסופ"ש' },
+              { emoji: '🔥', title: 'רצפים', desc: 'בונוסים ב-7/30/100 ימים' },
+              { emoji: '🎯', title: 'יעדים שבועיים', desc: 'בחר את הקצב שלך' },
+              { emoji: '🛡️', title: 'הקפאת רצף', desc: 'יום חופש ללא אובדן' },
+              { emoji: '💡', title: 'רמזים חכמים', desc: 'עזרה AI לכל תרגיל' },
+              { emoji: '⏱️', title: 'בונוס מהירות', desc: 'ענה מהר = יותר XP' },
+              { emoji: '📊', title: 'סטטיסטיקות', desc: 'עקוב אחרי ההתקדמות' },
+            ].map(({ emoji, title, desc }, i) => (
+              <RevealSection key={title} delay={i * 60}>
+                <div className="glass-card p-4 text-center group hover:border-gold/20 transition-all">
+                  <span className="text-2xl block mb-2 group-hover:scale-110 transition-transform inline-block">{emoji}</span>
+                  <h4 className="text-sm font-bold text-frost-white mb-0.5">{title}</h4>
+                  <p className="text-[10px] text-frost-white/40">{desc}</p>
+                </div>
+              </RevealSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Testimonials ─── */}
+      <section className="py-16 sm:py-24 px-4 bg-white/[0.01] border-y border-white/5">
+        <div className="max-w-5xl mx-auto">
+          <RevealSection className="text-center mb-10">
+            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">מה אומרים הלומדים</h2>
+          </RevealSection>
+
+          <div className="grid sm:grid-cols-3 gap-4">
+            {[
+              {
+                name: 'נועם ר.',
+                avatar: '👨‍💻',
+                text: 'נגמר לי ספר הרגלים אטומים ב-15 דקות. אני מפנים את החומר הרבה יותר טוב מקריאה רגילה.',
+                streak: 14,
+              },
+              {
+                name: 'שירה מ.',
+                avatar: '👩‍🎓',
+                text: 'הליגות והאירועים גורמים לי לחזור כל יום. כבר 30 ימים רצף!',
+                streak: 30,
+              },
+              {
+                name: 'יונתן ק.',
+                avatar: '🧑‍💼',
+                text: 'המאמן AI עזר לי להבין רעיונות שלא תפסתי בקריאה הראשונה. שווה כל שקל.',
+                streak: 7,
+              },
+            ].map((t, i) => (
+              <RevealSection key={t.name} delay={i * 100}>
+                <div className="glass-card p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl">{t.avatar}</span>
+                    <div>
+                      <p className="text-sm font-bold text-frost-white">{t.name}</p>
+                      <p className="text-[10px] text-warning">🔥 רצף {t.streak} ימים</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-frost-white/60 leading-relaxed italic">
+                    &ldquo;{t.text}&rdquo;
+                  </p>
+                </div>
+              </RevealSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ─── Features ─── */}
       <section className="py-16 sm:py-24 px-4">
         <div className="max-w-5xl mx-auto">

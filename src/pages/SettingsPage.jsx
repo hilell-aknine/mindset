@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { usePlayer } from '../contexts/PlayerContext'
 import { useSound } from '../hooks/useSound'
-import { ArrowRight, Volume2, VolumeX, Trash2, LogOut, User } from 'lucide-react'
+import { WEEKLY_GOALS } from '../lib/events'
+import { ArrowRight, Volume2, VolumeX, Trash2, LogOut, User, Target, Timer, Bell } from 'lucide-react'
 
 export default function SettingsPage() {
   const navigate = useNavigate()
@@ -16,6 +17,10 @@ export default function SettingsPage() {
   const handleToggleSound = () => {
     const newState = toggle()
     setSoundOn(newState)
+  }
+
+  const handleSetWeeklyGoal = (xp) => {
+    updatePlayer(prev => ({ ...prev, weeklyXPGoal: xp }))
   }
 
   const handleResetProgress = () => {
@@ -32,6 +37,7 @@ export default function SettingsPage() {
       reviewQueue: [],
       achievements: [],
       perfectLessons: 0,
+      weeklyXP: 0,
     })
     setConfirmReset(false)
   }
@@ -63,6 +69,41 @@ export default function SettingsPage() {
               {isGuest ? 'מצב אורח — ההתקדמות נשמרת מקומית' : 'חשבון מחובר'}
             </p>
           </div>
+        </div>
+      </div>
+
+      {/* Weekly XP Goal Picker */}
+      <div className="glass-card p-5 mb-4 animate-fade-in" style={{ animationDelay: '0.08s' }}>
+        <div className="flex items-center gap-2 mb-4">
+          <Target className="w-4 h-4 text-gold" />
+          <h3 className="text-sm font-bold text-frost-white">יעד שבועי</h3>
+        </div>
+        <p className="text-xs text-frost-white/40 mb-3">
+          כמה XP תרצה לצבור בשבוע? יעד גבוה = התקדמות מהירה.
+        </p>
+        <div className="grid grid-cols-4 gap-2">
+          {WEEKLY_GOALS.map(goal => {
+            const isSelected = (player.weeklyXPGoal || 250) === goal.xp
+            return (
+              <button
+                key={goal.xp}
+                onClick={() => handleSetWeeklyGoal(goal.xp)}
+                className={`p-3 rounded-xl text-center transition-all ${
+                  isSelected
+                    ? 'bg-gold/15 border border-gold/40 ring-1 ring-gold/20'
+                    : 'bg-white/5 border border-white/5 hover:border-white/10'
+                }`}
+              >
+                <span className="text-lg block mb-1">{goal.emoji}</span>
+                <span className={`text-xs font-bold block ${isSelected ? 'text-gold' : 'text-frost-white/60'}`}>
+                  {goal.label}
+                </span>
+                <span className="text-[10px] text-frost-white/30 block mt-0.5">
+                  {goal.xp} XP
+                </span>
+              </button>
+            )
+          })}
         </div>
       </div>
 
