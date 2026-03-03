@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo } from 'react'
-import { CheckCircle, XCircle, Zap, Lightbulb } from 'lucide-react'
-import { getComboLabel } from '../../config/constants'
+import { CheckCircle, XCircle, Zap, Lightbulb, Star } from 'lucide-react'
+import { getComboLabel, getComboBonus, XP_CORRECT_ANSWER } from '../../config/constants'
 
 const CORRECT_MESSAGES = [
   'מצוין!', 'נכון מאוד!', 'יופי!', 'בול!', 'כל הכבוד!',
@@ -15,7 +15,7 @@ const WRONG_ENCOURAGEMENTS = [
   'כמעט! נסה שוב.',
 ]
 
-export default function FeedbackPanel({ correct, explanation, onContinue, comboStreak = 0 }) {
+export default function FeedbackPanel({ correct, explanation, onContinue, comboStreak = 0, speedBonus = 0 }) {
   const showCombo = correct && comboStreak >= 3
   const btnRef = useRef(null)
 
@@ -23,6 +23,12 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
     const arr = correct ? CORRECT_MESSAGES : WRONG_ENCOURAGEMENTS
     return arr[Math.floor(Math.random() * arr.length)]
   }, [correct])
+
+  // Calculate earned XP for display
+  const earnedXP = useMemo(() => {
+    if (!correct) return 0
+    return XP_CORRECT_ANSWER + getComboBonus(comboStreak) + (speedBonus || 0)
+  }, [correct, comboStreak, speedBonus])
 
   // Auto-focus continue button + keyboard shortcut
   useEffect(() => {
@@ -41,11 +47,15 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
   }, [onContinue])
 
   return (
-    <div className={`sticky bottom-0 border-t animate-slide-up ${
-      correct
-        ? 'bg-success/10 border-success/20'
-        : 'bg-danger/10 border-danger/20'
-    }`}>
+    <div
+      className={`sticky bottom-0 border-t animate-slide-up ${
+        correct
+          ? 'bg-success/10 border-success/20'
+          : 'bg-danger/10 border-danger/20'
+      }`}
+      role="status"
+      aria-live="assertive"
+    >
       <div className="max-w-2xl mx-auto px-4 py-4">
         <div className="flex items-start gap-3 mb-3">
           {correct ? (
@@ -64,6 +74,13 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
                   <span className="text-[10px] font-bold text-warning">
                     {getComboLabel(comboStreak)} x{comboStreak}
                   </span>
+                </span>
+              )}
+              {/* XP earned badge */}
+              {correct && earnedXP > 0 && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gold/10 border border-gold/20 animate-bounce-in">
+                  <Star className="w-3 h-3 text-gold fill-current" />
+                  <span className="text-[10px] font-bold text-gold">+{earnedXP} XP</span>
                 </span>
               )}
             </div>

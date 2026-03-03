@@ -59,6 +59,12 @@ export const DEFAULT_PLAYER = {
   totalSpeedBonus: 0,
   dailyChallengesCompleted: 0,
   reviewsCompleted: 0,
+  streakFreezeDate: null,
+  lastSeenAchievements: 0,
+}
+
+export const getLevelName = (level) => {
+  return LEVEL_NAMES[Math.min(level, LEVEL_NAMES.length) - 1] || LEVEL_NAMES[0]
 }
 
 export const getLevelForXP = (xp) => {

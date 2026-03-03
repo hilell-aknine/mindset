@@ -73,3 +73,26 @@ export function getAchievementsByCategory(earned = []) {
   }
   return result
 }
+
+/**
+ * Get the next closest unearned achievement per category
+ */
+export function getNextAchievements(player) {
+  const earned = player.achievements || []
+  const next = {}
+  for (const cat of Object.keys(CATEGORIES)) {
+    const unearned = ACHIEVEMENTS
+      .filter(a => a.category === cat && !earned.includes(a.id))
+    if (unearned.length > 0) {
+      next[cat] = unearned[0] // First unearned in order = closest to achieving
+    }
+  }
+  return next
+}
+
+/**
+ * Overall achievement progress percentage
+ */
+export function getAchievementProgress(earned = []) {
+  return Math.round((earned.length / ACHIEVEMENTS.length) * 100)
+}
