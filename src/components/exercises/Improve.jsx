@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { checkAnswer } from '../../lib/gameEngine'
+import { useState, useEffect } from 'react'
 
 const LETTERS = ['א', 'ב', 'ג', 'ד']
+const KEYS = ['1', '2', '3', '4']
 
 export default function Improve({ exercise, onAnswer, disabled }) {
   const [selected, setSelected] = useState(null)
@@ -23,6 +23,22 @@ export default function Improve({ exercise, onAnswer, disabled }) {
     onAnswer(correct, exercise.explanation)
   }
 
+  // Keyboard shortcuts: 1-4 to select, Enter to check
+  useEffect(() => {
+    if (disabled) return
+    const handler = (e) => {
+      const keyIndex = KEYS.indexOf(e.key)
+      if (keyIndex >= 0 && keyIndex < options.length) {
+        setSelected(keyIndex)
+      }
+      if (e.key === 'Enter' && selected !== null) {
+        handleCheck()
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [disabled, options.length, selected])
+
   return (
     <div className="animate-fade-in">
       <h3 className="font-display text-lg font-bold text-frost-white mb-4 leading-relaxed">
@@ -38,7 +54,7 @@ export default function Improve({ exercise, onAnswer, disabled }) {
       )}
 
       {/* Improvement options */}
-      <div className="space-y-3 mb-6">
+      <div className="space-y-3 mb-6" role="radiogroup" aria-label="אפשרויות תשובה">
         {options.map((option, i) => {
           const optionText = typeof option === 'object' ? option.text : option
           const isSelected = selected === i
@@ -50,6 +66,9 @@ export default function Improve({ exercise, onAnswer, disabled }) {
               key={i}
               onClick={() => handleSelect(i)}
               disabled={disabled}
+              role="radio"
+              aria-checked={isSelected}
+              aria-label={`אפשרות ${LETTERS[i]}: ${optionText}`}
               className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border text-right transition-all ${
                 isCorrect ? 'border-success bg-success/10 text-success' :
                 isWrong ? 'border-danger bg-danger/10 text-danger animate-shake' :
@@ -57,7 +76,7 @@ export default function Improve({ exercise, onAnswer, disabled }) {
                 'border-white/10 bg-bg-card hover:border-white/20 text-frost-white/80'
               }`}
             >
-              <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0 ${
+              <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0 transition-colors ${
                 isCorrect ? 'bg-success/20' :
                 isWrong ? 'bg-danger/20' :
                 isSelected ? 'bg-gold/20' :
@@ -65,7 +84,11 @@ export default function Improve({ exercise, onAnswer, disabled }) {
               }`}>
                 {LETTERS[i]}
               </span>
-              <span className="text-sm leading-relaxed">{optionText}</span>
+              <span className="text-sm leading-relaxed flex-1">{optionText}</span>
+              {/* Keyboard hint */}
+              {!disabled && (
+                <span className="text-[9px] text-frost-white/15 font-mono shrink-0">{KEYS[i]}</span>
+              )}
             </button>
           )
         })}
@@ -75,7 +98,7 @@ export default function Improve({ exercise, onAnswer, disabled }) {
         <button
           onClick={handleCheck}
           disabled={selected === null}
-          className="w-full py-3.5 rounded-xl font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90"
+          className="w-full py-3.5 rounded-xl font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 active:scale-[0.98]"
         >
           בדוק
         </button>

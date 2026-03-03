@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function Compare({ exercise, onAnswer, disabled }) {
   const [selected, setSelected] = useState(null)
@@ -8,21 +8,29 @@ export default function Compare({ exercise, onAnswer, disabled }) {
     setSelected(index)
   }
 
+  const correctIndex = typeof exercise.correct === 'string'
+    ? (exercise.correct === 'A' ? 0 : 1)
+    : exercise.correct
+
   const handleCheck = () => {
     if (selected === null) return
-    // Handle both number (0/1) and string ("A"/"B") correct format
-    let correctIndex = exercise.correct
-    if (typeof correctIndex === 'string') {
-      correctIndex = correctIndex === 'A' ? 0 : 1
-    }
     const correct = selected === correctIndex
     onAnswer(correct, exercise.explanation)
   }
 
   const options = [exercise.optionA, exercise.optionB]
-  const correctIndex = typeof exercise.correct === 'string'
-    ? (exercise.correct === 'A' ? 0 : 1)
-    : exercise.correct
+
+  // Keyboard shortcuts: 1/2 to select, Enter to check
+  useEffect(() => {
+    if (disabled) return
+    const handler = (e) => {
+      if (e.key === '1') setSelected(0)
+      if (e.key === '2') setSelected(1)
+      if (e.key === 'Enter' && selected !== null) handleCheck()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [disabled, selected])
 
   return (
     <div className="animate-fade-in">
@@ -30,7 +38,7 @@ export default function Compare({ exercise, onAnswer, disabled }) {
         {exercise.question}
       </h3>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6" role="radiogroup" aria-label="אפשרויות השוואה">
         {options.map((option, i) => {
           const isSelected = selected === i
           const isCorrect = disabled && i === correctIndex
@@ -41,13 +49,22 @@ export default function Compare({ exercise, onAnswer, disabled }) {
               key={i}
               onClick={() => handleSelect(i)}
               disabled={disabled}
-              className={`p-4 rounded-xl border text-right transition-all ${
+              role="radio"
+              aria-checked={isSelected}
+              aria-label={`אפשרות ${i + 1}: ${option.label} — ${option.text}`}
+              className={`p-4 rounded-xl border text-right transition-all relative ${
                 isCorrect ? 'border-success bg-success/10' :
                 isWrong ? 'border-danger bg-danger/10 animate-shake' :
                 isSelected ? 'border-gold bg-gold/10' :
                 'border-white/10 bg-bg-card hover:border-white/20'
               }`}
             >
+              {/* Keyboard hint */}
+              {!disabled && (
+                <span className="absolute top-2 left-2 text-[9px] text-frost-white/15 font-mono">
+                  {i + 1}
+                </span>
+              )}
               <span className={`text-xs font-bold block mb-2 ${
                 isCorrect ? 'text-success' :
                 isWrong ? 'text-danger' :
@@ -79,7 +96,7 @@ export default function Compare({ exercise, onAnswer, disabled }) {
         <button
           onClick={handleCheck}
           disabled={selected === null}
-          className="w-full py-3.5 rounded-xl font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90"
+          className="w-full py-3.5 rounded-xl font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 active:scale-[0.98]"
         >
           בדוק
         </button>

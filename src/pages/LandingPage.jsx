@@ -4,7 +4,7 @@ import { useToast } from '../contexts/ToastContext'
 import {
   Brain, BookOpen, Gamepad2, Sparkles, Flame, Heart, Zap,
   RotateCcw, Check, X, ChevronDown, Mail, User, Loader2,
-  Star, Trophy, Target, MessageCircle
+  Star, Trophy, Target, MessageCircle, HelpCircle, Clock, Users
 } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
@@ -215,6 +215,30 @@ function PhoneMockup() {
   )
 }
 
+function FAQItem({ question, answer }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="glass-card overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between p-4 sm:p-5 text-right"
+        aria-expanded={open}
+      >
+        <span className="text-sm font-bold text-frost-white flex items-center gap-2">
+          <HelpCircle className="w-4 h-4 text-gold shrink-0" />
+          {question}
+        </span>
+        <ChevronDown className={`w-4 h-4 text-frost-white/30 transition-transform shrink-0 ${open ? 'rotate-180' : ''}`} />
+      </button>
+      <div className={`transition-all duration-300 overflow-hidden ${open ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+        <p className="px-4 sm:px-5 pb-4 sm:pb-5 text-sm text-frost-white/50 leading-relaxed pr-10">
+          {answer}
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export default function LandingPage() {
   const { loginWithGoogle, loginWithEmail, registerWithEmail, continueAsGuest } = useAuth()
   const toast = useToast()
@@ -344,10 +368,23 @@ export default function LandingPage() {
       {/* ─── Social proof strip ─── */}
       <RevealSection>
         <div className="border-y border-white/5 bg-white/[0.02]">
-          <div className="max-w-6xl mx-auto px-4 py-6 grid grid-cols-3 gap-4 text-center">
+          <div className="max-w-6xl mx-auto px-4 py-6 grid grid-cols-4 gap-4 text-center">
             <CounterStat target={4} label="ספרים זמינים" icon={BookOpen} />
             <CounterStat target={7} label="סוגי תרגילים" icon={Target} />
             <CounterStat target={360} label="תרגילים" icon={Flame} />
+            <CounterStat target={15} label="דקות לספר" icon={Clock} />
+          </div>
+          {/* Trust badges */}
+          <div className="flex items-center justify-center gap-4 pb-5 flex-wrap">
+            <span className="flex items-center gap-1.5 text-[10px] text-frost-white/25">
+              <Check className="w-3 h-3 text-success/50" /> בלי כרטיס אשראי
+            </span>
+            <span className="flex items-center gap-1.5 text-[10px] text-frost-white/25">
+              <Check className="w-3 h-3 text-success/50" /> פרק ראשון חינם
+            </span>
+            <span className="flex items-center gap-1.5 text-[10px] text-frost-white/25">
+              <Check className="w-3 h-3 text-success/50" /> עובד על כל מכשיר
+            </span>
           </div>
         </div>
       </RevealSection>
@@ -732,6 +769,44 @@ export default function LandingPage() {
                 </button>
               </div>
             </RevealSection>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── FAQ ─── */}
+      <section className="py-16 sm:py-24 px-4">
+        <div className="max-w-3xl mx-auto">
+          <RevealSection className="text-center mb-10">
+            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">שאלות נפוצות</h2>
+          </RevealSection>
+
+          <div className="space-y-3">
+            {[
+              {
+                q: 'מה בדיוק MindSet?',
+                a: 'MindSet הופך ספרי פיתוח אישי לשיעורים אינטראקטיביים קצרים — עם תרגילים, ניקוד ומאמן AI. במקום לקרוא ספר שלם, אתה משחק אותו ב-15 דקות ומפנים את העקרונות.',
+              },
+              {
+                q: 'האם אני צריך לקרוא את הספר לפני?',
+                a: 'בכלל לא! MindSet מלמד את עקרונות הספר דרך תרגילים — בלי קריאה פסיבית. אחרי שתסיים, תדע את הרעיונות המרכזיים כאילו קראת את הספר.',
+              },
+              {
+                q: 'כמה זמן לוקח כל שיעור?',
+                a: 'שיעור ממוצע לוקח 3-5 דקות. ספר שלם ניתן לסיים ב-15 דקות. אתה יכול ללמוד בקצב שלך — גם דקה ביום עושה הבדל.',
+              },
+              {
+                q: 'מה כלול בחינם?',
+                a: 'הפרק הראשון מכל ספר, 3 שאילתות AI ביום, מערכת חזרה מרווחת, הישגים, ליגות וכל מנגנוני הגיימיפיקציה. בלי הגבלת זמן.',
+              },
+              {
+                q: 'איך עובד המאמן AI?',
+                a: 'המאמן הוא עוזר חכם שמבין את החומר של כל ספר. אתה יכול לשאול שאלות, לבקש הסברים נוספים או דוגמאות — והוא עונה בעברית בצורה מותאמת.',
+              },
+            ].map(({ q, a }, i) => (
+              <RevealSection key={q} delay={i * 60}>
+                <FAQItem question={q} answer={a} />
+              </RevealSection>
+            ))}
           </div>
         </div>
       </section>
