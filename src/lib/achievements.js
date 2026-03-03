@@ -11,6 +11,10 @@ export const ACHIEVEMENTS = [
   { id: 'perfect_lesson', icon: '💯', title: 'מושלם', description: 'שיעור ללא שגיאות', check: (p) => p.perfectLessons > 0 },
   { id: 'correct_50', icon: '✅', title: 'ידע מוצק', description: '50 תשובות נכונות', check: (p) => p.totalCorrect >= 50 },
   { id: 'correct_100', icon: '🧠', title: 'מוח חד', description: '100 תשובות נכונות', check: (p) => p.totalCorrect >= 100 },
+  { id: 'combo_5', icon: '⚡', title: 'רצף חם', description: 'רצף של 5 תשובות נכונות', check: (p) => (p.comboStreak || 0) >= 5 },
+  { id: 'combo_10', icon: '🔥', title: 'בלתי ניתן לעצירה', description: 'רצף של 10 תשובות נכונות', check: (p) => (p.comboStreak || 0) >= 10 },
+  { id: 'perfect_3', icon: '🏅', title: 'פרפקציוניסט', description: '3 שיעורים מושלמים', check: (p) => (p.perfectLessons || 0) >= 3 },
+  { id: 'xp_2000', icon: '💫', title: 'סופרנובה', description: '2000 נקודות XP', check: (p) => p.xp >= 2000 },
 ]
 
 export function checkNewAchievements(player) {

@@ -15,6 +15,19 @@ export const XP_LESSON_COMPLETE = 50
 export const XP_DAILY_CHALLENGE = 50
 export const XP_PERFECT_LESSON = 25
 
+// Combo system — bonus XP for consecutive correct answers
+export const getComboBonus = (comboStreak) => {
+  if (comboStreak < 2) return 0
+  return Math.min(Math.ceil(comboStreak / 3), 5) // 1-5 bonus XP
+}
+export const getComboLabel = (comboStreak) => {
+  if (comboStreak >= 10) return 'מדהים!'
+  if (comboStreak >= 7) return 'פנטסטי!'
+  if (comboStreak >= 5) return 'מצוין!'
+  if (comboStreak >= 3) return 'רצף!'
+  return ''
+}
+
 export const PRICE_SINGLE_BOOK = 37
 export const PRICE_MASTERY_BUNDLE = 97
 
@@ -38,6 +51,7 @@ export const DEFAULT_PLAYER = {
   completedLessons: {},
   reviewQueue: [],
   perfectLessons: 0,
+  comboStreak: 0,
 }
 
 export const getLevelForXP = (xp) => {

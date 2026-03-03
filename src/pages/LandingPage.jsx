@@ -56,6 +56,120 @@ function RevealSection({ children, className = '', delay = 0 }) {
   )
 }
 
+function PhoneMockup() {
+  const [step, setStep] = useState(0)
+  const [animKey, setAnimKey] = useState(0)
+
+  // Auto-play exercise simulation
+  useEffect(() => {
+    const steps = [
+      { delay: 1500 }, // Show question
+      { delay: 2000 }, // Highlight wrong option
+      { delay: 1200 }, // Clear and highlight correct
+      { delay: 2500 }, // Show feedback
+      { delay: 3000 }, // Reset
+    ]
+
+    let timeout
+    const advance = () => {
+      setStep(s => {
+        const next = (s + 1) % steps.length
+        if (next === 0) setAnimKey(k => k + 1) // Reset animation cycle
+        timeout = setTimeout(advance, steps[next].delay)
+        return next
+      })
+    }
+    timeout = setTimeout(advance, steps[0].delay)
+    return () => clearTimeout(timeout)
+  }, [animKey])
+
+  const options = [
+    { text: 'שיפור של פי 37', correct: true },
+    { text: 'שיפור של 365%', correct: false },
+    { text: 'אין הבדל משמעותי', correct: false },
+  ]
+
+  const progressWidth = step >= 3 ? '80%' : '60%'
+
+  return (
+    <div className="relative w-[280px] sm:w-[300px]">
+      {/* Phone frame */}
+      <div className="rounded-[32px] border-2 border-white/10 bg-bg-base p-3 shadow-2xl shadow-black/40">
+        {/* Screen */}
+        <div className="rounded-[24px] bg-bg-card overflow-hidden">
+          {/* Status bar */}
+          <div className="px-4 py-2 flex items-center justify-between bg-bg-base/50">
+            <div className="flex items-center gap-1.5">
+              <Brain className="w-3.5 h-3.5 text-dusty-aqua" />
+              <span className="text-[10px] font-bold text-frost-white/70">MindSet</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-0.5 text-danger">
+                <Heart className="w-3 h-3 fill-current" />
+                <span className="text-[9px] font-bold">{step === 1 ? '4' : '5'}</span>
+              </div>
+              <div className="flex items-center gap-0.5 text-gold">
+                <Zap className="w-3 h-3 fill-current" />
+                <span className="text-[9px] font-bold">3</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Mock exercise */}
+          <div className="p-4 space-y-3">
+            <div className="text-center">
+              <p className="text-[10px] text-frost-white/40 mb-1">הרגלים אטומים — שיעור 1</p>
+              <div className="w-full h-1 rounded-full bg-white/10 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-700"
+                  style={{ width: progressWidth }}
+                />
+              </div>
+            </div>
+            <p className="text-xs text-frost-white leading-relaxed">
+              מה קורה כש-1% שיפור מצטבר לאורך שנה שלמה?
+            </p>
+
+            {/* Options with animation */}
+            {options.map((opt, i) => {
+              let classes = 'border-white/8 text-frost-white/50'
+              if (step === 1 && i === 1) classes = 'border-danger/40 bg-danger/10 text-danger animate-shake'
+              if (step >= 2 && opt.correct) classes = 'border-success/40 bg-success/10 text-success'
+              if (step >= 2 && i === 1) classes = 'border-white/8 text-frost-white/30'
+
+              return (
+                <div
+                  key={i}
+                  className={`p-2.5 rounded-xl border text-[11px] flex items-center justify-between transition-all duration-300 ${classes}`}
+                >
+                  <span>{opt.text}</span>
+                  {step >= 2 && opt.correct && <Check className="w-3.5 h-3.5" />}
+                </div>
+              )
+            })}
+
+            {/* Feedback — appears at step 3+ */}
+            <div className={`transition-all duration-300 overflow-hidden ${step >= 3 ? 'max-h-24 opacity-100' : 'max-h-0 opacity-0'}`}>
+              <div className="p-2.5 rounded-xl bg-success/5 border border-success/20">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Check className="w-3 h-3 text-success" />
+                  <span className="text-[10px] font-bold text-success">נכון! +10 XP</span>
+                  <span className="text-[9px] text-warning font-bold mr-auto">🔥 x3</span>
+                </div>
+                <p className="text-[9px] text-frost-white/40 leading-relaxed">
+                  כוח הריבית דריבית — 1% ביום = פי 37 בשנה
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Glow behind phone */}
+      <div className="absolute inset-0 -z-10 rounded-[40px] bg-gradient-to-br from-deep-petrol/40 to-gold/20 blur-[40px]" />
+    </div>
+  )
+}
+
 export default function LandingPage() {
   const { loginWithGoogle, loginWithEmail, registerWithEmail, continueAsGuest } = useAuth()
   const toast = useToast()
@@ -174,78 +288,9 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Phone mockup */}
+            {/* Animated Phone mockup */}
             <div className="animate-fade-in flex justify-center" style={{ animationDelay: '0.2s' }}>
-              <div className="relative w-[280px] sm:w-[300px]">
-                {/* Phone frame */}
-                <div className="rounded-[32px] border-2 border-white/10 bg-bg-base p-3 shadow-2xl shadow-black/40">
-                  {/* Screen */}
-                  <div className="rounded-[24px] bg-bg-card overflow-hidden">
-                    {/* Status bar */}
-                    <div className="px-4 py-2 flex items-center justify-between bg-bg-base/50">
-                      <div className="flex items-center gap-1.5">
-                        <Brain className="w-3.5 h-3.5 text-dusty-aqua" />
-                        <span className="text-[10px] font-bold text-frost-white/70">MindSet</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-0.5 text-danger">
-                          <Heart className="w-3 h-3 fill-current" />
-                          <span className="text-[9px] font-bold">5</span>
-                        </div>
-                        <div className="flex items-center gap-0.5 text-gold">
-                          <Zap className="w-3 h-3 fill-current" />
-                          <span className="text-[9px] font-bold">3</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Mock exercise */}
-                    <div className="p-4 space-y-3">
-                      <div className="text-center">
-                        <p className="text-[10px] text-frost-white/40 mb-1">הרגלים אטומים — שיעור 1</p>
-                        <div className="w-full h-1 rounded-full bg-white/10">
-                          <div className="w-3/5 h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua" />
-                        </div>
-                      </div>
-                      <p className="text-xs text-frost-white leading-relaxed">
-                        מה קורה כש-1% שיפור מצטבר לאורך שנה שלמה?
-                      </p>
-
-                      {/* Options */}
-                      {[
-                        { text: 'שיפור של פי 37', correct: true },
-                        { text: 'שיפור של 365%', correct: false },
-                        { text: 'אין הבדל משמעותי', correct: false },
-                      ].map((opt, i) => (
-                        <div
-                          key={i}
-                          className={`p-2.5 rounded-xl border text-[11px] flex items-center justify-between ${
-                            opt.correct
-                              ? 'border-success/40 bg-success/10 text-success'
-                              : 'border-white/8 text-frost-white/50'
-                          }`}
-                        >
-                          <span>{opt.text}</span>
-                          {opt.correct && <Check className="w-3.5 h-3.5" />}
-                        </div>
-                      ))}
-
-                      {/* Feedback */}
-                      <div className="p-2.5 rounded-xl bg-success/5 border border-success/20">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <Check className="w-3 h-3 text-success" />
-                          <span className="text-[10px] font-bold text-success">נכון! +10 XP</span>
-                        </div>
-                        <p className="text-[9px] text-frost-white/40 leading-relaxed">
-                          כוח הריבית דריבית — 1% ביום = פי 37 בשנה
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* Glow behind phone */}
-                <div className="absolute inset-0 -z-10 rounded-[40px] bg-gradient-to-br from-deep-petrol/40 to-gold/20 blur-[40px]" />
-              </div>
+              <PhoneMockup />
             </div>
           </div>
         </div>

@@ -1,9 +1,10 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
 import { useToast } from '../contexts/ToastContext'
 import { useSound } from '../hooks/useSound'
 import { checkNewAchievements } from '../lib/achievements'
+import { getComboBonus, getComboLabel, XP_CORRECT_ANSWER } from '../config/constants'
 import ExerciseRouter from '../components/exercises/ExerciseRouter'
 import FeedbackPanel from '../components/feedback/FeedbackPanel'
 import LessonComplete from '../components/feedback/LessonComplete'
@@ -11,13 +12,65 @@ import LevelUpOverlay from '../components/feedback/LevelUpOverlay'
 import AchievementPopup from '../components/feedback/AchievementPopup'
 import OutOfHeartsModal from '../components/modals/OutOfHeartsModal'
 import PurchaseModal from '../components/modals/PurchaseModal'
-import { X, Heart } from 'lucide-react'
+import { X, Heart, Zap } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
 
 const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves }
+
+// Mini confetti particles for correct answers
+function MiniConfetti({ active }) {
+  if (!active) return null
+  const particles = Array.from({ length: 12 }, (_, i) => {
+    const angle = (i / 12) * 360
+    const rad = (angle * Math.PI) / 180
+    const dist = 40 + Math.random() * 30
+    const tx = Math.cos(rad) * dist
+    const ty = Math.sin(rad) * dist - 20
+    const colors = ['#D4AF37', '#22c55e', '#2F8592', '#E8F1F2', '#f59e0b']
+    return { tx, ty, color: colors[i % colors.length], delay: Math.random() * 0.1, size: 4 + Math.random() * 4 }
+  })
+
+  return (
+    <div className="fixed inset-0 pointer-events-none z-50">
+      <div className="absolute top-1/2 left-1/2">
+        {particles.map((p, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              width: p.size,
+              height: p.size,
+              backgroundColor: p.color,
+              '--tx': `${p.tx}px`,
+              '--ty': `${p.ty}px`,
+              animation: `particleBurst 0.6s ${p.delay}s ease-out forwards`,
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Floating XP indicator
+function XPFloat({ xp, combo }) {
+  if (!xp) return null
+  return (
+    <div className="fixed top-1/3 left-1/2 -translate-x-1/2 z-50 pointer-events-none animate-xp-float">
+      <div className="text-center">
+        <span className="text-gold font-bold text-2xl drop-shadow-lg">+{xp} XP</span>
+        {combo >= 3 && (
+          <span className="block text-sm text-warning font-bold mt-0.5 animate-combo-scale">
+            {getComboLabel(combo)} x{combo}
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
 
 export default function LessonPage() {
   const { bookSlug, chapterIndex, lessonIndex } = useParams()
@@ -39,15 +92,42 @@ export default function LessonPage() {
   const [newAchievement, setNewAchievement] = useState(null)
   const [showOutOfHearts, setShowOutOfHearts] = useState(false)
   const [showPurchase, setShowPurchase] = useState(false)
+  const [transitioning, setTransitioning] = useState(false)
+  const [showConfetti, setShowConfetti] = useState(false)
+  const [floatingXP, setFloatingXP] = useState(null)
 
   const currentExercise = exercises[currentIndex]
   const progress = exercises.length > 0 ? ((currentIndex) / exercises.length) * 100 : 0
+  const comboStreak = player.comboStreak || 0
+
+  // Reset combo at lesson start
+  const hasReset = useRef(false)
+  useEffect(() => {
+    if (!hasReset.current) {
+      updatePlayer(prev => ({ ...prev, comboStreak: 0 }))
+      hasReset.current = true
+    }
+  }, [])
 
   const handleAnswer = useCallback((isCorrect, explanation) => {
     if (isCorrect) {
       play('correct')
+
+      // Calculate XP earned for display
+      const newCombo = (player.comboStreak || 0) + 1
+      const bonus = getComboBonus(newCombo)
+      const totalXP = XP_CORRECT_ANSWER + bonus
+
       onCorrectAnswer()
       setFeedback({ correct: true, explanation })
+
+      // Show mini confetti
+      setShowConfetti(true)
+      setTimeout(() => setShowConfetti(false), 700)
+
+      // Show floating XP
+      setFloatingXP({ xp: totalXP, combo: newCombo })
+      setTimeout(() => setFloatingXP(null), 1300)
     } else {
       play('wrong')
       onWrongAnswer()
@@ -71,7 +151,7 @@ export default function LessonPage() {
         )
         if (exists) return prev
 
-        // Check if hearts ran out (use prev to get accurate count after decrement)
+        // Check if hearts ran out
         if (prev.hearts <= 1) {
           setTimeout(() => setShowOutOfHearts(true), 600)
         }
@@ -79,7 +159,7 @@ export default function LessonPage() {
         return { ...prev, reviewQueue: [...queue, item] }
       })
     }
-  }, [onCorrectAnswer, onWrongAnswer, updatePlayer, play, bookSlug, chapterIndex, lessonIndex, currentIndex])
+  }, [onCorrectAnswer, onWrongAnswer, updatePlayer, play, bookSlug, chapterIndex, lessonIndex, currentIndex, player.comboStreak])
 
   // Watch for level changes
   const [prevLevel, setPrevLevel] = useState(player.level)
@@ -97,7 +177,6 @@ export default function LessonPage() {
     if (newOnes.length > 0 && !newAchievement) {
       play('achievement')
       setNewAchievement(newOnes[0])
-      // Save the earned achievement
       updatePlayer(prev => ({
         ...prev,
         achievements: [...(prev.achievements || []), newOnes[0].id],
@@ -112,7 +191,12 @@ export default function LessonPage() {
       play('lessonComplete')
       setIsComplete(true)
     } else {
-      setCurrentIndex(i => i + 1)
+      // Animate exercise transition
+      setTransitioning(true)
+      setTimeout(() => {
+        setCurrentIndex(i => i + 1)
+        setTransitioning(false)
+      }, 280)
     }
   }, [currentIndex, exercises.length, bookSlug, chapterIndex, lessonIndex, mistakes, completeLesson, play])
 
@@ -136,6 +220,12 @@ export default function LessonPage() {
 
   return (
     <div className="min-h-dvh flex flex-col">
+      {/* Mini confetti on correct answer */}
+      <MiniConfetti active={showConfetti} />
+
+      {/* Floating XP indicator */}
+      {floatingXP && <XPFloat xp={floatingXP.xp} combo={floatingXP.combo} />}
+
       {/* Top bar */}
       <div className="sticky top-0 z-40 bg-bg-base/90 backdrop-blur-lg px-4 py-3 border-b border-white/5">
         <div className="max-w-2xl mx-auto flex items-center gap-3">
@@ -146,13 +236,28 @@ export default function LessonPage() {
             <X className="w-5 h-5 text-frost-white/40" />
           </button>
 
-          {/* Progress bar */}
-          <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+          {/* Progress bar with shimmer */}
+          <div className="flex-1 h-2.5 rounded-full bg-white/5 overflow-hidden relative">
             <div
-              className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-500"
+              className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-700 ease-out relative"
               style={{ width: `${progress}%` }}
-            />
+            >
+              <div className="absolute inset-0 progress-shimmer rounded-full" />
+            </div>
           </div>
+
+          {/* Exercise counter */}
+          <span className="text-[10px] text-frost-white/30 font-medium min-w-[32px] text-center">
+            {currentIndex + 1}/{exercises.length}
+          </span>
+
+          {/* Combo indicator */}
+          {comboStreak >= 3 && (
+            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning/15 border border-warning/30 animate-combo-scale">
+              <Zap className="w-3 h-3 text-warning fill-current" />
+              <span className="text-[10px] font-bold text-warning">x{comboStreak}</span>
+            </div>
+          )}
 
           {/* Hearts */}
           <div className="flex items-center gap-1 text-danger">
@@ -162,15 +267,19 @@ export default function LessonPage() {
         </div>
       </div>
 
-      {/* Exercise */}
+      {/* Exercise with slide animation */}
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
         {currentExercise && (
-          <ExerciseRouter
+          <div
             key={currentIndex}
-            exercise={currentExercise}
-            onAnswer={handleAnswer}
-            disabled={!!feedback}
-          />
+            className={transitioning ? 'animate-exercise-exit' : 'animate-exercise-enter'}
+          >
+            <ExerciseRouter
+              exercise={currentExercise}
+              onAnswer={handleAnswer}
+              disabled={!!feedback}
+            />
+          </div>
         )}
       </div>
 
@@ -180,6 +289,7 @@ export default function LessonPage() {
           correct={feedback.correct}
           explanation={feedback.explanation}
           onContinue={handleContinue}
+          comboStreak={comboStreak}
         />
       )}
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Sparkles } from 'lucide-react'
 
 export default function AchievementPopup({ achievement, onClose }) {
   const [visible, setVisible] = useState(false)
@@ -14,10 +15,18 @@ export default function AchievementPopup({ achievement, onClose }) {
 
   return (
     <div className={`fixed top-20 left-1/2 -translate-x-1/2 z-50 transition-all duration-400 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-      <div className="glass-card px-6 py-4 flex items-center gap-4 border-gold/30 shadow-lg shadow-gold/10">
-        <span className="text-3xl">{achievement.icon}</span>
+      <div className="glass-card px-6 py-4 flex items-center gap-4 border-gold/30 shadow-lg shadow-gold/10 relative overflow-hidden">
+        {/* Shimmer overlay */}
+        <div className="absolute inset-0 progress-shimmer pointer-events-none opacity-30" />
+
+        <div className="relative">
+          <span className="text-3xl block animate-bounce-in">{achievement.icon}</span>
+        </div>
         <div>
-          <p className="text-xs text-gold font-bold">הישג חדש!</p>
+          <p className="text-xs text-gold font-bold flex items-center gap-1">
+            <Sparkles className="w-3 h-3" />
+            הישג חדש!
+          </p>
           <p className="text-sm font-semibold text-frost-white">{achievement.title}</p>
           <p className="text-xs text-frost-white/40">{achievement.description}</p>
         </div>

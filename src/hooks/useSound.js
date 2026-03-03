@@ -46,6 +46,13 @@ export function useSound() {
         case 'click':
           tone(600, 0.08, 'sine', 0.15)
           break
+        case 'combo':
+          tone(700, 0.1, 'sine', 0.2); tone(900, 0.1, 'sine', 0.2, 0.08); tone(1100, 0.15, 'sine', 0.2, 0.16)
+          break
+        case 'dailyComplete':
+          [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, 0.2, 'sine', 0.2, i * 0.1))
+          tone(1319, 0.5, 'sine', 0.15, 0.55)
+          break
       }
     } catch {}
   }, [])

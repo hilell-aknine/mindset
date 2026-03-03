@@ -4,7 +4,7 @@ import { useAuth } from './AuthContext'
 import {
   DEFAULT_PLAYER, MAX_HEARTS, FREE_DAILY_TOKENS,
   HEART_RECOVERY_MINUTES, getLevelForXP, XP_CORRECT_ANSWER,
-  XP_LESSON_COMPLETE, XP_PERFECT_LESSON
+  XP_LESSON_COMPLETE, XP_PERFECT_LESSON, getComboBonus
 } from '../config/constants'
 
 const PlayerContext = createContext(null)
@@ -137,11 +137,16 @@ export function PlayerProvider({ children }) {
 
   // Game actions
   const onCorrectAnswer = useCallback(() => {
-    updatePlayer(prev => ({
-      ...prev,
-      xp: prev.xp + XP_CORRECT_ANSWER,
-      totalCorrect: prev.totalCorrect + 1,
-    }))
+    updatePlayer(prev => {
+      const newCombo = (prev.comboStreak || 0) + 1
+      const comboBonus = getComboBonus(newCombo)
+      return {
+        ...prev,
+        xp: prev.xp + XP_CORRECT_ANSWER + comboBonus,
+        totalCorrect: prev.totalCorrect + 1,
+        comboStreak: newCombo,
+      }
+    })
   }, [updatePlayer])
 
   const onWrongAnswer = useCallback(() => {
@@ -149,6 +154,7 @@ export function PlayerProvider({ children }) {
       ...prev,
       hearts: Math.max(0, prev.hearts - 1),
       totalWrong: prev.totalWrong + 1,
+      comboStreak: 0, // Reset combo on wrong answer
       lastHeartLost: prev.hearts <= 1 ? new Date().toISOString() : (prev.lastHeartLost || new Date().toISOString()),
     }))
   }, [updatePlayer])
@@ -213,6 +219,7 @@ function mapFromDB(row) {
     completedLessons: row.completed_lessons ?? {},
     reviewQueue: row.review_queue ?? [],
     perfectLessons: row.perfect_lessons ?? 0,
+    comboStreak: row.combo_streak ?? 0,
   }
 }
 
@@ -237,5 +244,6 @@ function mapToDB(player) {
     completed_lessons: player.completedLessons,
     review_queue: player.reviewQueue,
     perfect_lessons: player.perfectLessons,
+    combo_streak: player.comboStreak,
   }
 }

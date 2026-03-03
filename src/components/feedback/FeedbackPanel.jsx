@@ -1,6 +1,9 @@
-import { CheckCircle, XCircle } from 'lucide-react'
+import { CheckCircle, XCircle, Zap } from 'lucide-react'
+import { getComboLabel } from '../../config/constants'
 
-export default function FeedbackPanel({ correct, explanation, onContinue }) {
+export default function FeedbackPanel({ correct, explanation, onContinue, comboStreak = 0 }) {
+  const showCombo = correct && comboStreak >= 3
+
   return (
     <div className={`sticky bottom-0 border-t animate-slide-up ${
       correct
@@ -10,14 +13,24 @@ export default function FeedbackPanel({ correct, explanation, onContinue }) {
       <div className="max-w-2xl mx-auto px-4 py-4">
         <div className="flex items-start gap-3 mb-3">
           {correct ? (
-            <CheckCircle className="w-6 h-6 text-success shrink-0 mt-0.5" />
+            <CheckCircle className="w-6 h-6 text-success shrink-0 mt-0.5 animate-bounce-in" />
           ) : (
-            <XCircle className="w-6 h-6 text-danger shrink-0 mt-0.5" />
+            <XCircle className="w-6 h-6 text-danger shrink-0 mt-0.5 animate-shake" />
           )}
-          <div>
-            <p className={`font-bold text-sm ${correct ? 'text-success' : 'text-danger'}`}>
-              {correct ? 'נכון!' : 'לא נכון'}
-            </p>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <p className={`font-bold text-sm ${correct ? 'text-success' : 'text-danger'}`}>
+                {correct ? 'נכון!' : 'לא נכון'}
+              </p>
+              {showCombo && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning/15 border border-warning/30 animate-combo-scale">
+                  <Zap className="w-3 h-3 text-warning fill-current" />
+                  <span className="text-[10px] font-bold text-warning">
+                    {getComboLabel(comboStreak)} x{comboStreak}
+                  </span>
+                </span>
+              )}
+            </div>
             <p className="text-xs text-frost-white/60 mt-1 leading-relaxed">
               {explanation}
             </p>
@@ -26,8 +39,10 @@ export default function FeedbackPanel({ correct, explanation, onContinue }) {
 
         <button
           onClick={onContinue}
-          className={`w-full py-3 rounded-xl font-bold text-sm transition-opacity hover:opacity-90 ${
-            correct ? 'bg-success text-white' : 'bg-danger text-white'
+          className={`w-full py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90 active:scale-[0.98] ${
+            correct
+              ? 'bg-success text-white animate-correct-pulse'
+              : 'bg-danger text-white'
           }`}
         >
           המשך
