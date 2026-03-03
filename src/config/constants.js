@@ -55,6 +55,10 @@ export const DEFAULT_PLAYER = {
   weeklyXP: 0,
   weeklyXPGoal: 250,
   lastWeekReset: null,
+  spotlightSeen: false,
+  totalSpeedBonus: 0,
+  dailyChallengesCompleted: 0,
+  reviewsCompleted: 0,
 }
 
 export const getLevelForXP = (xp) => {

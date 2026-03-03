@@ -1,10 +1,28 @@
-import { useEffect, useRef } from 'react'
-import { CheckCircle, XCircle, Zap } from 'lucide-react'
+import { useEffect, useRef, useMemo } from 'react'
+import { CheckCircle, XCircle, Zap, Lightbulb } from 'lucide-react'
 import { getComboLabel } from '../../config/constants'
+
+const CORRECT_MESSAGES = [
+  'מצוין!', 'נכון מאוד!', 'יופי!', 'בול!', 'כל הכבוד!',
+  'מדהים!', 'בדיוק!', 'אלוף!', 'תותח!', 'ברווו!',
+]
+
+const WRONG_ENCOURAGEMENTS = [
+  'לא נורא, ממשיכים!',
+  'הפעם הבאה תצליח!',
+  'טעויות הן חלק מהלמידה.',
+  'קדימה, אל תוותר!',
+  'כמעט! נסה שוב.',
+]
 
 export default function FeedbackPanel({ correct, explanation, onContinue, comboStreak = 0 }) {
   const showCombo = correct && comboStreak >= 3
   const btnRef = useRef(null)
+
+  const randomMessage = useMemo(() => {
+    const arr = correct ? CORRECT_MESSAGES : WRONG_ENCOURAGEMENTS
+    return arr[Math.floor(Math.random() * arr.length)]
+  }, [correct])
 
   // Auto-focus continue button + keyboard shortcut
   useEffect(() => {
@@ -36,9 +54,9 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
             <XCircle className="w-6 h-6 text-danger shrink-0 mt-0.5 animate-shake" />
           )}
           <div className="flex-1">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <p className={`font-bold text-sm ${correct ? 'text-success' : 'text-danger'}`}>
-                {correct ? 'נכון!' : 'לא נכון'}
+                {randomMessage}
               </p>
               {showCombo && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning/15 border border-warning/30 animate-combo-scale">
@@ -49,9 +67,14 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
                 </span>
               )}
             </div>
-            <p className="text-xs text-frost-white/60 mt-1 leading-relaxed">
-              {explanation}
-            </p>
+            {explanation && (
+              <div className={`flex items-start gap-1.5 mt-1.5 ${!correct ? 'bg-white/3 rounded-lg p-2 -mx-2' : ''}`}>
+                {!correct && <Lightbulb className="w-3.5 h-3.5 text-warning shrink-0 mt-0.5" />}
+                <p className="text-xs text-frost-white/60 leading-relaxed">
+                  {explanation}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 

@@ -69,6 +69,7 @@ export default function DailyChallenge({ onClose }) {
         ...prev,
         xp: prev.xp + XP_DAILY_CHALLENGE,
         dailyChallengeCompleted: today,
+        dailyChallengesCompleted: (prev.dailyChallengesCompleted || 0) + 1,
       }))
       play('lessonComplete')
       setCompleted(true)

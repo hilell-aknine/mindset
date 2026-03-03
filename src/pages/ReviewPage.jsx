@@ -55,10 +55,11 @@ export default function ReviewPage() {
       onCorrectAnswer()
       setFeedback({ correct: true, explanation })
       setLastCorrect(true)
-      // Remove from review queue
+      // Remove from review queue + track reviews completed
       updatePlayer(prev => ({
         ...prev,
         reviewQueue: (prev.reviewQueue || []).filter((_, i) => i !== currentIndex),
+        reviewsCompleted: (prev.reviewsCompleted || 0) + 1,
       }))
       setCompleted(c => c + 1)
     } else {

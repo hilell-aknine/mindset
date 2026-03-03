@@ -4,6 +4,7 @@ import { usePlayer } from '../contexts/PlayerContext'
 import { BookOpen, Trophy, Flame, RotateCcw, BarChart2, Settings, Zap, Target, Crown, X } from 'lucide-react'
 import DailyChallenge from '../components/DailyChallenge'
 import StreakFreeze from '../components/StreakFreeze'
+import FeatureSpotlight from '../components/FeatureSpotlight'
 import { getActiveEvent, WEEKLY_GOALS, STREAK_MILESTONES } from '../lib/events'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
@@ -312,6 +313,9 @@ export default function HomePage() {
       {showDailyChallenge && (
         <DailyChallenge onClose={() => setShowDailyChallenge(false)} />
       )}
+
+      {/* First-time feature spotlight */}
+      <FeatureSpotlight />
     </main>
   )
 }

@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
 import { LEVEL_NAMES, getXPProgress, LEVEL_THRESHOLDS } from '../config/constants'
-import { ACHIEVEMENTS } from '../lib/achievements'
+import { ACHIEVEMENTS, RARITY, CATEGORIES, getAchievementsByCategory } from '../lib/achievements'
 import { getActiveEvent, WEEKLY_GOALS, STREAK_MILESTONES } from '../lib/events'
 import { ArrowRight, Trophy, Target, Flame, Brain, Heart, Zap, TrendingUp, BookOpen, Calendar, Award } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
@@ -225,28 +225,50 @@ export default function StatsPage() {
         <ProgressChart books={BOOKS} completedLessons={player.completedLessons} />
       </div>
 
-      {/* Achievements */}
+      {/* Achievements — categorized */}
       <h3 className="font-display text-lg font-bold text-frost-white mb-4 animate-fade-in" style={{ animationDelay: '0.4s' }}>
         הישגים ({earnedAchievements}/{totalAchievements})
       </h3>
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-        {ACHIEVEMENTS.map((ach, i) => {
-          const earned = (player.achievements || []).includes(ach.id)
-          return (
-            <div
-              key={ach.id}
-              className={`glass-card p-3 text-center animate-fade-in transition-all ${
-                earned ? 'border-gold/20 hover:border-gold/40' : 'opacity-30 grayscale'
-              }`}
-              style={{ animationDelay: `${0.45 + i * 0.03}s` }}
-            >
-              <span className="text-2xl block mb-1">{ach.icon}</span>
-              <p className="text-[11px] font-semibold text-frost-white truncate">{ach.title}</p>
-              <p className="text-[9px] text-frost-white/40 mt-0.5 line-clamp-2">{ach.description}</p>
+      {Object.entries(getAchievementsByCategory(player.achievements || [])).map(([catKey, achs]) => {
+        const cat = CATEGORIES[catKey]
+        const earnedInCat = achs.filter(a => a.earned).length
+        if (achs.length === 0) return null
+        return (
+          <div key={catKey} className="mb-5 animate-fade-in" style={{ animationDelay: '0.45s' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-sm">{cat.icon}</span>
+              <span className="text-xs font-bold text-frost-white/60">{cat.label}</span>
+              <span className="text-[10px] text-frost-white/30">{earnedInCat}/{achs.length}</span>
             </div>
-          )
-        })}
-      </div>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+              {achs.map(ach => {
+                const rarity = RARITY[ach.rarity || 'common']
+                return (
+                  <div
+                    key={ach.id}
+                    className={`glass-card p-3 text-center transition-all ${
+                      ach.earned
+                        ? `${rarity.border} hover:border-gold/40`
+                        : 'opacity-25 grayscale'
+                    }`}
+                  >
+                    <span className="text-2xl block mb-1">{ach.icon}</span>
+                    <p className="text-[11px] font-semibold text-frost-white truncate">{ach.title}</p>
+                    {ach.earned && (
+                      <span className={`text-[8px] px-1.5 py-0.5 rounded-full ${rarity.bg} ${rarity.color} font-bold inline-block mt-1`}>
+                        {rarity.label}
+                      </span>
+                    )}
+                    {!ach.earned && (
+                      <p className="text-[9px] text-frost-white/40 mt-0.5 line-clamp-1">{ach.description}</p>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )
+      })}
     </main>
   )
 }

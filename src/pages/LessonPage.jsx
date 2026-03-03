@@ -153,6 +153,11 @@ export default function LessonPage() {
 
       if (speedBonus > 0) {
         setTotalSpeedBonus(prev => prev + speedBonus)
+        // Track cumulative speed bonus
+        updatePlayer(prev => ({
+          ...prev,
+          totalSpeedBonus: (prev.totalSpeedBonus || 0) + speedBonus,
+        }))
       }
 
       onCorrectAnswer()

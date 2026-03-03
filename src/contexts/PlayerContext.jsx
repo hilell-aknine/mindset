@@ -261,6 +261,10 @@ function mapFromDB(row) {
     weeklyXP: row.weekly_xp ?? 0,
     weeklyXPGoal: row.weekly_xp_goal ?? 250,
     lastWeekReset: row.last_week_reset ?? null,
+    spotlightSeen: row.spotlight_seen ?? false,
+    totalSpeedBonus: row.total_speed_bonus ?? 0,
+    dailyChallengesCompleted: row.daily_challenges_completed ?? 0,
+    reviewsCompleted: row.reviews_completed ?? 0,
   }
 }
 
@@ -289,5 +293,9 @@ function mapToDB(player) {
     weekly_xp: player.weeklyXP,
     weekly_xp_goal: player.weeklyXPGoal,
     last_week_reset: player.lastWeekReset,
+    spotlight_seen: player.spotlightSeen,
+    total_speed_bonus: player.totalSpeedBonus,
+    daily_challenges_completed: player.dailyChallengesCompleted,
+    reviews_completed: player.reviewsCompleted,
   }
 }

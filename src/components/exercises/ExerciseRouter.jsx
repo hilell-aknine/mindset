@@ -17,8 +17,19 @@ const COMPONENTS = {
   'identify': Identify,
 }
 
+const TYPE_LABELS = {
+  'multiple-choice': { label: 'בחירה מרובה', emoji: '🔘' },
+  'fill-blank': { label: 'השלם את המשפט', emoji: '✏️' },
+  'order': { label: 'סדר נכון', emoji: '📋' },
+  'compare': { label: 'השוואה', emoji: '⚖️' },
+  'match': { label: 'התאמה', emoji: '🔗' },
+  'improve': { label: 'שיפור', emoji: '💡' },
+  'identify': { label: 'זיהוי', emoji: '🔍' },
+}
+
 export default function ExerciseRouter({ exercise, onAnswer, disabled, tokens, onUseToken }) {
   const Component = COMPONENTS[exercise.type]
+  const typeInfo = TYPE_LABELS[exercise.type]
 
   if (!Component) {
     return (
@@ -30,6 +41,14 @@ export default function ExerciseRouter({ exercise, onAnswer, disabled, tokens, o
 
   return (
     <div>
+      {/* Exercise type badge */}
+      {typeInfo && (
+        <div className="flex items-center gap-1.5 mb-3 animate-fade-in">
+          <span className="text-sm">{typeInfo.emoji}</span>
+          <span className="text-[10px] font-bold text-frost-white/30 tracking-wide">{typeInfo.label}</span>
+        </div>
+      )}
+
       {/* Hint button — only show when not answered yet and tokens available */}
       {!disabled && tokens != null && (
         <HintButton
