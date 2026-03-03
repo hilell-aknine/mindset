@@ -1,0 +1,766 @@
+import { useState, useEffect, useRef } from 'react'
+import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../contexts/ToastContext'
+import {
+  Brain, BookOpen, Gamepad2, Sparkles, Flame, Heart, Zap,
+  RotateCcw, Check, X, ChevronDown, Mail, User, Loader2,
+  Star, Trophy, Target, MessageCircle
+} from 'lucide-react'
+import strengthsFinder from '../data/books/strengths-finder.json'
+import atomicHabits from '../data/books/atomic-habits.json'
+import happyChemicals from '../data/books/happy-chemicals.json'
+import nextFiveMoves from '../data/books/next-five-moves.json'
+
+const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves]
+
+const EXERCISE_TYPES = [
+  { name: 'בחירה מרובה', icon: '🎯' },
+  { name: 'השלמת חסר', icon: '✏️' },
+  { name: 'סידור', icon: '🔢' },
+  { name: 'השוואה', icon: '⚖️' },
+  { name: 'התאמה', icon: '🔗' },
+  { name: 'שיפור', icon: '💡' },
+  { name: 'זיהוי', icon: '🔍' },
+]
+
+function useScrollReveal() {
+  const ref = useRef(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add('revealed')
+          observer.unobserve(el)
+        }
+      },
+      { threshold: 0.15 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+  return ref
+}
+
+function RevealSection({ children, className = '', delay = 0 }) {
+  const ref = useScrollReveal()
+  return (
+    <div
+      ref={ref}
+      className={`scroll-reveal ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  )
+}
+
+export default function LandingPage() {
+  const { loginWithGoogle, loginWithEmail, registerWithEmail, continueAsGuest } = useAuth()
+  const toast = useToast()
+  const [authMode, setAuthMode] = useState(null) // null | 'main' | 'email-login' | 'email-register'
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const ctaRef = useRef(null)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  const scrollToCTA = () => {
+    ctaRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const openAuth = () => setAuthMode('main')
+  const closeAuth = () => { setAuthMode(null); setEmail(''); setPassword('') }
+
+  const handleGoogle = async () => {
+    try {
+      setLoading(true)
+      await loginWithGoogle()
+    } catch {
+      toast.error('שגיאה בהתחברות עם Google')
+      setLoading(false)
+    }
+  }
+
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault()
+    if (!email || !password) return toast.error('נא למלא את כל השדות')
+    try {
+      setLoading(true)
+      if (authMode === 'email-login') {
+        await loginWithEmail(email, password)
+      } else {
+        await registerWithEmail(email, password)
+        toast.success('נרשמת בהצלחה! בדוק את המייל לאישור')
+      }
+    } catch (err) {
+      toast.error(err.message || 'שגיאה בהתחברות')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGuest = () => continueAsGuest()
+
+  return (
+    <div className="min-h-dvh bg-bg-base text-frost-white overflow-x-hidden">
+
+      {/* ─── Navbar ─── */}
+      <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? 'bg-bg-base/90 backdrop-blur-xl border-b border-white/5 shadow-lg shadow-black/20' : ''}`}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center">
+              <Brain className="w-5 h-5 text-frost-white" />
+            </div>
+            <span className="font-display font-bold text-lg text-frost-white">MindSet</span>
+          </div>
+          <button
+            onClick={openAuth}
+            className="px-5 py-2 rounded-xl bg-gold/10 border border-gold/30 text-gold text-sm font-medium hover:bg-gold/20 transition-colors"
+          >
+            התחבר
+          </button>
+        </div>
+      </nav>
+
+      {/* ─── Hero ─── */}
+      <section className="relative pt-28 sm:pt-36 pb-16 sm:pb-24 px-4">
+        {/* Background orbs */}
+        <div className="absolute top-10 right-0 w-[500px] h-[500px] rounded-full bg-deep-petrol/25 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-gold/8 blur-[100px] pointer-events-none" />
+
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+            {/* Text */}
+            <div className="text-center lg:text-right animate-fade-in">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold/10 border border-gold/20 text-gold text-xs font-medium mb-6">
+                <Sparkles className="w-3.5 h-3.5" />
+                פרק ראשון חינם — בלי כרטיס אשראי
+              </div>
+              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-5">
+                מה אם יכולת{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-l from-gold to-dusty-aqua">
+                  לשחק
+                </span>{' '}
+                ספר
+                <br />
+                במקום לקרוא אותו?
+              </h1>
+              <p className="text-frost-white/60 text-base sm:text-lg leading-relaxed max-w-lg mx-auto lg:mx-0 mb-8">
+                MindSet הופך ספרי פיתוח אישי לשיעורים אינטראקטיביים עם תרגילים, ניקוד ומאמן AI —
+                כמו Duolingo, רק לספרים.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center gap-3 justify-center lg:justify-start">
+                <button
+                  onClick={openAuth}
+                  className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base font-bold text-base hover:brightness-110 transition-all animate-pulse-glow"
+                >
+                  התחל ללמוד בחינם
+                </button>
+                <button
+                  onClick={scrollToCTA}
+                  className="w-full sm:w-auto px-8 py-4 rounded-2xl border border-white/10 text-frost-white/70 text-sm hover:border-white/20 hover:text-frost-white transition-all flex items-center justify-center gap-2"
+                >
+                  <ChevronDown className="w-4 h-4" />
+                  גלה עוד
+                </button>
+              </div>
+            </div>
+
+            {/* Phone mockup */}
+            <div className="animate-fade-in flex justify-center" style={{ animationDelay: '0.2s' }}>
+              <div className="relative w-[280px] sm:w-[300px]">
+                {/* Phone frame */}
+                <div className="rounded-[32px] border-2 border-white/10 bg-bg-base p-3 shadow-2xl shadow-black/40">
+                  {/* Screen */}
+                  <div className="rounded-[24px] bg-bg-card overflow-hidden">
+                    {/* Status bar */}
+                    <div className="px-4 py-2 flex items-center justify-between bg-bg-base/50">
+                      <div className="flex items-center gap-1.5">
+                        <Brain className="w-3.5 h-3.5 text-dusty-aqua" />
+                        <span className="text-[10px] font-bold text-frost-white/70">MindSet</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-0.5 text-danger">
+                          <Heart className="w-3 h-3 fill-current" />
+                          <span className="text-[9px] font-bold">5</span>
+                        </div>
+                        <div className="flex items-center gap-0.5 text-gold">
+                          <Zap className="w-3 h-3 fill-current" />
+                          <span className="text-[9px] font-bold">3</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Mock exercise */}
+                    <div className="p-4 space-y-3">
+                      <div className="text-center">
+                        <p className="text-[10px] text-frost-white/40 mb-1">הרגלים אטומים — שיעור 1</p>
+                        <div className="w-full h-1 rounded-full bg-white/10">
+                          <div className="w-3/5 h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua" />
+                        </div>
+                      </div>
+                      <p className="text-xs text-frost-white leading-relaxed">
+                        מה קורה כש-1% שיפור מצטבר לאורך שנה שלמה?
+                      </p>
+
+                      {/* Options */}
+                      {[
+                        { text: 'שיפור של פי 37', correct: true },
+                        { text: 'שיפור של 365%', correct: false },
+                        { text: 'אין הבדל משמעותי', correct: false },
+                      ].map((opt, i) => (
+                        <div
+                          key={i}
+                          className={`p-2.5 rounded-xl border text-[11px] flex items-center justify-between ${
+                            opt.correct
+                              ? 'border-success/40 bg-success/10 text-success'
+                              : 'border-white/8 text-frost-white/50'
+                          }`}
+                        >
+                          <span>{opt.text}</span>
+                          {opt.correct && <Check className="w-3.5 h-3.5" />}
+                        </div>
+                      ))}
+
+                      {/* Feedback */}
+                      <div className="p-2.5 rounded-xl bg-success/5 border border-success/20">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <Check className="w-3 h-3 text-success" />
+                          <span className="text-[10px] font-bold text-success">נכון! +10 XP</span>
+                        </div>
+                        <p className="text-[9px] text-frost-white/40 leading-relaxed">
+                          כוח הריבית דריבית — 1% ביום = פי 37 בשנה
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* Glow behind phone */}
+                <div className="absolute inset-0 -z-10 rounded-[40px] bg-gradient-to-br from-deep-petrol/40 to-gold/20 blur-[40px]" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Social proof strip ─── */}
+      <RevealSection>
+        <div className="border-y border-white/5 bg-white/[0.02]">
+          <div className="max-w-6xl mx-auto px-4 py-6 grid grid-cols-3 gap-4 text-center">
+            {[
+              { num: '4', label: 'ספרים זמינים', icon: BookOpen },
+              { num: '7', label: 'סוגי תרגילים', icon: Target },
+              { num: '15 דק\'', label: 'לכל ספר', icon: Flame },
+            ].map(({ num, label, icon: Icon }) => (
+              <div key={label} className="flex flex-col items-center gap-1">
+                <Icon className="w-5 h-5 text-gold mb-1" />
+                <span className="font-display text-2xl sm:text-3xl font-bold text-frost-white">{num}</span>
+                <span className="text-[11px] sm:text-xs text-frost-white/40">{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </RevealSection>
+
+      {/* ─── How It Works ─── */}
+      <section className="py-16 sm:py-24 px-4">
+        <div className="max-w-4xl mx-auto">
+          <RevealSection className="text-center mb-12">
+            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">איך זה עובד?</h2>
+            <p className="text-frost-white/50 text-sm sm:text-base">שלושה צעדים לידע אמיתי</p>
+          </RevealSection>
+
+          <div className="grid sm:grid-cols-3 gap-6 sm:gap-8">
+            {[
+              {
+                step: 1,
+                icon: BookOpen,
+                title: 'בחר ספר',
+                desc: 'גלה ספרי פיתוח אישי מובילים — כל ספר מחולק לפרקים ושיעורים קצרים',
+              },
+              {
+                step: 2,
+                icon: Gamepad2,
+                title: 'שחק שיעורים',
+                desc: '7 סוגי תרגילים אינטראקטיביים שמפעילים את המוח — לא קריאה פסיבית',
+              },
+              {
+                step: 3,
+                icon: Brain,
+                title: 'תקבע ידע',
+                desc: 'חזרה מרווחת, מאמן AI אישי ומערכת ניקוד — הידע נשאר לטווח ארוך',
+              },
+            ].map(({ step, icon: Icon, title, desc }, i) => (
+              <RevealSection key={step} delay={i * 120}>
+                <div className="glass-card p-6 text-center relative group">
+                  {/* Step number */}
+                  <div className="absolute -top-4 right-1/2 translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-br from-gold to-gold/70 flex items-center justify-center text-bg-base font-bold text-sm">
+                    {step}
+                  </div>
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center mx-auto mt-3 mb-4 group-hover:scale-110 transition-transform">
+                    <Icon className="w-7 h-7 text-frost-white" />
+                  </div>
+                  <h3 className="font-display text-xl font-bold mb-2">{title}</h3>
+                  <p className="text-sm text-frost-white/50 leading-relaxed">{desc}</p>
+                </div>
+              </RevealSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Book Showcase ─── */}
+      <section className="py-16 sm:py-24 px-4 relative">
+        <div className="absolute top-1/2 left-0 w-[400px] h-[400px] rounded-full bg-deep-petrol/15 blur-[100px] pointer-events-none -translate-y-1/2" />
+
+        <div className="max-w-5xl mx-auto relative z-10">
+          <RevealSection className="text-center mb-12">
+            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">הספרים שלנו</h2>
+            <p className="text-frost-white/50 text-sm sm:text-base">4 ספרים. 15 דקות כל אחד. ידע אמיתי.</p>
+          </RevealSection>
+
+          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+            {BOOKS.map((book, i) => {
+              const totalLessons = book.chapters.reduce((acc, ch) => acc + ch.lessons.length, 0)
+              const freeChapter = book.chapters.find(ch => ch.isFree)
+              return (
+                <RevealSection key={book.slug} delay={i * 100}>
+                  <div className="glass-card p-5 flex items-start gap-4 group hover:border-gold/20 transition-all">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-3xl shrink-0 group-hover:scale-105 transition-transform">
+                      {book.icon}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-display text-lg font-bold text-frost-white truncate">{book.title}</h3>
+                      <p className="text-xs text-frost-white/40 mt-0.5">{book.author}</p>
+                      <div className="flex items-center gap-2 mt-2.5 flex-wrap">
+                        <span className="px-2 py-0.5 rounded-full bg-success/10 border border-success/20 text-success text-[10px] font-medium">
+                          פרק ראשון חינם
+                        </span>
+                        <span className="text-[10px] text-frost-white/30">
+                          {book.chapters.length} פרקים · {totalLessons} שיעורים
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </RevealSection>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Exercise Types Preview ─── */}
+      <section className="py-16 sm:py-24 px-4 bg-white/[0.01] border-y border-white/5">
+        <div className="max-w-5xl mx-auto">
+          <RevealSection className="text-center mb-10">
+            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">
+              לא קריאה פסיבית —{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-l from-gold to-dusty-aqua">
+                למידה פעילה
+              </span>
+            </h2>
+            <p className="text-frost-white/50 text-sm sm:text-base">7 סוגי תרגילים שמפעילים את המוח ומבטיחים שהידע נקלט</p>
+          </RevealSection>
+
+          <RevealSection delay={100}>
+            <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 mb-10">
+              {EXERCISE_TYPES.map(({ name, icon }) => (
+                <div
+                  key={name}
+                  className="glass-card px-4 py-2.5 flex items-center gap-2 text-sm text-frost-white/70 hover:border-gold/20 hover:text-frost-white transition-all cursor-default"
+                >
+                  <span className="text-base">{icon}</span>
+                  {name}
+                </div>
+              ))}
+            </div>
+          </RevealSection>
+
+          {/* Mini exercise demo */}
+          <RevealSection delay={200}>
+            <div className="max-w-md mx-auto">
+              <div className="glass-card p-5 sm:p-6 border-gold/10">
+                <p className="text-xs text-gold mb-3 flex items-center gap-1.5">
+                  <Target className="w-3.5 h-3.5" />
+                  תרגיל לדוגמה — השלמת חסר
+                </p>
+                <p className="text-sm text-frost-white leading-relaxed mb-4">
+                  לפי עקרון הריבית דריבית, שיפור של 1% בכל יום לאורך שנה שלמה יוביל לשיפור כולל של פי{' '}
+                  <span className="inline-flex items-center gap-1 px-3 py-0.5 rounded-lg bg-gold/15 border border-gold/30 text-gold font-bold text-sm mx-0.5">
+                    37
+                  </span>
+                </p>
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-success/5 border border-success/20">
+                  <Check className="w-4 h-4 text-success shrink-0" />
+                  <p className="text-xs text-frost-white/50">מעולה! זו בדיוק התשובה. עכשיו תזכור את זה לתמיד.</p>
+                </div>
+              </div>
+            </div>
+          </RevealSection>
+        </div>
+      </section>
+
+      {/* ─── Features ─── */}
+      <section className="py-16 sm:py-24 px-4">
+        <div className="max-w-5xl mx-auto">
+          <RevealSection className="text-center mb-12">
+            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">למה MindSet?</h2>
+            <p className="text-frost-white/50 text-sm sm:text-base">כל מה שצריך כדי באמת ללמוד ספר — לא רק לקרוא אותו</p>
+          </RevealSection>
+
+          <div className="grid sm:grid-cols-2 gap-4 sm:gap-5">
+            {[
+              {
+                icon: MessageCircle,
+                color: 'text-dusty-aqua',
+                bg: 'bg-dusty-aqua/10',
+                title: 'מאמן AI אישי',
+                desc: 'שאל שאלות על החומר וקבל תשובות מותאמות אישית — כאילו יש לך מרצה פרטי',
+              },
+              {
+                icon: Flame,
+                color: 'text-warning',
+                bg: 'bg-warning/10',
+                title: 'רצף ימים',
+                desc: 'מערכת Streak כמו Duolingo — כל יום שאתה לומד מחזק את הרצף ואת המוטיבציה',
+              },
+              {
+                icon: RotateCcw,
+                color: 'text-gold',
+                bg: 'bg-gold/10',
+                title: 'חזרה מרווחת',
+                desc: 'המערכת מזהה תרגילים שטעית בהם ומחזירה אותם בזמן הנכון לזיכרון ארוך טווח',
+              },
+              {
+                icon: Heart,
+                color: 'text-danger',
+                bg: 'bg-danger/10',
+                title: '5 לבבות',
+                desc: 'כל טעות עולה לב — כמו במשחק אמיתי. זה יוצר ריכוז, לחץ חיובי ולמידה עמוקה',
+              },
+              {
+                icon: Trophy,
+                color: 'text-gold',
+                bg: 'bg-gold/10',
+                title: 'הישגים ורמות',
+                desc: 'צבור XP, עלה רמות, פתח הישגים — מ"מתחיל סקרן" עד "אגדת MindSet"',
+              },
+              {
+                icon: Zap,
+                color: 'text-dusty-aqua',
+                bg: 'bg-dusty-aqua/10',
+                title: 'טוקנים יומיים',
+                desc: '3 שאילתות AI בחינם כל יום — מספיק כדי לטעום את הכוח של לימוד מונחה',
+              },
+            ].map(({ icon: Icon, color, bg, title, desc }, i) => (
+              <RevealSection key={title} delay={i * 80}>
+                <div className="glass-card p-5 flex gap-4 group hover:border-gold/15 transition-all">
+                  <div className={`w-11 h-11 rounded-xl ${bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
+                    <Icon className={`w-5 h-5 ${color}`} />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-base font-bold mb-1">{title}</h3>
+                    <p className="text-sm text-frost-white/45 leading-relaxed">{desc}</p>
+                  </div>
+                </div>
+              </RevealSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Pricing ─── */}
+      <section className="py-16 sm:py-24 px-4 bg-white/[0.01] border-y border-white/5">
+        <div className="max-w-4xl mx-auto">
+          <RevealSection className="text-center mb-12">
+            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">תוכניות ומחירים</h2>
+            <p className="text-frost-white/50 text-sm sm:text-base">התחל בחינם — שדרג כשתרצה</p>
+          </RevealSection>
+
+          <div className="grid sm:grid-cols-3 gap-4 sm:gap-5">
+            {/* Free */}
+            <RevealSection delay={0}>
+              <div className="glass-card p-6 text-center h-full flex flex-col">
+                <div className="w-12 h-12 rounded-2xl bg-frost-white/5 flex items-center justify-center mx-auto mb-4">
+                  <BookOpen className="w-6 h-6 text-frost-white/60" />
+                </div>
+                <h3 className="font-display text-xl font-bold mb-1">חינם</h3>
+                <p className="text-3xl font-bold text-frost-white mb-1">₪0</p>
+                <p className="text-xs text-frost-white/40 mb-5">לתמיד</p>
+                <ul className="space-y-2.5 text-sm text-frost-white/60 text-right mb-6 flex-1">
+                  {['פרק ראשון מכל ספר', '3 שאילתות AI ביום', 'מערכת חזרה מרווחת', 'הישגים ורמות'].map(item => (
+                    <li key={item} className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-success shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={openAuth}
+                  className="w-full py-3 rounded-xl border border-white/10 text-frost-white/70 text-sm font-medium hover:border-white/20 hover:text-frost-white transition-all"
+                >
+                  התחל בחינם
+                </button>
+              </div>
+            </RevealSection>
+
+            {/* Single book */}
+            <RevealSection delay={120}>
+              <div className="glass-card p-6 text-center h-full flex flex-col">
+                <div className="w-12 h-12 rounded-2xl bg-dusty-aqua/10 flex items-center justify-center mx-auto mb-4">
+                  <BookOpen className="w-6 h-6 text-dusty-aqua" />
+                </div>
+                <h3 className="font-display text-xl font-bold mb-1">ספר בודד</h3>
+                <p className="text-3xl font-bold text-frost-white mb-1">₪37</p>
+                <p className="text-xs text-frost-white/40 mb-5">חד פעמי</p>
+                <ul className="space-y-2.5 text-sm text-frost-white/60 text-right mb-6 flex-1">
+                  {['כל הפרקים של ספר אחד', '50 שאילתות AI', 'חזרה מרווחת מלאה', 'חוברת עבודה'].map(item => (
+                    <li key={item} className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-success shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={openAuth}
+                  className="w-full py-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white text-sm font-medium hover:opacity-90 transition-opacity"
+                >
+                  בחר ספר
+                </button>
+              </div>
+            </RevealSection>
+
+            {/* Bundle */}
+            <RevealSection delay={240}>
+              <div className="glass-card p-6 text-center relative border-gold/30 h-full flex flex-col">
+                <div className="absolute -top-3 right-1/2 translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-l from-gold to-[#e8c84a] text-bg-base text-[11px] font-bold whitespace-nowrap">
+                  הכי משתלם
+                </div>
+                <div className="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center mx-auto mb-4">
+                  <Star className="w-6 h-6 text-gold" />
+                </div>
+                <h3 className="font-display text-xl font-bold mb-1">באנדל מאסטר</h3>
+                <p className="text-3xl font-bold text-gold mb-1">₪97</p>
+                <p className="text-xs text-frost-white/40 mb-5">חד פעמי — כל הספרים</p>
+                <ul className="space-y-2.5 text-sm text-frost-white/60 text-right mb-6 flex-1">
+                  {['כל הספרים (4+)', 'AI ללא הגבלה', 'חוברות עבודה', 'עדכונים וספרים חדשים'].map(item => (
+                    <li key={item} className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-gold shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={openAuth}
+                  className="w-full py-3 rounded-xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base font-bold text-sm hover:brightness-110 transition-all"
+                >
+                  קנה באנדל
+                </button>
+              </div>
+            </RevealSection>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Final CTA + Auth ─── */}
+      <section ref={ctaRef} className="py-16 sm:py-24 px-4 relative">
+        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] rounded-full bg-deep-petrol/20 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] rounded-full bg-gold/8 blur-[100px] pointer-events-none" />
+
+        <div className="max-w-sm mx-auto relative z-10 text-center">
+          <RevealSection>
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua mb-5">
+              <Brain className="w-8 h-8 text-frost-white" />
+            </div>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">מוכן להתחיל?</h2>
+            <p className="text-frost-white/50 text-sm mb-8">הצטרף בחינם ותתחיל לשחק את הספר הראשון שלך עוד היום</p>
+
+            {/* Inline auth */}
+            <div className="space-y-3">
+              <button
+                onClick={handleGoogle}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-xl bg-white text-gray-800 font-medium text-sm hover:bg-gray-100 transition-colors disabled:opacity-50"
+              >
+                {loading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <svg className="w-5 h-5" viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                  </svg>
+                )}
+                התחבר עם Google
+              </button>
+
+              <button
+                onClick={() => setAuthMode('email-login')}
+                className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-xl bg-bg-card border border-white/10 text-frost-white font-medium text-sm hover:bg-bg-card-hover transition-colors"
+              >
+                <Mail className="w-5 h-5" />
+                התחבר עם אימייל
+              </button>
+
+              <div className="flex items-center gap-3 my-1">
+                <div className="flex-1 h-px bg-white/10" />
+                <span className="text-xs text-frost-white/40">או</span>
+                <div className="flex-1 h-px bg-white/10" />
+              </div>
+
+              <button
+                onClick={handleGuest}
+                className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-xl border border-white/10 text-frost-white/60 text-sm hover:text-frost-white hover:border-white/20 transition-colors"
+              >
+                <User className="w-5 h-5" />
+                המשך כאורח
+              </button>
+
+              <p className="text-[11px] text-frost-white/25 mt-3">
+                במצב אורח ההתקדמות נשמרת רק במכשיר זה
+              </p>
+            </div>
+          </RevealSection>
+        </div>
+      </section>
+
+      {/* ─── Footer ─── */}
+      <footer className="py-5 text-center border-t border-white/5">
+        <p className="text-[11px] text-frost-white/25 px-4">
+          מדריך לא רשמי. אינו קשור למחברים המקוריים.
+          <span className="mx-2">|</span>
+          MindSet &copy; {new Date().getFullYear()}
+        </p>
+      </footer>
+
+      {/* ─── Auth Modal (triggered by navbar "התחבר") ─── */}
+      {authMode && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeAuth} />
+
+          <div className="relative z-10 w-full max-w-sm animate-slide-up">
+            <div className="glass-card p-6 border-white/10 bg-bg-base/95 backdrop-blur-xl">
+              {/* Close */}
+              <button onClick={closeAuth} className="absolute top-4 left-4 text-frost-white/40 hover:text-frost-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua mb-3">
+                  <Brain className="w-7 h-7 text-frost-white" />
+                </div>
+                <h3 className="font-display text-2xl font-bold">ברוך הבא</h3>
+                <p className="text-frost-white/50 text-sm mt-1">התחבר כדי להתחיל ללמוד</p>
+              </div>
+
+              {authMode === 'main' && (
+                <div className="space-y-3">
+                  <button
+                    onClick={handleGoogle}
+                    disabled={loading}
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-xl bg-white text-gray-800 font-medium text-sm hover:bg-gray-100 transition-colors disabled:opacity-50"
+                  >
+                    {loading ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <svg className="w-5 h-5" viewBox="0 0 24 24">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                      </svg>
+                    )}
+                    התחבר עם Google
+                  </button>
+
+                  <button
+                    onClick={() => setAuthMode('email-login')}
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-xl bg-bg-card border border-white/10 text-frost-white font-medium text-sm hover:bg-bg-card-hover transition-colors"
+                  >
+                    <Mail className="w-5 h-5" />
+                    התחבר עם אימייל
+                  </button>
+
+                  <div className="flex items-center gap-3 my-1">
+                    <div className="flex-1 h-px bg-white/10" />
+                    <span className="text-xs text-frost-white/40">או</span>
+                    <div className="flex-1 h-px bg-white/10" />
+                  </div>
+
+                  <button
+                    onClick={handleGuest}
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-xl border border-white/10 text-frost-white/60 text-sm hover:text-frost-white hover:border-white/20 transition-colors"
+                  >
+                    <User className="w-5 h-5" />
+                    המשך כאורח
+                  </button>
+
+                  <p className="text-center text-[11px] text-frost-white/25 mt-3">
+                    במצב אורח ההתקדמות נשמרת רק במכשיר זה
+                  </p>
+                </div>
+              )}
+
+              {(authMode === 'email-login' || authMode === 'email-register') && (
+                <form onSubmit={handleEmailSubmit} className="space-y-3">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="אימייל"
+                    className="w-full px-4 py-3 rounded-xl bg-bg-card border border-white/10 text-frost-white placeholder:text-frost-white/30 text-sm focus:border-gold/50 focus:outline-none transition-colors"
+                    dir="ltr"
+                  />
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="סיסמה"
+                    className="w-full px-4 py-3 rounded-xl bg-bg-card border border-white/10 text-frost-white placeholder:text-frost-white/30 text-sm focus:border-gold/50 focus:outline-none transition-colors"
+                    dir="ltr"
+                  />
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full px-6 py-3.5 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
+                  >
+                    {loading ? (
+                      <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                    ) : authMode === 'email-login' ? 'התחבר' : 'הירשם'}
+                  </button>
+
+                  <div className="flex justify-between text-xs text-frost-white/40">
+                    <button
+                      type="button"
+                      onClick={() => setAuthMode(authMode === 'email-login' ? 'email-register' : 'email-login')}
+                      className="hover:text-gold transition-colors"
+                    >
+                      {authMode === 'email-login' ? 'עדיין אין לך חשבון? הירשם' : 'יש לך חשבון? התחבר'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAuthMode('main')}
+                      className="hover:text-gold transition-colors"
+                    >
+                      חזרה
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

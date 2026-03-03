@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
-import AuthScreen from './components/auth/AuthScreen'
+import LandingPage from './pages/LandingPage'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import Toast from './components/shared/Toast'
@@ -41,7 +41,7 @@ export default function App() {
           path="/"
           element={
             loading ? <Spinner size="lg" text="טוען..." /> :
-            isAuthenticated ? <Navigate to="/home" replace /> : <AuthScreen />
+            isAuthenticated ? <Navigate to="/home" replace /> : <LandingPage />
           }
         />
         <Route
