@@ -73,6 +73,23 @@ export default function FeatureSpotlight() {
     }
   }, [currentTip, dismiss])
 
+  // Keyboard navigation
+  useEffect(() => {
+    if (!visible) return
+    const handler = (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        next()
+      }
+      if (e.key === 'Escape') dismiss()
+      if (e.key === 'ArrowRight') {
+        if (currentTip > 0) setCurrentTip(t => t - 1)
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [visible, currentTip, next, dismiss])
+
   if (!shouldShow || !visible) return null
 
   const tip = TIPS[currentTip]
@@ -86,6 +103,7 @@ export default function FeatureSpotlight() {
           exiting ? 'opacity-0' : 'opacity-100'
         }`}
         onClick={dismiss}
+        aria-hidden="true"
       />
 
       {/* Tooltip card */}
@@ -94,7 +112,7 @@ export default function FeatureSpotlight() {
           exiting ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'
         }`}
       >
-        <div className="glass-card p-5 border-gold/20 shadow-xl shadow-black/30 relative overflow-hidden">
+        <div className="glass-card p-5 border-gold/20 shadow-xl shadow-black/30 relative overflow-hidden" role="dialog" aria-label="טיפים לשימוש ראשון">
           {/* Shimmer */}
           <div className="absolute inset-0 progress-shimmer pointer-events-none opacity-20" />
 

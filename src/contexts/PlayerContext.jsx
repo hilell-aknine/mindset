@@ -154,6 +154,29 @@ export function PlayerProvider({ children }) {
     }, SAVE_DEBOUNCE)
   }, [isGuest, user?.id])
 
+  // Flush pending saves on tab close
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (saveTimeout.current) {
+        clearTimeout(saveTimeout.current)
+        // Sync save via sendBeacon or localStorage is already saved
+        if (!isGuest && user?.id) {
+          const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
+          const body = JSON.stringify(mapToDB(data))
+          // Use sendBeacon for reliable save on close
+          try {
+            navigator.sendBeacon?.(
+              `${supabase.supabaseUrl}/rest/v1/mindset_users?user_id=eq.${user.id}`,
+              new Blob([body], { type: 'application/json' })
+            )
+          } catch {}
+        }
+      }
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [isGuest, user?.id])
+
   // Update helper
   const updatePlayer = useCallback((updates) => {
     setPlayer(prev => {
@@ -265,6 +288,8 @@ function mapFromDB(row) {
     totalSpeedBonus: row.total_speed_bonus ?? 0,
     dailyChallengesCompleted: row.daily_challenges_completed ?? 0,
     reviewsCompleted: row.reviews_completed ?? 0,
+    streakFreezeDate: row.streak_freeze_date ?? null,
+    lastSeenAchievements: row.last_seen_achievements ?? 0,
   }
 }
 
@@ -297,5 +322,7 @@ function mapToDB(player) {
     total_speed_bonus: player.totalSpeedBonus,
     daily_challenges_completed: player.dailyChallengesCompleted,
     reviews_completed: player.reviewsCompleted,
+    streak_freeze_date: player.streakFreezeDate,
+    last_seen_achievements: player.lastSeenAchievements,
   }
 }

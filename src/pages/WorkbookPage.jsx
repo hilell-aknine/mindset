@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
-import { ArrowRight, Printer, Lock } from 'lucide-react'
+import { ArrowRight, Printer, Lock, Download, FileText } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
@@ -53,14 +53,20 @@ export default function WorkbookPage() {
       {/* Header (hidden in print) */}
       <div className="flex items-center justify-between mb-6 animate-fade-in print:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(`/book/${slug}`)} className="p-2 rounded-xl hover:bg-white/5 transition-colors">
+          <button onClick={() => navigate(`/book/${slug}`)} className="p-2 rounded-xl hover:bg-white/5 transition-colors" aria-label="חזרה לספר">
             <ArrowRight className="w-5 h-5 text-frost-white/60" />
           </button>
-          <h2 className="font-display text-xl font-bold text-frost-white">חוברת עבודה</h2>
+          <div>
+            <h2 className="font-display text-xl font-bold text-frost-white">חוברת עבודה</h2>
+            <p className="text-[10px] text-frost-white/30">
+              {book.chapters.length} פרקים · {book.chapters.reduce((a, ch) => a + ch.lessons.reduce((b, l) => b + l.exercises.length, 0), 0)} תרגילים
+            </p>
+          </div>
         </div>
         <button
           onClick={handlePrint}
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white text-sm font-bold hover:opacity-90 transition-opacity"
+          aria-label="הדפס חוברת עבודה"
         >
           <Printer className="w-4 h-4" />
           הדפסה

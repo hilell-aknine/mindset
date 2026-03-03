@@ -10,8 +10,8 @@ export default function HintButton({ exercise, tokens, onUseToken, disabled }) {
 
   if (disabled || used) {
     return hint ? (
-      <div className="flex items-start gap-2 px-3 py-2 rounded-xl bg-gold/5 border border-gold/15 mb-4 animate-fade-in">
-        <Lightbulb className="w-4 h-4 text-gold shrink-0 mt-0.5" />
+      <div className="flex items-start gap-2 px-3 py-2 rounded-xl bg-gold/5 border border-gold/15 mb-4 animate-elastic-in" role="alert">
+        <Lightbulb className="w-4 h-4 text-gold shrink-0 mt-0.5 animate-heartbeat" />
         <p className="text-xs text-gold/80 leading-relaxed">{hint}</p>
       </div>
     ) : null
@@ -30,7 +30,8 @@ export default function HintButton({ exercise, tokens, onUseToken, disabled }) {
     <button
       onClick={generateHint}
       disabled={tokens <= 0}
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-gold/60 hover:text-gold hover:bg-gold/5 border border-transparent hover:border-gold/15 transition-all disabled:opacity-30 disabled:cursor-not-allowed mb-4"
+      aria-label={tokens > 0 ? `קבל רמז — עולה 1 אסימון (נותרו ${tokens})` : 'אין אסימונים לרמז'}
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-gold/60 hover:text-gold hover:bg-gold/5 border border-transparent hover:border-gold/15 transition-all disabled:opacity-30 disabled:cursor-not-allowed mb-4 active:scale-95"
     >
       <Lightbulb className="w-3.5 h-3.5" />
       <span>רמז</span>
