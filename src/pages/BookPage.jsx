@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
-import { ArrowRight, Lock, Check, Play, Clock, Star, Zap } from 'lucide-react'
+import { ArrowRight, Lock, Check, Play, Clock, Star, Zap, Trophy, RotateCcw } from 'lucide-react'
 import PurchaseModal from '../components/modals/PurchaseModal'
 import AICoachButton from '../components/ai/AICoachButton'
 import strengthsFinder from '../data/books/strengths-finder.json'
@@ -73,11 +73,22 @@ export default function BookPage() {
     return [...types].map(t => TYPE_ICONS[t] || '📝').slice(0, 4)
   }
 
+  // Estimate time for a lesson (30s per exercise)
+  const getLessonTime = (lesson) => {
+    const seconds = lesson.exercises.length * 30
+    return seconds >= 60 ? `${Math.round(seconds / 60)} דק'` : `${seconds} שנ'`
+  }
+
   // Book overall stats
   const totalLessons = book.chapters.reduce((acc, ch) => acc + ch.lessons.length, 0)
   const completedLessons = book.chapters.reduce((acc, ch) =>
     acc + ch.lessons.filter((_, li) => isLessonCompleted(ch.orderIndex, li)).length, 0)
   const bookProgress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0
+  const totalExercises = book.chapters.reduce((acc, ch) =>
+    acc + ch.lessons.reduce((a, l) => a + l.exercises.length, 0), 0)
+
+  // Review items for this book
+  const reviewCount = (player.reviewQueue || []).filter(r => r.bookSlug === slug).length
 
   return (
     <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6 overflow-hidden">
@@ -86,6 +97,7 @@ export default function BookPage() {
         <button
           onClick={() => navigate('/home')}
           className="p-2 rounded-xl hover:bg-white/5 transition-colors"
+          aria-label="חזרה לדף הבית"
         >
           <ArrowRight className="w-5 h-5 text-frost-white/60" />
         </button>
@@ -96,21 +108,36 @@ export default function BookPage() {
         <span className="text-3xl">{book.icon}</span>
       </div>
 
-      {/* Book progress bar */}
-      <div className="glass-card p-3 mb-4 animate-fade-in" style={{ animationDelay: '0.05s' }}>
-        <div className="flex items-center justify-between mb-2">
+      {/* Book progress card with stats */}
+      <div className="glass-card p-4 mb-4 animate-fade-in" style={{ animationDelay: '0.05s' }}>
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Star className={`w-4 h-4 ${bookProgress === 100 ? 'text-gold fill-gold' : 'text-frost-white/30'}`} />
             <span className="text-xs text-frost-white/60">{completedLessons}/{totalLessons} שיעורים</span>
           </div>
           <span className="text-xs font-bold text-gold">{bookProgress}%</span>
         </div>
-        <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+        <div className="h-2.5 rounded-full bg-white/5 overflow-hidden mb-3">
           <div
             className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-700 relative"
             style={{ width: `${bookProgress}%` }}
           >
             <div className="absolute inset-0 progress-shimmer rounded-full" />
+          </div>
+        </div>
+        {/* Mini stats */}
+        <div className="grid grid-cols-3 gap-2">
+          <div className="text-center">
+            <p className="text-lg font-bold text-frost-white">{totalExercises}</p>
+            <p className="text-[9px] text-frost-white/30">תרגילים</p>
+          </div>
+          <div className="text-center">
+            <p className="text-lg font-bold text-frost-white">{book.chapters.length}</p>
+            <p className="text-[9px] text-frost-white/30">פרקים</p>
+          </div>
+          <div className="text-center">
+            <p className="text-lg font-bold text-frost-white">~{Math.round(totalExercises * 0.5)}</p>
+            <p className="text-[9px] text-frost-white/30">דקות</p>
           </div>
         </div>
       </div>
@@ -119,7 +146,7 @@ export default function BookPage() {
       {continueTarget && (
         <button
           onClick={() => navigate(`/lesson/${slug}/${continueTarget.ci}/${continueTarget.li}`)}
-          className="w-full glass-card p-4 mb-6 flex items-center gap-3 border-gold/15 hover:border-gold/30 transition-all animate-fade-in group"
+          className="w-full glass-card p-4 mb-4 flex items-center gap-3 border-gold/15 hover:border-gold/30 transition-all animate-fade-in group animate-pulse-glow"
           style={{ animationDelay: '0.1s' }}
         >
           <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -133,7 +160,35 @@ export default function BookPage() {
           </div>
           <div className="flex items-center gap-1 text-gold/50">
             <Clock className="w-3.5 h-3.5" />
-            <span className="text-[10px]">~{continueTarget.lesson.exercises.length * 30}שנ</span>
+            <span className="text-[10px]">{getLessonTime(continueTarget.lesson)}</span>
+          </div>
+        </button>
+      )}
+
+      {/* Book completed banner */}
+      {bookProgress === 100 && (
+        <div className="glass-card p-4 mb-4 flex items-center gap-3 border-success/20 bg-success/5 animate-fade-in">
+          <Trophy className="w-8 h-8 text-success" />
+          <div className="flex-1">
+            <p className="text-sm font-bold text-success">סיימת את הספר!</p>
+            <p className="text-[10px] text-frost-white/40">כל הכבוד! חזור על שיעורים כדי לשפר את הציון.</p>
+          </div>
+        </div>
+      )}
+
+      {/* Review reminder */}
+      {reviewCount > 0 && (
+        <button
+          onClick={() => navigate('/review')}
+          className="w-full glass-card p-3 mb-4 flex items-center gap-3 border-warning/10 hover:border-warning/20 transition-all animate-fade-in"
+          style={{ animationDelay: '0.12s' }}
+        >
+          <div className="w-8 h-8 rounded-lg bg-warning/15 flex items-center justify-center">
+            <RotateCcw className="w-4 h-4 text-warning" />
+          </div>
+          <div className="flex-1 text-right">
+            <p className="text-xs font-bold text-warning">{reviewCount} תרגילים לחזרה</p>
+            <p className="text-[10px] text-frost-white/30">תשובות שגויות מהספר הזה</p>
           </div>
         </button>
       )}
@@ -196,6 +251,7 @@ export default function BookPage() {
                     {chapter.lessons.map((lesson, li) => {
                       const completed = isLessonCompleted(ci, li)
                       const types = getLessonTypes(lesson)
+                      const isContinue = continueTarget?.ci === ci && continueTarget?.li === li
 
                       return (
                         <button
@@ -204,20 +260,24 @@ export default function BookPage() {
                           className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-right transition-all ${
                             completed
                               ? 'bg-success/10 border border-success/20 hover:bg-success/15'
-                              : 'glass-card hover:border-gold/20'
+                              : isContinue
+                                ? 'glass-card border-gold/20 hover:border-gold/30'
+                                : 'glass-card hover:border-white/15'
                           }`}
                         >
                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                            completed ? 'bg-success/20' : 'bg-white/5'
+                            completed ? 'bg-success/20' : isContinue ? 'bg-gold/15' : 'bg-white/5'
                           }`}>
                             {completed ? (
                               <Check className="w-4 h-4 text-success" />
                             ) : (
-                              <Play className="w-4 h-4 text-frost-white/40" />
+                              <Play className={`w-4 h-4 ${isContinue ? 'text-gold' : 'text-frost-white/40'}`} />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <span className={`text-sm block ${completed ? 'text-success' : 'text-frost-white/70'}`}>
+                            <span className={`text-sm block ${
+                              completed ? 'text-success' : isContinue ? 'text-frost-white' : 'text-frost-white/70'
+                            }`}>
                               {lesson.title}
                             </span>
                             <div className="flex items-center gap-1.5 mt-1">
@@ -225,9 +285,16 @@ export default function BookPage() {
                                 {lesson.exercises.length} תרגילים
                               </span>
                               <span className="text-frost-white/10">·</span>
+                              <span className="text-[10px] text-frost-white/25">{getLessonTime(lesson)}</span>
+                              <span className="text-frost-white/10">·</span>
                               <span className="text-[10px]">{types.join('')}</span>
                             </div>
                           </div>
+                          {completed && (
+                            <div className="flex items-center gap-0.5">
+                              <Star className="w-3 h-3 text-gold fill-gold" />
+                            </div>
+                          )}
                         </button>
                       )
                     })}
