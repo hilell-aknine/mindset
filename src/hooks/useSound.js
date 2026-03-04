@@ -87,6 +87,25 @@ export function useSound() {
           tone(1100, 0.15, 'sine', 0.2, 0.16)
           vibrate(30)
           break
+        case 'lessonStart':
+          // Gentle ascending tone: C4→E4 — signals "game on"
+          tone(262, 0.15, 'sine', 0.12); tone(330, 0.2, 'sine', 0.15, 0.12)
+          break
+        case 'transition': {
+          // Quick subtle whoosh using white noise burst
+          const c = getCtx()
+          const bufferSize = c.sampleRate * 0.08
+          const buffer = c.createBuffer(1, bufferSize, c.sampleRate)
+          const data = buffer.getChannelData(0)
+          for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize)
+          const src = c.createBufferSource()
+          src.buffer = buffer
+          const g = c.createGain()
+          g.gain.value = 0.06 * volume.current
+          src.connect(g).connect(c.destination)
+          src.start()
+          break
+        }
       }
     } catch {}
   }, [])

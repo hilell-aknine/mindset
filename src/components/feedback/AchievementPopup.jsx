@@ -1,10 +1,12 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Sparkles } from 'lucide-react'
 import { RARITY } from '../../lib/achievements'
+import { useSound } from '../../hooks/useSound'
 
 export default function AchievementPopup({ achievement, onClose }) {
   const [visible, setVisible] = useState(false)
   const [showParticles, setShowParticles] = useState(false)
+  const { play } = useSound()
 
   const rarity = RARITY[achievement.rarity || 'common']
   const isSpecial = achievement.rarity === 'epic' || achievement.rarity === 'legendary'
@@ -15,6 +17,7 @@ export default function AchievementPopup({ achievement, onClose }) {
   }, [onClose])
 
   useEffect(() => {
+    play('achievement')
     setTimeout(() => setVisible(true), 100)
     setTimeout(() => setShowParticles(true), 300)
     const timer = setTimeout(dismiss, isSpecial ? 5000 : 3500)

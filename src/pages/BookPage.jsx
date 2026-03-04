@@ -8,8 +8,9 @@ import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
+import mindsetBook from '../data/books/mindset-book.json'
 
-const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves }
+const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook }
 
 const TYPE_ICONS = {
   'multiple-choice': '🎯',
@@ -175,6 +176,36 @@ export default function BookPage() {
           </div>
         </div>
       )}
+
+      {/* Next book CTA when 100% complete */}
+      {bookProgress === 100 && (() => {
+        const allSlugs = Object.keys(BOOKS)
+        const nextSlug = allSlugs.find(s => {
+          if (s === slug) return false
+          const b = BOOKS[s]
+          const total = b.chapters.reduce((acc, ch) => acc + ch.lessons.length, 0)
+          const done = b.chapters.reduce((acc, ch) =>
+            acc + ch.lessons.filter((_, li) => player.completedLessons[`${s}:${ch.orderIndex}:${li}`]).length, 0)
+          return done < total
+        })
+        if (!nextSlug) return null
+        const nextBook = BOOKS[nextSlug]
+        return (
+          <button
+            onClick={() => navigate(`/book/${nextSlug}`)}
+            className="w-full glass-card p-4 mb-4 flex items-center gap-3 border-gold/15 hover:border-gold/30 transition-all animate-fade-in group"
+          >
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+              {nextBook.icon}
+            </div>
+            <div className="flex-1 text-right">
+              <p className="text-sm font-bold text-gold">ספר הבא</p>
+              <p className="text-[10px] text-frost-white/40 mt-0.5">{nextBook.title}</p>
+            </div>
+            <Play className="w-5 h-5 text-gold/50" />
+          </button>
+        )
+      })()}
 
       {/* Review reminder */}
       {reviewCount > 0 && (

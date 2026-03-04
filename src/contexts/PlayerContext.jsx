@@ -6,6 +6,13 @@ import {
   HEART_RECOVERY_MINUTES, getLevelForXP, XP_CORRECT_ANSWER,
   XP_LESSON_COMPLETE, XP_PERFECT_LESSON, getComboBonus
 } from '../config/constants'
+import strengthsFinder from '../data/books/strengths-finder.json'
+import atomicHabits from '../data/books/atomic-habits.json'
+import happyChemicals from '../data/books/happy-chemicals.json'
+import nextFiveMoves from '../data/books/next-five-moves.json'
+import mindsetBook from '../data/books/mindset-book.json'
+
+const ALL_BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook }
 import { getXPMultiplier, checkStreakMilestone } from '../lib/events'
 
 const PlayerContext = createContext(null)
@@ -73,6 +80,7 @@ export function PlayerProvider({ children }) {
       if (prev.lastLoginDate === today) return prev
 
       let newStreak = prev.currentStreak
+      let comebackUnlocked = prev.comebackUnlocked || false
       if (prev.lastLoginDate === yesterday) {
         newStreak += 1
       } else if (prev.lastLoginDate !== today) {
@@ -81,6 +89,11 @@ export function PlayerProvider({ children }) {
         if (freezeDate === yesterday && prev.currentStreak > 0) {
           newStreak = prev.currentStreak // preserved by freeze
         } else {
+          // Check if missed 3+ days → comeback achievement
+          if (prev.lastLoginDate) {
+            const daysMissed = Math.floor((Date.now() - new Date(prev.lastLoginDate).getTime()) / 86400000)
+            if (daysMissed >= 3) comebackUnlocked = true
+          }
           newStreak = 1
         }
       }
@@ -96,6 +109,7 @@ export function PlayerProvider({ children }) {
         currentStreak: newStreak,
         longestStreak: Math.max(newStreak, prev.longestStreak),
         lastLoginDate: today,
+        comebackUnlocked,
         // Award milestone XP bonus
         xp: milestone ? prev.xp + milestone.xpBonus : prev.xp,
       }
@@ -231,12 +245,33 @@ export function PlayerProvider({ children }) {
       const multiplier = getXPMultiplier()
       const baseXP = XP_LESSON_COMPLETE + (mistakes === 0 ? XP_PERFECT_LESSON : 0)
       const earnedXP = Math.round(baseXP * multiplier)
+
+      const newCompletedLessons = { ...prev.completedLessons, [key]: true }
+
+      // Check if all lessons in this book are now complete
+      let newCompletedBooks = [...(prev.completedBooks || [])]
+      const book = ALL_BOOKS[bookSlug]
+      if (book && !newCompletedBooks.includes(bookSlug)) {
+        const allDone = book.chapters.every(ch =>
+          ch.lessons.every((_, li) => newCompletedLessons[`${bookSlug}:${ch.orderIndex}:${li}`])
+        )
+        if (allDone) newCompletedBooks.push(bookSlug)
+      }
+
+      // Time-based achievement flags
+      const hour = new Date().getHours()
+      const nightOwlUnlocked = prev.nightOwlUnlocked || hour >= 23
+      const earlyBirdUnlocked = prev.earlyBirdUnlocked || hour < 7
+
       return {
         ...prev,
         xp: prev.xp + earnedXP,
-        completedLessons: { ...prev.completedLessons, [key]: true },
+        completedLessons: newCompletedLessons,
+        completedBooks: newCompletedBooks,
         perfectLessons: mistakes === 0 ? (prev.perfectLessons || 0) + 1 : (prev.perfectLessons || 0),
         weeklyXP: (prev.weeklyXP || 0) + earnedXP,
+        nightOwlUnlocked,
+        earlyBirdUnlocked,
       }
     })
   }, [updatePlayer])
@@ -290,6 +325,10 @@ function mapFromDB(row) {
     reviewsCompleted: row.reviews_completed ?? 0,
     streakFreezeDate: row.streak_freeze_date ?? null,
     lastSeenAchievements: row.last_seen_achievements ?? 0,
+    completedBooks: row.completed_books ?? [],
+    nightOwlUnlocked: row.night_owl_unlocked ?? false,
+    earlyBirdUnlocked: row.early_bird_unlocked ?? false,
+    comebackUnlocked: row.comeback_unlocked ?? false,
   }
 }
 
@@ -324,5 +363,9 @@ function mapToDB(player) {
     reviews_completed: player.reviewsCompleted,
     streak_freeze_date: player.streakFreezeDate,
     last_seen_achievements: player.lastSeenAchievements,
+    completed_books: player.completedBooks,
+    night_owl_unlocked: player.nightOwlUnlocked,
+    early_bird_unlocked: player.earlyBirdUnlocked,
+    comeback_unlocked: player.comebackUnlocked,
   }
 }

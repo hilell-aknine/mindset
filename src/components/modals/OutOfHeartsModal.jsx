@@ -62,6 +62,20 @@ export default function OutOfHeartsModal({ onClose, onPurchase }) {
           </div>
         )}
 
+        {/* How hearts work */}
+        <div className="text-right space-y-1.5 mb-5 px-3 py-3 rounded-xl bg-white/3 border border-white/5">
+          <p className="text-[10px] font-bold text-frost-white/50 mb-2">איך לבבות עובדים?</p>
+          <p className="text-[10px] text-frost-white/35 flex items-center gap-2">
+            <span>❤️</span> מתחילים עם 5 לבבות
+          </p>
+          <p className="text-[10px] text-frost-white/35 flex items-center gap-2">
+            <span>⏱️</span> לב חוזר כל {HEART_RECOVERY_MINUTES} דקות
+          </p>
+          <p className="text-[10px] text-frost-white/35 flex items-center gap-2">
+            <span>👑</span> פרימיום = לבבות ללא הגבלה
+          </p>
+        </div>
+
         <button
           onClick={onPurchase}
           className="w-full py-3 rounded-xl bg-gradient-to-l from-gold to-warning text-bg-base font-bold text-sm mb-3 hover:opacity-90 transition-opacity flex items-center justify-center gap-2"

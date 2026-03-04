@@ -19,20 +19,23 @@ import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
+import mindsetBook from '../data/books/mindset-book.json'
 
-const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves }
+const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook }
 
-// Mini confetti particles for correct answers
-function MiniConfetti({ active }) {
+// Mini confetti particles for correct answers — scales up with combo
+function MiniConfetti({ active, combo = 0 }) {
   if (!active) return null
-  const particles = Array.from({ length: 12 }, (_, i) => {
-    const angle = (i / 12) * 360
+  const count = combo >= 5 ? 24 : combo >= 3 ? 18 : 12
+  const spread = combo >= 5 ? 80 : combo >= 3 ? 60 : 40
+  const particles = Array.from({ length: count }, (_, i) => {
+    const angle = (i / count) * 360
     const rad = (angle * Math.PI) / 180
-    const dist = 40 + Math.random() * 30
+    const dist = spread + Math.random() * 30
     const tx = Math.cos(rad) * dist
     const ty = Math.sin(rad) * dist - 20
     const colors = ['#D4AF37', '#22c55e', '#2F8592', '#E8F1F2', '#f59e0b']
-    return { tx, ty, color: colors[i % colors.length], delay: Math.random() * 0.1, size: 4 + Math.random() * 4 }
+    return { tx, ty, color: colors[i % colors.length], delay: Math.random() * 0.15, size: 4 + Math.random() * (combo >= 3 ? 6 : 4) }
   })
 
   return (
@@ -110,16 +113,19 @@ export default function LessonPage() {
   const [timerEnabled, setTimerEnabled] = useState(false)
   const timerTimeLeft = useRef(TIMER_DURATION)
   const [totalSpeedBonus, setTotalSpeedBonus] = useState(0)
+  const [halfwayShown, setHalfwayShown] = useState(false)
+  const autoAdvanceRef = useRef(null)
 
   const currentExercise = exercises[currentIndex]
   const progress = exercises.length > 0 ? ((currentIndex) / exercises.length) * 100 : 0
   const comboStreak = player.comboStreak || 0
 
-  // Reset combo at lesson start
+  // Reset combo at lesson start + play start sound
   const hasReset = useRef(false)
   useEffect(() => {
     if (!hasReset.current) {
       updatePlayer(prev => ({ ...prev, comboStreak: 0 }))
+      play('lessonStart')
       hasReset.current = true
     }
   }, [])
@@ -143,6 +149,8 @@ export default function LessonPage() {
   const handleAnswer = useCallback((isCorrect, explanation) => {
     if (isCorrect) {
       play('correct')
+      // Haptic feedback
+      if (navigator.vibrate) navigator.vibrate([30, 20, 30])
 
       // Calculate XP earned for display (with event multiplier)
       const newCombo = (player.comboStreak || 0) + 1
@@ -163,15 +171,29 @@ export default function LessonPage() {
       onCorrectAnswer()
       setFeedback({ correct: true, explanation })
 
-      // Show mini confetti
+      // Show mini confetti — bigger burst on high combos
       setShowConfetti(true)
-      setTimeout(() => setShowConfetti(false), 700)
+      setTimeout(() => setShowConfetti(false), newCombo >= 5 ? 1000 : 700)
 
       // Show floating XP
       setFloatingXP({ xp: totalXP, combo: newCombo, speedBonus, eventMultiplier: multiplier })
       setTimeout(() => setFloatingXP(null), 1300)
+
+      // Auto-advance after correct answer (Duolingo-style)
+      if (autoAdvanceRef.current) clearTimeout(autoAdvanceRef.current)
+      autoAdvanceRef.current = setTimeout(() => {
+        setFeedback(prev => {
+          if (prev?.correct) {
+            // Trigger continue via state change — actual navigation handled in effect
+            return { ...prev, autoAdvance: true }
+          }
+          return prev
+        })
+      }, 1500)
     } else {
       play('wrong')
+      // Haptic feedback — stronger for wrong
+      if (navigator.vibrate) navigator.vibrate([50, 30, 80])
       onWrongAnswer()
       setMistakes(m => m + 1)
       setFeedback({ correct: false, explanation })
@@ -227,6 +249,11 @@ export default function LessonPage() {
   }, [player.xp, player.totalCorrect, player.completedLessons, player.currentStreak, player.perfectLessons])
 
   const handleContinue = useCallback(() => {
+    // Clear any pending auto-advance
+    if (autoAdvanceRef.current) {
+      clearTimeout(autoAdvanceRef.current)
+      autoAdvanceRef.current = null
+    }
     setFeedback(null)
     if (currentIndex + 1 >= exercises.length) {
       completeLesson(bookSlug, parseInt(chapterIndex), parseInt(lessonIndex), mistakes)
@@ -234,6 +261,7 @@ export default function LessonPage() {
       setIsComplete(true)
     } else {
       // Animate exercise transition
+      play('transition')
       setTransitioning(true)
       setTimeout(() => {
         setCurrentIndex(i => i + 1)
@@ -242,6 +270,21 @@ export default function LessonPage() {
       }, 280)
     }
   }, [currentIndex, exercises.length, bookSlug, chapterIndex, lessonIndex, mistakes, completeLesson, play])
+
+  // Auto-advance effect: watch for autoAdvance flag set by timer
+  useEffect(() => {
+    if (feedback?.autoAdvance) {
+      handleContinue()
+    }
+  }, [feedback?.autoAdvance, handleContinue])
+
+  // Halfway encouragement toast
+  useEffect(() => {
+    if (!halfwayShown && exercises.length >= 4 && currentIndex === Math.floor(exercises.length / 2)) {
+      setHalfwayShown(true)
+      toast.show('🔥 חצי דרך! ממשיכים חזק', 'info')
+    }
+  }, [currentIndex, exercises.length, halfwayShown, toast])
 
   if (!book || !lesson) {
     return (
@@ -282,8 +325,8 @@ export default function LessonPage() {
 
   return (
     <div className="min-h-dvh flex flex-col">
-      {/* Mini confetti on correct answer */}
-      <MiniConfetti active={showConfetti} />
+      {/* Mini confetti on correct answer — scales with combo */}
+      <MiniConfetti active={showConfetti} combo={comboStreak} />
 
       {/* Floating XP indicator */}
       {floatingXP && <XPFloat xp={floatingXP.xp} combo={floatingXP.combo} speedBonus={floatingXP.speedBonus} eventMultiplier={floatingXP.eventMultiplier} />}

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
-import { BookOpen, Trophy, Flame, RotateCcw, BarChart2, Settings, Zap, Target, Crown, X } from 'lucide-react'
+import { BookOpen, Trophy, Flame, RotateCcw, BarChart2, Settings, Zap, Target, Crown, X, Sparkles } from 'lucide-react'
+import { getNextAchievements, CATEGORIES } from '../lib/achievements'
 import DailyChallenge from '../components/DailyChallenge'
 import StreakFreeze from '../components/StreakFreeze'
 import FeatureSpotlight from '../components/FeatureSpotlight'
@@ -10,8 +11,9 @@ import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
+import mindsetBook from '../data/books/mindset-book.json'
 
-const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves]
+const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook]
 
 const DAILY_QUOTES = [
   { text: 'אתה לא צריך להיות מושלם כדי להתחיל, אבל צריך להתחיל כדי להשתפר.', source: 'הרגלים אטומים' },
@@ -314,6 +316,28 @@ export default function HomePage() {
         </p>
         <p className="text-[10px] text-frost-white/25 mt-2">— {dailyQuote.source}</p>
       </div>
+
+      {/* Next achievement teaser */}
+      {(() => {
+        const nextAchievements = getNextAchievements(player)
+        const nextOne = Object.values(nextAchievements)[0]
+        if (!nextOne) return null
+        const cat = CATEGORIES[nextOne.category]
+        return (
+          <div className="glass-card p-3 mt-4 flex items-center gap-3 animate-fade-in border-white/5" style={{ animationDelay: '0.52s' }}>
+            <span className="text-xl">{nextOne.icon}</span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <Sparkles className="w-3 h-3 text-gold/50" />
+                <p className="text-[10px] text-gold/60 font-bold">ההישג הבא</p>
+              </div>
+              <p className="text-xs text-frost-white/70 font-semibold mt-0.5">{nextOne.title}</p>
+              <p className="text-[10px] text-frost-white/30">{nextOne.description}</p>
+            </div>
+            <span className="text-base">{cat?.icon}</span>
+          </div>
+        )
+      })()}
 
       {/* Stats summary */}
       <div className="grid grid-cols-4 gap-2 sm:gap-3 mt-4" data-spotlight="xp">

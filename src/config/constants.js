@@ -61,6 +61,10 @@ export const DEFAULT_PLAYER = {
   reviewsCompleted: 0,
   streakFreezeDate: null,
   lastSeenAchievements: 0,
+  completedBooks: [],
+  nightOwlUnlocked: false,
+  earlyBirdUnlocked: false,
+  comebackUnlocked: false,
 }
 
 export const getLevelName = (level) => {

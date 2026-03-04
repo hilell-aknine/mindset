@@ -56,6 +56,17 @@ export const ACHIEVEMENTS = [
   { id: 'daily_7', icon: '📅', title: 'שבוע של אתגרים', description: '7 אתגרים יומיים', category: 'social', rarity: 'rare', check: (p) => (p.dailyChallengesCompleted || 0) >= 7 },
   { id: 'review_master', icon: '🔄', title: 'מלך החזרות', description: 'סיים 10 תרגילי חזרה', category: 'social', rarity: 'rare', check: (p) => (p.reviewsCompleted || 0) >= 10 },
   { id: 'weekly_goal', icon: '🎯', title: 'יעד שבועי', description: 'השג יעד XP שבועי', category: 'social', rarity: 'rare', check: (p) => (p.weeklyXP || 0) >= (p.weeklyXPGoal || 250) },
+
+  // --- Book Completion ---
+  { id: 'first_book', icon: '📕', title: 'ספר ראשון', description: 'סיים את כל השיעורים בספר', category: 'lessons', rarity: 'legendary', check: (p) => (p.completedBooks || []).length >= 1 },
+  { id: 'two_books', icon: '📚', title: 'קורא רציני', description: 'סיים 2 ספרים שלמים', category: 'lessons', rarity: 'epic', check: (p) => (p.completedBooks || []).length >= 2 },
+
+  // --- Time-based ---
+  { id: 'night_owl', icon: '🦉', title: 'ינשוף לילה', description: 'סיים שיעור אחרי 23:00', category: 'social', rarity: 'common', check: (p) => p.nightOwlUnlocked === true },
+  { id: 'early_bird', icon: '🐦', title: 'ציפור מוקדמת', description: 'סיים שיעור לפני 7:00', category: 'social', rarity: 'common', check: (p) => p.earlyBirdUnlocked === true },
+
+  // --- Comeback ---
+  { id: 'comeback', icon: '💪', title: 'חזרה חזקה', description: 'חזור ללמוד אחרי 3+ ימים הפסקה', category: 'streak', rarity: 'rare', check: (p) => p.comebackUnlocked === true },
 ]
 
 export function checkNewAchievements(player) {

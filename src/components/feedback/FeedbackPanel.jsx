@@ -51,7 +51,7 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
       className={`sticky bottom-0 border-t animate-slide-up ${
         correct
           ? 'bg-success/10 border-success/20'
-          : 'bg-danger/10 border-danger/20'
+          : 'bg-danger/10 border-danger/20 animate-shake'
       }`}
       role="status"
       aria-live="assertive"
@@ -98,13 +98,19 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
         <button
           ref={btnRef}
           onClick={onContinue}
-          className={`w-full py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90 active:scale-[0.98] ${
+          className={`w-full py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90 active:scale-[0.98] relative overflow-hidden ${
             correct
               ? 'bg-success text-white animate-correct-pulse'
               : 'bg-danger text-white'
           }`}
         >
-          המשך
+          {correct ? (
+            <>
+              <span className="relative z-10">המשך</span>
+              {/* Auto-advance progress bar */}
+              <div className="absolute inset-0 bg-white/15 origin-left" style={{ animation: 'shrinkBar 1.5s linear forwards' }} />
+            </>
+          ) : 'הבנתי, הלאה'}
         </button>
       </div>
     </div>

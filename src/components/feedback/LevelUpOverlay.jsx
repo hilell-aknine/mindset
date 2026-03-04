@@ -1,11 +1,13 @@
 import { useEffect, useState, useCallback } from 'react'
 import ReactConfetti from 'react-confetti'
 import { LEVEL_NAMES, LEVEL_THRESHOLDS } from '../../config/constants'
+import { useSound } from '../../hooks/useSound'
 import { Trophy, Sparkles } from 'lucide-react'
 
 export default function LevelUpOverlay({ level, onClose }) {
   const [visible, setVisible] = useState(false)
   const [showConfetti, setShowConfetti] = useState(true)
+  const { play } = useSound()
 
   const dismiss = useCallback(() => {
     setVisible(false)
@@ -13,6 +15,7 @@ export default function LevelUpOverlay({ level, onClose }) {
   }, [onClose])
 
   useEffect(() => {
+    play('levelUp')
     setTimeout(() => setVisible(true), 100)
     const confettiTimer = setTimeout(() => setShowConfetti(false), 4000)
     const closeTimer = setTimeout(dismiss, 4000)
