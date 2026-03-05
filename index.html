@@ -2,21 +2,39 @@
 <html lang="he" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png" />
+    <link rel="canonical" href="https://mindset-omega.vercel.app/" />
+
+    <!-- Preconnect / DNS prefetch -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="dns-prefetch" href="https://vrjrnnmbaankcococoeu.supabase.co" />
+    <link rel="preconnect" href="https://vrjrnnmbaankcococoeu.supabase.co" />
+
+    <!-- Fonts -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;600;700;800;900&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" /></noscript>
+
+    <!-- Preload LCP image for mobile -->
+    <link rel="preload" as="image" href="/backgrounds/hero-mobile-bg.png" media="(max-width: 639px)" />
+
     <title>MindSet - למידה חוויתית של ספרים, 5 דקות ביום</title>
     <meta name="description" content="MindSet הופך ספרי פיתוח אישי לשיעורים אינטראקטיביים עם תרגילים, ניקוד ומאמן AI — כמו Duolingo, רק לספרים." />
     <meta name="theme-color" content="#0a0a12" />
     <meta name="author" content="MindSet" />
+    <meta name="robots" content="index, follow" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://mindset-omega.vercel.app/" />
     <meta property="og:title" content="MindSet - שחק ספר במקום לקרוא אותו" />
     <meta property="og:description" content="למידה חוויתית של ספרי פיתוח אישי — 5 דקות ביום של תרגילים אינטראקטיביים, ניקוד ומאמן AI. פרק ראשון חינם!" />
-    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:image" content="https://mindset-omega.vercel.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="he_IL" />
     <meta property="og:site_name" content="MindSet" />
 
@@ -24,16 +42,37 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="MindSet - שחק ספר במקום לקרוא אותו" />
     <meta name="twitter:description" content="למד ספרי פיתוח אישי בצורה אינטראקטיבית — 7 סוגי תרגילים, XP, רצפים והישגים." />
-    <meta name="twitter:image" content="/og-image.png" />
+    <meta name="twitter:image" content="https://mindset-omega.vercel.app/og-image.png" />
 
     <!-- PWA hints -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="MindSet" />
-    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "MindSet",
+      "description": "MindSet הופך ספרי פיתוח אישי לשיעורים אינטראקטיביים עם תרגילים, ניקוד ומאמן AI",
+      "url": "https://mindset-omega.vercel.app",
+      "applicationCategory": "EducationalApplication",
+      "inLanguage": "he",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "ILS",
+        "description": "פרק ראשון חינם"
+      }
+    }
+    </script>
   </head>
   <body>
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:right-4 focus:z-[9999] focus:bg-gold focus:text-bg-base focus:px-4 focus:py-2 focus:rounded-lg focus:font-bold">דלג לתוכן הראשי</a>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
