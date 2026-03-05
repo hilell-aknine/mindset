@@ -6,7 +6,8 @@ import { useSound } from '../hooks/useSound'
 import { WEEKLY_GOALS } from '../lib/events'
 import {
   ArrowRight, Volume2, VolumeX, Trash2, LogOut, User, Target,
-  Download, Shield, Info, ChevronDown, BookOpen, Zap, Crown
+  Download, Shield, Info, ChevronDown, BookOpen, Zap, Crown,
+  Type, MonitorOff
 } from 'lucide-react'
 
 export default function SettingsPage() {
@@ -18,10 +19,27 @@ export default function SettingsPage() {
   const [vol, setVol] = useState(() => Math.round(getVolume() * 100))
   const [confirmReset, setConfirmReset] = useState(false)
   const [expandedSection, setExpandedSection] = useState(null)
+  const [fontSize, setFontSize] = useState(() => localStorage.getItem('mindset_font_size') || 'normal')
+  const [reducedMotion, setReducedMotion] = useState(() => localStorage.getItem('mindset_reduced_motion') === 'true')
 
   const handleToggleSound = () => {
     const newState = toggle()
     setSoundOn(newState)
+  }
+
+  const handleFontSize = (size) => {
+    setFontSize(size)
+    localStorage.setItem('mindset_font_size', size)
+    document.documentElement.classList.remove('font-large', 'font-xl')
+    if (size === 'large') document.documentElement.classList.add('font-large')
+    if (size === 'xl') document.documentElement.classList.add('font-xl')
+  }
+
+  const handleReducedMotion = () => {
+    const next = !reducedMotion
+    setReducedMotion(next)
+    localStorage.setItem('mindset_reduced_motion', String(next))
+    document.documentElement.classList.toggle('reduce-motion', next)
   }
 
   const handleSetWeeklyGoal = (xp) => {
@@ -210,6 +228,51 @@ export default function SettingsPage() {
               <span className="text-[10px] text-frost-white/30 w-7 text-center font-mono">{vol}%</span>
             </div>
           )}
+        </div>
+
+        {/* Font size setting */}
+        <div className="glass-card p-4 animate-fade-in" style={{ animationDelay: '0.11s' }}>
+          <div className="flex items-center gap-3 mb-3">
+            <Type className="w-5 h-5 text-dusty-aqua" />
+            <span className="text-sm text-frost-white">גודל טקסט</span>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { value: 'normal', label: 'רגיל' },
+              { value: 'large', label: 'גדול' },
+              { value: 'xl', label: 'גדול מאוד' },
+            ].map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => handleFontSize(opt.value)}
+                className={`py-2 rounded-xl text-xs font-bold transition-all ${
+                  fontSize === opt.value
+                    ? 'bg-dusty-aqua/15 border border-dusty-aqua/40 text-dusty-aqua'
+                    : 'bg-white/5 border border-white/5 text-frost-white/50 hover:border-white/10'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Reduced motion toggle */}
+        <div className="glass-card p-4 animate-fade-in" style={{ animationDelay: '0.115s' }}>
+          <button
+            onClick={handleReducedMotion}
+            className="w-full flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <MonitorOff className={`w-5 h-5 ${reducedMotion ? 'text-dusty-aqua' : 'text-frost-white/30'}`} />
+              <span className="text-sm text-frost-white">הפחת אנימציות</span>
+            </div>
+            <div className={`w-10 h-6 rounded-full transition-colors flex items-center ${
+              reducedMotion ? 'bg-dusty-aqua justify-end' : 'bg-white/10 justify-start'
+            }`}>
+              <div className="w-5 h-5 rounded-full bg-white m-0.5 shadow-sm transition-all" />
+            </div>
+          </button>
         </div>
 
         {/* Premium status */}

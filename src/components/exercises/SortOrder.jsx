@@ -203,9 +203,10 @@ export default function SortOrder({ exercise, onAnswer, disabled }) {
       {!disabled && (
         <button
           onClick={handleCheck}
-          className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 transition-opacity active:scale-[0.98]"
+          className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 transition-all active:scale-[0.98] animate-pulse-ready"
         >
           בדוק
+          <span className="text-[10px] font-normal mr-2 opacity-60">(Enter ↵)</span>
         </button>
       )}
     </div>

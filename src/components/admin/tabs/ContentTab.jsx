@@ -6,8 +6,9 @@ import atomicHabits from '../../../data/books/atomic-habits.json'
 import strengthsFinder from '../../../data/books/strengths-finder.json'
 import happyChemicals from '../../../data/books/happy-chemicals.json'
 import nextFiveMoves from '../../../data/books/next-five-moves.json'
+import mindsetBook from '../../../data/books/mindset-book.json'
 
-const BOOKS = [atomicHabits, strengthsFinder, happyChemicals, nextFiveMoves]
+const BOOKS = [atomicHabits, strengthsFinder, happyChemicals, nextFiveMoves, mindsetBook]
 
 export default function ContentTab() {
   const [completionData, setCompletionData] = useState(null)

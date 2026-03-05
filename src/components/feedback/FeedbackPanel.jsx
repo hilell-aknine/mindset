@@ -80,7 +80,7 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
               {correct && earnedXP > 0 && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gold/10 border border-gold/20 animate-bounce-in">
                   <Star className="w-3 h-3 text-gold fill-current" />
-                  <span className="text-[10px] font-bold text-gold">+{earnedXP} XP</span>
+                  <span className="text-[10px] font-bold text-gold-text">+{earnedXP} XP</span>
                 </span>
               )}
             </div>

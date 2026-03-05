@@ -1,6 +1,8 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { shuffleArray } from '../../lib/gameEngine'
 import { Undo2, Link } from 'lucide-react'
+
+const HEBREW_LETTERS = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח']
 
 export default function Match({ exercise, onAnswer, disabled }) {
   const [selectedLeft, setSelectedLeft] = useState(null)
@@ -29,6 +31,14 @@ export default function Match({ exercise, onAnswer, disabled }) {
       }, 400)
     }
   }
+
+  const handleKeyDown = useCallback((e, side, index) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      if (side === 'left') handleLeftClick(index)
+      else handleRightClick(index)
+    }
+  }, [handleLeftClick, handleRightClick])
 
   const undoLastPair = () => {
     if (matchedPairs.length === 0 || disabled) return
@@ -65,6 +75,11 @@ export default function Match({ exercise, onAnswer, disabled }) {
       <h3 className="font-display text-lg font-bold text-frost-white mb-2 leading-relaxed">
         {exercise.question}
       </h3>
+
+      {/* Keyboard instruction */}
+      <p className="text-[10px] text-frost-white/25 mb-2">
+        בחר פריט מהעמודה הימנית ואז את ההתאמה משמאל — Tab + Enter לניווט
+      </p>
 
       {/* Instructions + undo */}
       <div className="flex items-center justify-between mb-4">
@@ -105,15 +120,18 @@ export default function Match({ exercise, onAnswer, disabled }) {
               <button
                 key={i}
                 onClick={() => handleLeftClick(i)}
+                onKeyDown={(e) => handleKeyDown(e, 'left', i)}
                 disabled={disabled || matched}
                 aria-pressed={selectedLeft === i}
-                aria-label={`${pair.left}${matched ? ' — מחובר' : ''}`}
+                aria-label={`${i + 1}. ${pair.left}${matched ? ' — מחובר' : ''}`}
                 className={`w-full px-3 py-3 rounded-xl border text-sm text-right transition-all relative ${
                   style ? `${style.border} ${style.bg}` :
                   selectedLeft === i ? 'border-gold bg-gold/10 text-gold scale-[1.02]' :
                   'border-white/10 bg-bg-card hover:border-white/20 text-frost-white/70'
                 }`}
               >
+                {/* Number label */}
+                <span className="absolute top-1.5 right-1.5 text-[9px] text-frost-white/20 font-mono">{i + 1}</span>
                 {/* Color dot for matched pairs */}
                 {style && !disabled && (
                   <span className={`absolute top-1.5 left-1.5 w-2 h-2 rounded-full ${style.dot}`} />
@@ -134,8 +152,9 @@ export default function Match({ exercise, onAnswer, disabled }) {
               <button
                 key={originalIndex}
                 onClick={() => handleRightClick(originalIndex)}
+                onKeyDown={(e) => handleKeyDown(e, 'right', originalIndex)}
                 disabled={disabled || matched || selectedLeft === null}
-                aria-label={`${text}${matched ? ' — מחובר' : ''}`}
+                aria-label={`${HEBREW_LETTERS[shuffledRight.indexOf(shuffledRight.find(s => s.originalIndex === originalIndex))]}. ${text}${matched ? ' — מחובר' : ''}`}
                 className={`w-full px-3 py-3 rounded-xl border text-sm text-right transition-all relative ${
                   style ? `${style.border} ${style.bg}` :
                   selectedLeft !== null && !matched
@@ -143,6 +162,10 @@ export default function Match({ exercise, onAnswer, disabled }) {
                     : 'border-white/10 bg-bg-card text-frost-white/70 opacity-50'
                 }`}
               >
+                {/* Letter label */}
+                <span className="absolute top-1.5 right-1.5 text-[9px] text-frost-white/20 font-mono">
+                  {HEBREW_LETTERS[shuffledRight.findIndex(s => s.originalIndex === originalIndex)]}
+                </span>
                 {/* Color dot for matched pairs */}
                 {style && !disabled && (
                   <span className={`absolute top-1.5 left-1.5 w-2 h-2 rounded-full ${style.dot}`} />

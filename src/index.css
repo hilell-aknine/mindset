@@ -12,6 +12,7 @@
   --color-success: #22c55e;
   --color-danger: #ef4444;
   --color-warning: #f59e0b;
+  --color-gold-text: #E8C547;
   --font-display: "Frank Ruhl Libre", serif;
   --font-body: "Heebo", sans-serif;
 }
@@ -142,6 +143,14 @@
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
+@keyframes shrinkBar {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+@keyframes pulseReady {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(47, 133, 146, 0.4); }
+  50% { box-shadow: 0 0 12px 4px rgba(47, 133, 146, 0.15); }
+}
 
 .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
 .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
@@ -157,6 +166,7 @@
 .animate-bounce-in { animation: bounceIn 0.5s ease-out forwards; }
 .animate-slide-in-right { animation: slideInRight 0.3s ease-out forwards; }
 .animate-drop-in { animation: dropIn 0.4s ease-out forwards; }
+.animate-pulse-ready { animation: pulseReady 1.5s ease-in-out infinite; }
 
 .progress-shimmer {
   background: linear-gradient(
@@ -245,13 +255,27 @@
   border-color: rgba(255,255,255,0.1);
 }
 
-/* Reduced motion */
+/* Font size scaling */
+html.font-large { font-size: 18px; }
+html.font-xl { font-size: 20px; }
+
+/* Accessible gold text — passes WCAG AA on #0a0a12 at small sizes */
+.text-gold-text { color: var(--color-gold-text); }
+
+/* Reduced motion — OS preference */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Reduced motion — app-specific toggle */
+html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
 }
 
 /* Line clamp utilities */
@@ -289,7 +313,6 @@
 
 /* Mobile pricing horizontal scroll */
 .mobile-scroll-x {
-  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }

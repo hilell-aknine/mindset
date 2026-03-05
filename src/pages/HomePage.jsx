@@ -329,7 +329,7 @@ export default function HomePage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
                 <Sparkles className="w-3 h-3 text-gold/50" />
-                <p className="text-[10px] text-gold/60 font-bold">ההישג הבא</p>
+                <p className="text-[10px] text-gold-text font-bold">ההישג הבא</p>
               </div>
               <p className="text-xs text-frost-white/70 font-semibold mt-0.5">{nextOne.title}</p>
               <p className="text-[10px] text-frost-white/30">{nextOne.description}</p>

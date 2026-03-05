@@ -1,11 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { usePlayer } from '../../contexts/PlayerContext'
 import { HEART_RECOVERY_MINUTES } from '../../config/constants'
 import { Heart, Clock, Crown } from 'lucide-react'
+import { useFocusTrap } from '../../hooks/useFocusTrap'
 
 export default function OutOfHeartsModal({ onClose, onPurchase }) {
   const { player } = usePlayer()
   const [timeStr, setTimeStr] = useState('')
+  const modalRef = useRef(null)
+
+  const handleEscape = useCallback(() => onClose(), [onClose])
+  useFocusTrap(modalRef, { onEscape: handleEscape })
 
   // Live countdown timer — updates every second
   useEffect(() => {
@@ -27,8 +32,8 @@ export default function OutOfHeartsModal({ onClose, onPurchase }) {
   }, [player.lastHeartLost])
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg-base/80 backdrop-blur-md p-4" role="dialog" aria-label="נגמרו הלבבות">
-      <div className="glass-card max-w-sm w-full p-6 text-center animate-bounce-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg-base/80 backdrop-blur-md p-4" role="dialog" aria-modal="true" aria-label="נגמרו הלבבות">
+      <div ref={modalRef} className="glass-card max-w-sm w-full p-6 text-center animate-bounce-in">
         {/* Hearts display */}
         <div className="w-16 h-16 rounded-2xl bg-danger/20 mx-auto mb-4 flex items-center justify-center relative">
           <Heart className="w-8 h-8 text-danger animate-heartbeat" />

@@ -11,14 +11,16 @@ import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
+import mindsetBook from '../data/books/mindset-book.json'
 
-const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves]
+const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook]
 
 const bookImages = {
   'atomic-habits': '/books/atomic-habits.png',
   'strengths-finder': '/books/strengths-finder.png',
   'happy-chemicals': '/books/happy-chemicals.png',
   'next-five-moves': '/books/next-five-moves.png',
+  'mindset-book': '/books/mindset-book.png',
 }
 
 const EXERCISE_TYPES = [
@@ -43,21 +45,38 @@ function useCountUp(target, duration = 1500) {
   useEffect(() => {
     const el = ref.current
     if (!el) return
+
+    const startAnimation = () => {
+      if (started.current) return
+      started.current = true
+      const startTime = performance.now()
+      const animate = (now) => {
+        const elapsed = now - startTime
+        const progress = Math.min(elapsed / duration, 1)
+        const eased = 1 - Math.pow(1 - progress, 3)
+        setCount(Math.round(eased * target))
+        if (progress < 1) requestAnimationFrame(animate)
+      }
+      requestAnimationFrame(animate)
+    }
+
+    // Check if parent has scroll-reveal — if so, wait for 'revealed' class
+    const revealParent = el.closest('.scroll-reveal')
+    if (revealParent && !revealParent.classList.contains('revealed')) {
+      const mo = new MutationObserver(() => {
+        if (revealParent.classList.contains('revealed')) {
+          mo.disconnect()
+          setTimeout(startAnimation, 200)
+        }
+      })
+      mo.observe(revealParent, { attributes: true, attributeFilter: ['class'] })
+      return () => mo.disconnect()
+    }
+
+    // No reveal parent or already revealed — use IntersectionObserver
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !started.current) {
-          started.current = true
-          const startTime = performance.now()
-          const animate = (now) => {
-            const elapsed = now - startTime
-            const progress = Math.min(elapsed / duration, 1)
-            // Ease-out cubic
-            const eased = 1 - Math.pow(1 - progress, 3)
-            setCount(Math.round(eased * target))
-            if (progress < 1) requestAnimationFrame(animate)
-          }
-          requestAnimationFrame(animate)
-        }
+        if (entry.isIntersecting) startAnimation()
       },
       { threshold: 0.3 }
     )
@@ -487,6 +506,7 @@ export default function LandingPage() {
       </nav>
 
       {/* ─── Hero ─── */}
+      <main id="main-content">
       <section ref={heroRef} className="relative pt-20 sm:pt-36 pb-10 sm:pb-24 px-4">
         {/* Background video on desktop, static image on mobile */}
         <video
@@ -502,6 +522,9 @@ export default function LandingPage() {
         <img
           src="/backgrounds/hero-mobile-bg.png"
           alt=""
+          width={640}
+          height={960}
+          fetchPriority="high"
           className="absolute inset-0 w-full h-full object-cover opacity-40 pointer-events-none sm:hidden"
           aria-hidden="true"
         />
@@ -522,6 +545,7 @@ export default function LandingPage() {
               <h1 className="font-display text-[28px] sm:text-5xl lg:text-6xl font-black leading-[1.2] sm:leading-tight mb-3 sm:mb-5">
                 מה אם יכולת{' '}
                 <span
+                  aria-live="polite"
                   className={`inline-block text-transparent bg-clip-text bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-400 ${heroWordVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}
                   style={{ minWidth: '2.5em' }}
                 >
@@ -631,6 +655,9 @@ export default function LandingPage() {
                     <img
                       src={img}
                       alt={title}
+                      width={80}
+                      height={80}
+                      loading="lazy"
                       className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl object-cover shrink-0 sm:mt-3 sm:mb-4 group-hover:scale-110 transition-transform"
                     />
                     <div className="flex-1 sm:text-center">
@@ -680,6 +707,9 @@ export default function LandingPage() {
                       <img
                         src={bookImages[book.slug]}
                         alt={book.title}
+                        width={72}
+                        height={72}
+                        loading="lazy"
                         className="w-16 h-16 sm:w-18 sm:h-18 rounded-xl sm:rounded-2xl object-cover shrink-0 group-hover:scale-105 transition-transform shadow-lg shadow-black/30"
                       />
                     ) : (
@@ -721,6 +751,9 @@ export default function LandingPage() {
         <img
           src="/backgrounds/exercises-bg.png"
           alt=""
+          width={1200}
+          height={800}
+          loading="lazy"
           className="absolute inset-0 w-full h-full object-cover opacity-15 pointer-events-none"
           aria-hidden="true"
         />
@@ -763,6 +796,9 @@ export default function LandingPage() {
         <img
           src="/backgrounds/gamification-bg.png"
           alt=""
+          width={1200}
+          height={800}
+          loading="lazy"
           className="absolute inset-0 w-full h-full object-cover opacity-10 pointer-events-none"
           aria-hidden="true"
         />
@@ -840,7 +876,7 @@ export default function LandingPage() {
               <RevealSection key={t.name} delay={i * 100}>
                 <div className="glass-card p-4 sm:p-5 group hover:border-gold/15 transition-all">
                   <div className="flex items-center gap-3 mb-3">
-                    <img src={t.avatar} alt={t.name} className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-gold/30 group-hover:border-gold/60 transition-colors" />
+                    <img src={t.avatar} alt={t.name} width={44} height={44} loading="lazy" className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-gold/30 group-hover:border-gold/60 transition-colors" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <p className="text-sm font-bold text-frost-white">{t.name}</p>
@@ -1143,6 +1179,8 @@ export default function LandingPage() {
           </RevealSection>
         </div>
       </section>
+
+      </main>
 
       {/* ─── Footer ─── */}
       <footer className="py-5 text-center border-t border-white/5 pb-24 sm:pb-5">

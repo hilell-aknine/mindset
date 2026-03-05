@@ -11,6 +11,7 @@ import Spinner from './components/shared/Spinner'
 import Onboarding from './components/Onboarding'
 import ErrorBoundary from './components/ErrorBoundary'
 import AdminGuard from './components/admin/AdminGuard'
+import { AnnouncerProvider } from './components/Announcer'
 
 // Lazy-loaded pages for code splitting
 const HomePage = lazy(() => import('./pages/HomePage'))
@@ -34,7 +35,7 @@ function PageSuspense({ children }) {
 
 function LoadingSkeleton() {
   return (
-    <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
+    <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-6" role="status" aria-label="טוען את האפליקציה">
       {/* Title skeleton */}
       <div className="mb-6 animate-fade-in">
         <div className="h-8 w-48 bg-white/5 rounded-xl mb-2 animate-pulse" />
@@ -137,8 +138,20 @@ function OfflineDetector() {
 export default function App() {
   const { isAuthenticated, loading } = useAuth()
 
+  // Apply saved accessibility settings on mount
+  useEffect(() => {
+    const fs = localStorage.getItem('mindset_font_size')
+    if (fs === 'large') document.documentElement.classList.add('font-large')
+    if (fs === 'xl') document.documentElement.classList.add('font-xl')
+
+    if (localStorage.getItem('mindset_reduced_motion') === 'true') {
+      document.documentElement.classList.add('reduce-motion')
+    }
+  }, [])
+
   return (
     <ErrorBoundary>
+      <AnnouncerProvider>
       <Toast />
       <OfflineDetector />
       <Routes>
@@ -239,6 +252,7 @@ export default function App() {
         />
         <Route path="*" element={<PageSuspense><NotFoundPage /></PageSuspense>} />
       </Routes>
+      </AnnouncerProvider>
     </ErrorBoundary>
   )
 }

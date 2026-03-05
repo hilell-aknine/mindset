@@ -178,9 +178,14 @@ export default function Identify({ exercise, onAnswer, disabled }) {
             onClick={handleCheck}
             disabled={!selection}
             aria-label="בדוק תשובה (Enter)"
-            className="w-full py-3.5 rounded-xl font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 active:scale-[0.98]"
+            className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all active:scale-[0.98] ${
+              selection
+                ? 'bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 animate-pulse-ready'
+                : 'bg-white/5 text-frost-white/30 cursor-not-allowed'
+            }`}
           >
             בדוק
+            {selection && <span className="text-[10px] font-normal mr-2 opacity-60">(Enter ↵)</span>}
           </button>
         )}
       </div>

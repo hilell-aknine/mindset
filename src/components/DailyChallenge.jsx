@@ -9,8 +9,9 @@ import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
+import mindsetBook from '../data/books/mindset-book.json'
 
-const ALL_BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves]
+const ALL_BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook]
 
 function getDailyExercise() {
   const today = new Date().toDateString()

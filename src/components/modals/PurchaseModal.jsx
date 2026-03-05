@@ -1,15 +1,20 @@
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import ReactConfetti from 'react-confetti'
 import { usePlayer } from '../../contexts/PlayerContext'
 import { useToast } from '../../contexts/ToastContext'
 import { PRICE_SINGLE_BOOK, PRICE_MASTERY_BUNDLE, PAID_BOOK_TOKENS } from '../../config/constants'
 import { Crown, BookOpen, Sparkles, Loader2, Check, Shield, RefreshCw, Lock } from 'lucide-react'
+import { useFocusTrap } from '../../hooks/useFocusTrap'
 
 export default function PurchaseModal({ bookSlug, onClose }) {
   const { updatePlayer } = usePlayer()
   const toast = useToast()
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const modalRef = useRef(null)
+
+  const handleEscape = useCallback(() => { if (!loading) onClose() }, [onClose, loading])
+  useFocusTrap(modalRef, { onEscape: handleEscape })
 
   const simulatePurchase = async (tier) => {
     setLoading(true)
@@ -53,8 +58,8 @@ export default function PurchaseModal({ bookSlug, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-bg-base/80 backdrop-blur-md p-4">
-      <div className="glass-card max-w-md w-full p-6 animate-slide-up sm:animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-bg-base/80 backdrop-blur-md p-4" role="dialog" aria-modal="true" aria-label="בחר תוכנית">
+      <div ref={modalRef} className="glass-card max-w-md w-full p-6 animate-slide-up sm:animate-fade-in">
         <h3 className="font-display text-xl font-bold text-frost-white text-center mb-6">
           בחר תוכנית
         </h3>

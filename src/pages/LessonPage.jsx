@@ -8,6 +8,7 @@ import { getComboBonus, getComboLabel, XP_CORRECT_ANSWER } from '../config/const
 import { getActiveEvent, getXPMultiplier } from '../lib/events'
 import ExerciseRouter from '../components/exercises/ExerciseRouter'
 import ExerciseTimer, { getSpeedBonus, TIMER_DURATION } from '../components/exercises/ExerciseTimer'
+import { useAnnounce } from '../components/Announcer'
 import FeedbackPanel from '../components/feedback/FeedbackPanel'
 import LessonComplete from '../components/feedback/LessonComplete'
 import LevelUpOverlay from '../components/feedback/LevelUpOverlay'
@@ -22,6 +23,16 @@ import nextFiveMoves from '../data/books/next-five-moves.json'
 import mindsetBook from '../data/books/mindset-book.json'
 
 const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook }
+
+const EXERCISE_TYPE_NAMES = {
+  'multiple-choice': 'בחירה מרובה',
+  'fill-blank': 'השלם את המשפט',
+  'compare': 'השוואה',
+  'improve': 'שיפור',
+  'order': 'סדר נכון',
+  'match': 'התאמה',
+  'identify': 'זיהוי',
+}
 
 // Mini confetti particles for correct answers — scales up with combo
 function MiniConfetti({ active, combo = 0 }) {
@@ -66,7 +77,7 @@ function XPFloat({ xp, combo, speedBonus, eventMultiplier }) {
   return (
     <div className="fixed top-1/3 left-1/2 -translate-x-1/2 z-50 pointer-events-none animate-xp-float">
       <div className="text-center">
-        <span className="text-gold font-bold text-2xl drop-shadow-lg">+{xp} XP</span>
+        <span className="text-gold-text font-bold text-2xl drop-shadow-lg">+{xp} XP</span>
         {eventMultiplier > 1 && (
           <span className="block text-xs text-warning font-bold mt-0.5 animate-combo-scale">
             x{eventMultiplier} אירוע!
@@ -93,6 +104,7 @@ export default function LessonPage() {
   const { player, updatePlayer, onCorrectAnswer, onWrongAnswer, completeLesson } = usePlayer()
   const toast = useToast()
   const { play } = useSound()
+  const announce = useAnnounce()
 
   const book = BOOKS[bookSlug]
   const chapter = book?.chapters[parseInt(chapterIndex)]
@@ -119,6 +131,14 @@ export default function LessonPage() {
   const currentExercise = exercises[currentIndex]
   const progress = exercises.length > 0 ? ((currentIndex) / exercises.length) * 100 : 0
   const comboStreak = player.comboStreak || 0
+
+  // Announce exercise to screen readers
+  useEffect(() => {
+    if (currentExercise) {
+      const typeName = EXERCISE_TYPE_NAMES[currentExercise.type] || currentExercise.type
+      announce(`תרגיל ${currentIndex + 1} מתוך ${exercises.length}: ${typeName}`)
+    }
+  }, [currentIndex, currentExercise, exercises.length, announce])
 
   // Reset combo at lesson start + play start sound
   const hasReset = useRef(false)
@@ -231,9 +251,10 @@ export default function LessonPage() {
     if (player.level > prevLevel) {
       play('levelUp')
       setLevelUp(player.level)
+      announce(`עלית לרמה ${player.level}!`)
     }
     setPrevLevel(player.level)
-  }, [player.level, prevLevel, play])
+  }, [player.level, prevLevel, play, announce])
 
   // Watch for new achievements
   useEffect(() => {
@@ -241,6 +262,7 @@ export default function LessonPage() {
     if (newOnes.length > 0 && !newAchievement) {
       play('achievement')
       setNewAchievement(newOnes[0])
+      announce(`הישג חדש: ${newOnes[0].title}`)
       updatePlayer(prev => ({
         ...prev,
         achievements: [...(prev.achievements || []), newOnes[0].id],

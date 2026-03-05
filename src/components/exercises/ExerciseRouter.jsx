@@ -6,6 +6,7 @@ import Match from './Match'
 import Improve from './Improve'
 import Identify from './Identify'
 import HintButton from './HintButton'
+import ExerciseHelp from './ExerciseHelp'
 
 const COMPONENTS = {
   'multiple-choice': MultipleChoice,
@@ -49,7 +50,7 @@ export default function ExerciseRouter({ exercise, onAnswer, disabled, tokens, o
 
   return (
     <div>
-      {/* Exercise type badge + difficulty */}
+      {/* Exercise type badge + difficulty + help */}
       {typeInfo && (
         <div className="flex items-center gap-2 mb-3 animate-fade-in">
           <span className="text-sm">{typeInfo.emoji}</span>
@@ -63,6 +64,7 @@ export default function ExerciseRouter({ exercise, onAnswer, disabled, tokens, o
               ))}
             </div>
           )}
+          <ExerciseHelp exerciseType={exercise.type} />
         </div>
       )}
 
