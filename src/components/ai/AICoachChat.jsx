@@ -64,7 +64,7 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
 
       if (res.ok) {
         const data = await res.json()
-        setMessages(prev => [...prev, { role: 'assistant', content: data.reply }])
+        setMessages(prev => [...prev, { role: 'assistant', content: data.reply || 'לא קיבלתי תשובה. נסה שוב.' }])
       } else {
         throw new Error('API unavailable')
       }

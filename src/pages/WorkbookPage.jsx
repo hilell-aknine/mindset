@@ -15,7 +15,7 @@ export default function WorkbookPage() {
   const { player } = usePlayer()
   const book = BOOKS[slug]
 
-  const hasPremium = player.isPremium || player.premiumBooks.includes(slug)
+  const hasPremium = player.isPremium || player.premiumBooks?.includes(slug)
 
   if (!book) {
     return (

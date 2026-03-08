@@ -87,7 +87,7 @@ export default function ReviewPage() {
       for (const chapter of book.chapters) {
         for (let li = 0; li < chapter.lessons.length; li++) {
           const key = `${book.slug}:${chapter.orderIndex}:${li}`
-          if (!player.completedLessons[key]) {
+          if (!player.completedLessons?.[key]) {
             return { book, chapter, lessonIndex: li, lesson: chapter.lessons[li] }
           }
         }

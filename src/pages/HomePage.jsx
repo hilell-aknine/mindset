@@ -223,7 +223,7 @@ export default function HomePage() {
           const totalLessons = book.chapters.reduce((acc, ch) => acc + ch.lessons.length, 0)
           const completedCount = book.chapters.reduce((acc, ch) =>
             acc + ch.lessons.filter((_, li) =>
-              player.completedLessons[`${book.slug}:${ch.orderIndex}:${li}`]
+              player.completedLessons?.[`${book.slug}:${ch.orderIndex}:${li}`]
             ).length, 0)
           const progress = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0
 

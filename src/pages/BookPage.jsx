@@ -39,12 +39,12 @@ export default function BookPage() {
 
   const isChapterUnlocked = (chapterIndex) => {
     if (chapterIndex === 0) return true
-    if (player.isPremium || player.premiumBooks.includes(slug)) return true
+    if (player.isPremium || player.premiumBooks?.includes(slug)) return true
     return false
   }
 
   const isLessonCompleted = (chapterIndex, lessonIndex) => {
-    return !!player.completedLessons[`${slug}:${chapterIndex}:${lessonIndex}`]
+    return !!player.completedLessons?.[`${slug}:${chapterIndex}:${lessonIndex}`]
   }
 
   const getChapterProgress = (chapter) => {
@@ -185,7 +185,7 @@ export default function BookPage() {
           const b = BOOKS[s]
           const total = b.chapters.reduce((acc, ch) => acc + ch.lessons.length, 0)
           const done = b.chapters.reduce((acc, ch) =>
-            acc + ch.lessons.filter((_, li) => player.completedLessons[`${s}:${ch.orderIndex}:${li}`]).length, 0)
+            acc + ch.lessons.filter((_, li) => player.completedLessons?.[`${s}:${ch.orderIndex}:${li}`]).length, 0)
           return done < total
         })
         if (!nextSlug) return null
@@ -351,7 +351,7 @@ export default function BookPage() {
       </div>
 
       {/* Workbook link for premium users */}
-      {(player.isPremium || player.premiumBooks.includes(slug)) && (
+      {(player.isPremium || player.premiumBooks?.includes(slug)) && (
         <button
           onClick={() => navigate(`/workbook/${slug}`)}
           className="w-full glass-card p-3 mt-4 flex items-center gap-3 border-dusty-aqua/10 hover:border-dusty-aqua/25 transition-all animate-fade-in"
