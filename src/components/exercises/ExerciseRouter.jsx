@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { BookOpen, ChevronDown } from 'lucide-react'
 import MultipleChoice from './MultipleChoice'
 import FillBlank from './FillBlank'
 import SortOrder from './SortOrder'
@@ -7,6 +9,33 @@ import Improve from './Improve'
 import Identify from './Identify'
 import HintButton from './HintButton'
 import ExerciseHelp from './ExerciseHelp'
+
+function ContextPassage({ text }) {
+  const [expanded, setExpanded] = useState(false)
+  const isLong = text.length > 120
+  const display = !isLong || expanded ? text : text.slice(0, 120) + '...'
+
+  return (
+    <div className="mb-4 p-3.5 rounded-xl bg-deep-petrol/30 border border-white/5 animate-fade-in">
+      <div className="flex items-start gap-2">
+        <BookOpen className="w-3.5 h-3.5 text-dusty-aqua/60 mt-0.5 shrink-0" />
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] font-bold text-dusty-aqua/60 mb-1">רקע מהספר</p>
+          <p className="text-xs text-frost-white/55 leading-relaxed">{display}</p>
+          {isLong && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="flex items-center gap-1 mt-1.5 text-[10px] text-dusty-aqua/50 hover:text-dusty-aqua/80 transition-colors"
+            >
+              <ChevronDown className={`w-3 h-3 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+              {expanded ? 'הסתר' : 'קרא עוד'}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const COMPONENTS = {
   'multiple-choice': MultipleChoice,
@@ -66,6 +95,11 @@ export default function ExerciseRouter({ exercise, onAnswer, disabled, tokens, o
           )}
           <ExerciseHelp exerciseType={exercise.type} />
         </div>
+      )}
+
+      {/* Context passage — helps users who haven't read the book */}
+      {exercise.context && (
+        <ContextPassage text={exercise.context} />
       )}
 
       {/* Hint button — only show when not answered yet and tokens available */}
