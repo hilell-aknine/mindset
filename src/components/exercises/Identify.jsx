@@ -136,7 +136,7 @@ export default function Identify({ exercise, onAnswer, disabled }) {
       <div className="flex items-center gap-2 mb-3">
         <MousePointerClick className="w-3.5 h-3.5 text-frost-white/30" />
         <p className="text-xs text-frost-white/40">
-          {selection && !disabled ? 'ניתן לבחור מחדש או ללחוץ Enter' : 'סמנו את הטקסט הרלוונטי בעזרת הגרירה'}
+          {selection && !disabled ? 'ניתן לבחור מחדש או ללחוץ Enter' : 'סמנו את הטקסט הרלוונטי — לחצו ארוך וגררו'}
         </p>
       </div>
 

@@ -132,6 +132,34 @@ export default function LessonPage() {
   const progress = exercises.length > 0 ? ((currentIndex) / exercises.length) * 100 : 0
   const comboStreak = player.comboStreak || 0
 
+  // Reset combo at lesson start + play start sound
+  const hasReset = useRef(false)
+
+  // Reset all state when navigating to a different lesson (same component, new params)
+  const lessonKey = `${bookSlug}:${chapterIndex}:${lessonIndex}`
+  const prevLessonKey = useRef(lessonKey)
+  useEffect(() => {
+    if (prevLessonKey.current !== lessonKey) {
+      prevLessonKey.current = lessonKey
+      setCurrentIndex(0)
+      setFeedback(null)
+      setMistakes(0)
+      setIsComplete(false)
+      setLevelUp(null)
+      setNewAchievement(null)
+      setShowOutOfHearts(false)
+      setShowPurchase(false)
+      setTransitioning(false)
+      setShowConfetti(false)
+      setFloatingXP(null)
+      setTimerEnabled(false)
+      setTotalSpeedBonus(0)
+      setHalfwayShown(false)
+      timerTimeLeft.current = TIMER_DURATION
+      hasReset.current = false
+    }
+  }, [lessonKey])
+
   // Announce exercise to screen readers
   useEffect(() => {
     if (currentExercise) {
@@ -139,16 +167,13 @@ export default function LessonPage() {
       announce(`תרגיל ${currentIndex + 1} מתוך ${exercises.length}: ${typeName}`)
     }
   }, [currentIndex, currentExercise, exercises.length, announce])
-
-  // Reset combo at lesson start + play start sound
-  const hasReset = useRef(false)
   useEffect(() => {
     if (!hasReset.current) {
       updatePlayer(prev => ({ ...prev, comboStreak: 0 }))
       play('lessonStart')
       hasReset.current = true
     }
-  }, [])
+  }, [lessonKey])
 
   // Track timer value
   const handleTimerUpdate = useCallback(() => {
