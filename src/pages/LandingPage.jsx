@@ -674,7 +674,7 @@ export default function LandingPage() {
 
       {/* ─── Book Showcase ─── */}
       <section className="py-12 sm:py-24 px-4 relative overflow-hidden">
-        {/* Background video - hidden on mobile to save battery */}
+        {/* Background video on desktop, static image on mobile */}
         <video
           autoPlay
           loop
@@ -685,6 +685,15 @@ export default function LandingPage() {
         >
           <source src="/books-bg.mp4" type="video/mp4" />
         </video>
+        <img
+          src="/backgrounds/hero-book-brain.png"
+          alt=""
+          width={800}
+          height={450}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover opacity-25 pointer-events-none sm:hidden"
+          aria-hidden="true"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-bg-base via-transparent to-bg-base pointer-events-none" />
         <div className="absolute top-1/2 left-0 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] rounded-full bg-deep-petrol/15 blur-[60px] sm:blur-[100px] pointer-events-none -translate-y-1/2" />
 
@@ -805,6 +814,14 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-bg-base/70 via-bg-base/40 to-bg-base/70 pointer-events-none" />
         <div className="max-w-5xl mx-auto relative z-10">
           <RevealSection className="text-center mb-8 sm:mb-12">
+            <img
+              src="/backgrounds/achievement-badge.png"
+              alt=""
+              width={120}
+              height={120}
+              loading="lazy"
+              className="w-20 h-20 sm:w-28 sm:h-28 mx-auto mb-4 sm:mb-6 object-contain drop-shadow-[0_0_30px_rgba(212,175,55,0.3)]"
+            />
             <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">
               מערכת{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-l from-gold to-dusty-aqua">
