@@ -18,7 +18,13 @@ export default function Compare({ exercise, onAnswer, disabled }) {
     onAnswer(correct, exercise.explanation)
   }
 
-  const options = [exercise.optionA, exercise.optionB]
+  // Handle both formats: string ("text") or object ({label, text})
+  const rawOptions = [exercise.optionA, exercise.optionB]
+  const options = rawOptions.map((opt, i) =>
+    typeof opt === 'object' && opt !== null
+      ? opt
+      : { label: i === 0 ? 'גישה א' : 'גישה ב', text: opt }
+  )
 
   // Keyboard shortcuts: 1/2 to select, Enter to check
   useEffect(() => {
