@@ -39,7 +39,7 @@ export default function WorkbookPage() {
     return (
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
         <div className="flex items-center gap-3 mb-6 animate-fade-in">
-          <button onClick={() => navigate(`/book/${slug}`)} className="p-2 rounded-xl hover:bg-white/5 transition-colors">
+          <button onClick={() => navigate(`/book/${slug}`)} className="p-2.5 -m-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors">
             <ArrowRight className="w-5 h-5 text-frost-white/60" />
           </button>
           <h2 className="font-display text-xl font-bold text-frost-white">חוברת עבודה</h2>
@@ -64,7 +64,7 @@ export default function WorkbookPage() {
       {/* Header (hidden in print) */}
       <div className="flex items-center justify-between mb-6 animate-fade-in print:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(`/book/${slug}`)} className="p-2 rounded-xl hover:bg-white/5 transition-colors" aria-label="חזרה לספר">
+          <button onClick={() => navigate(`/book/${slug}`)} className="p-2.5 -m-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors" aria-label="חזרה לספר">
             <ArrowRight className="w-5 h-5 text-frost-white/60" />
           </button>
           <div>

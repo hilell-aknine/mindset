@@ -97,7 +97,7 @@ export default function BookPage() {
       <div className="flex items-center gap-3 mb-4 animate-fade-in">
         <button
           onClick={() => navigate('/home')}
-          className="p-2 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors"
+          className="p-2.5 -m-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors"
           aria-label="חזרה לדף הבית"
         >
           <ArrowRight className="w-5 h-5 text-frost-white/60" />
@@ -147,7 +147,7 @@ export default function BookPage() {
       {continueTarget && (
         <button
           onClick={() => navigate(`/lesson/${slug}/${continueTarget.ci}/${continueTarget.li}`)}
-          className="w-full glass-card p-4 mb-4 flex items-center gap-3 border-gold/15 hover:border-gold/30 transition-all animate-fade-in group animate-pulse-glow"
+          className="w-full glass-card p-4 mb-4 flex items-center gap-3 border-gold/15 hover:border-gold/30 active:bg-white/5 active:scale-[0.98] transition-all animate-fade-in group animate-pulse-glow"
           style={{ animationDelay: '0.1s' }}
         >
           <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center group-hover:scale-110 transition-transform">

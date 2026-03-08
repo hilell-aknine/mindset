@@ -133,7 +133,8 @@ export default function LeaderboardPage() {
       <div className="flex items-center gap-3 mb-5 animate-fade-in">
         <button
           onClick={() => navigate('/home')}
-          className="p-2 rounded-xl hover:bg-white/5 transition-colors"
+          className="p-2.5 -m-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors"
+          aria-label="חזרה לדף הבית"
         >
           <ArrowRight className="w-5 h-5 text-frost-white/60" />
         </button>

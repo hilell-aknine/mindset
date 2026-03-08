@@ -101,7 +101,7 @@ export default function ReviewPage() {
     return (
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
         <div className="flex items-center gap-3 mb-6 animate-fade-in">
-          <button onClick={() => navigate('/home')} className="p-2 rounded-xl hover:bg-white/5 transition-colors">
+          <button onClick={() => navigate('/home')} className="p-2.5 -m-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors">
             <ArrowRight className="w-5 h-5 text-frost-white/60" />
           </button>
           <h2 className="font-display text-xl font-bold text-frost-white">חזרה</h2>
@@ -132,7 +132,7 @@ export default function ReviewPage() {
 
           <button
             onClick={() => navigate('/home')}
-            className="px-6 py-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-bold text-sm hover:opacity-90 transition-opacity"
+            className="px-6 py-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-bold text-sm hover:opacity-90 active:scale-[0.98] transition-all"
           >
             חזרה לספרייה
           </button>
@@ -173,7 +173,7 @@ export default function ReviewPage() {
 
           <button
             onClick={() => navigate('/home')}
-            className="px-6 py-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-bold text-sm hover:opacity-90 transition-opacity animate-fade-in"
+            className="px-6 py-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-bold text-sm hover:opacity-90 active:scale-[0.98] transition-all animate-fade-in"
             style={{ animationDelay: '0.3s' }}
           >
             חזרה לספרייה
@@ -190,7 +190,7 @@ export default function ReviewPage() {
         <div className="max-w-2xl mx-auto flex items-center gap-3">
           <button
             onClick={() => navigate('/home')}
-            className="p-1.5 rounded-lg hover:bg-white/5 transition-colors"
+            className="p-2.5 -m-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors"
           >
             <ArrowRight className="w-5 h-5 text-frost-white/40" />
           </button>

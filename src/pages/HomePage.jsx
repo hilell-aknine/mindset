@@ -231,7 +231,7 @@ export default function HomePage() {
             <button
               key={book.slug}
               onClick={() => navigate(`/book/${book.slug}`)}
-              className="glass-card p-4 flex items-center gap-3 text-right hover:border-gold/20 transition-all group overflow-hidden w-full animate-fade-in"
+              className="glass-card p-4 flex items-center gap-3 text-right hover:border-gold/20 active:bg-white/5 active:scale-[0.98] transition-all group overflow-hidden w-full animate-fade-in"
               style={{ animationDelay: `${0.2 + idx * 0.05}s` }}
             >
               <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-2xl sm:text-3xl shrink-0 group-hover:scale-105 transition-transform">
@@ -260,7 +260,7 @@ export default function HomePage() {
         {/* Review */}
         <button
           onClick={() => navigate('/review')}
-          className="glass-card p-3 text-center hover:border-gold/20 transition-all animate-fade-in"
+          className="glass-card p-3 text-center hover:border-gold/20 active:bg-white/5 active:scale-[0.97] transition-all animate-fade-in"
           style={{ animationDelay: '0.4s' }}
         >
           <div className="w-9 h-9 rounded-xl bg-warning/10 flex items-center justify-center mx-auto mb-2">
@@ -275,7 +275,7 @@ export default function HomePage() {
         {/* Leaderboard */}
         <button
           onClick={() => navigate('/leaderboard')}
-          className="glass-card p-3 text-center hover:border-gold/20 transition-all animate-fade-in"
+          className="glass-card p-3 text-center hover:border-gold/20 active:bg-white/5 active:scale-[0.97] transition-all animate-fade-in"
           style={{ animationDelay: '0.43s' }}
         >
           <div className="w-9 h-9 rounded-xl bg-gold/10 flex items-center justify-center mx-auto mb-2">
@@ -287,7 +287,7 @@ export default function HomePage() {
         {/* Stats */}
         <button
           onClick={() => navigate('/stats')}
-          className="glass-card p-3 text-center hover:border-gold/20 transition-all animate-fade-in"
+          className="glass-card p-3 text-center hover:border-gold/20 active:bg-white/5 active:scale-[0.97] transition-all animate-fade-in"
           style={{ animationDelay: '0.46s' }}
         >
           <div className="w-9 h-9 rounded-xl bg-dusty-aqua/10 flex items-center justify-center mx-auto mb-2">
@@ -299,7 +299,7 @@ export default function HomePage() {
         {/* Settings */}
         <button
           onClick={() => navigate('/settings')}
-          className="glass-card p-3 text-center hover:border-gold/20 transition-all animate-fade-in"
+          className="glass-card p-3 text-center hover:border-gold/20 active:bg-white/5 active:scale-[0.97] transition-all animate-fade-in"
           style={{ animationDelay: '0.5s' }}
         >
           <div className="w-9 h-9 rounded-xl bg-frost-white/5 flex items-center justify-center mx-auto mb-2">
@@ -346,7 +346,7 @@ export default function HomePage() {
           <p className="text-[10px] text-frost-white/40 mt-1">XP</p>
         </div>
         <div className="glass-card p-3 text-center animate-fade-in" style={{ animationDelay: '0.6s' }}>
-          <p className="text-2xl font-bold text-success">{player.totalCorrect}</p>
+          <p className="text-2xl font-bold text-success">{player.totalCorrect.toLocaleString()}</p>
           <p className="text-[10px] text-frost-white/40 mt-1">נכונות</p>
         </div>
         <div className="glass-card p-3 text-center animate-fade-in" style={{ animationDelay: '0.63s' }}>

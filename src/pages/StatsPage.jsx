@@ -110,7 +110,7 @@ export default function StatsPage() {
       <div className="flex items-center gap-3 mb-6 animate-fade-in">
         <button
           onClick={() => navigate('/home')}
-          className="p-2 rounded-xl hover:bg-white/5 transition-colors"
+          className="p-2.5 -m-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors"
           aria-label="חזרה לדף הבית"
         >
           <ArrowRight className="w-5 h-5 text-frost-white/60" />
@@ -124,7 +124,7 @@ export default function StatsPage() {
                 text: `רמה ${player.level} (${levelName}) | ${player.xp} XP | דיוק ${accuracy}% | רצף ${player.currentStreak} ימים`,
               }).catch(() => {})
             }}
-            className="p-2 rounded-xl hover:bg-white/5 transition-colors text-frost-white/30 hover:text-frost-white/60"
+            className="p-2.5 -m-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors text-frost-white/30 hover:text-frost-white/60"
             aria-label="שתף סטטיסטיקות"
           >
             <Share2 className="w-4 h-4" />
@@ -143,7 +143,7 @@ export default function StatsPage() {
             <h3 className="font-display text-2xl font-bold text-frost-white">{levelName}</h3>
             <div className="flex items-center gap-2 mt-2">
               <TrendingUp className="w-3.5 h-3.5 text-gold" />
-              <span className="text-xs text-frost-white/40">{player.xp}/{nextThreshold} XP</span>
+              <span className="text-xs text-frost-white/40">{player.xp.toLocaleString()}/{nextThreshold.toLocaleString()} XP</span>
             </div>
           </div>
         </div>
@@ -152,12 +152,12 @@ export default function StatsPage() {
       {/* Stats grid */}
       <div className="grid grid-cols-2 gap-3 mb-6">
         {[
-          { icon: Brain, color: 'text-dusty-aqua', bg: 'bg-dusty-aqua/10', value: player.xp, label: 'נקודות XP' },
+          { icon: Brain, color: 'text-dusty-aqua', bg: 'bg-dusty-aqua/10', value: player.xp.toLocaleString(), label: 'נקודות XP' },
           { icon: Target, color: 'text-success', bg: 'bg-success/10', value: `${accuracy}%`, label: 'דיוק' },
-          { icon: Flame, color: 'text-warning', bg: 'bg-warning/10', value: player.longestStreak, label: 'רצף שיא' },
-          { icon: Heart, color: 'text-danger', bg: 'bg-danger/10', value: player.totalCorrect, label: 'תשובות נכונות' },
-          { icon: Zap, color: 'text-gold', bg: 'bg-gold/10', value: completedCount, label: 'שיעורים' },
-          { icon: BookOpen, color: 'text-dusty-aqua', bg: 'bg-dusty-aqua/10', value: player.reviewsCompleted || 0, label: 'חזרות' },
+          { icon: Flame, color: 'text-warning', bg: 'bg-warning/10', value: player.longestStreak.toLocaleString(), label: 'רצף שיא' },
+          { icon: Heart, color: 'text-danger', bg: 'bg-danger/10', value: player.totalCorrect.toLocaleString(), label: 'תשובות נכונות' },
+          { icon: Zap, color: 'text-gold', bg: 'bg-gold/10', value: completedCount.toLocaleString(), label: 'שיעורים' },
+          { icon: BookOpen, color: 'text-dusty-aqua', bg: 'bg-dusty-aqua/10', value: (player.reviewsCompleted || 0).toLocaleString(), label: 'חזרות' },
           { icon: Trophy, color: 'text-gold', bg: 'bg-gold/10', value: `${earnedAchievements}/${totalAchievements}`, label: 'הישגים' },
           { icon: Calendar, color: 'text-warning', bg: 'bg-warning/10', value: player.dailyChallengesCompleted || 0, label: 'אתגרים יומיים' },
         ].map((stat, i) => (
