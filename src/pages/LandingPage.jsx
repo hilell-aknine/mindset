@@ -593,7 +593,7 @@ export default function LandingPage() {
       <RevealSection>
         <div className="border-y border-white/5 bg-white/[0.02]">
           <div className="max-w-6xl mx-auto px-4 py-5 sm:py-6 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-4 text-center">
-            <CounterStat target={4} label="ספרים זמינים" icon={BookOpen} />
+            <CounterStat target={BOOKS.length} label="ספרים זמינים" icon={BookOpen} />
             <CounterStat target={7} label="סוגי תרגילים" icon={Target} />
             <CounterStat target={360} label="תרגילים" icon={Flame} />
             <CounterStat target={5} label="דקות ביום" icon={Clock} />
@@ -691,7 +691,7 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto relative z-10">
           <RevealSection className="text-center mb-8 sm:mb-12">
             <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">הספרים שלנו</h2>
-            <p className="text-frost-white/50 text-sm sm:text-base">4 ספרים. 5 דקות ביום. ידע שנשאר.</p>
+            <p className="text-frost-white/50 text-sm sm:text-base">{BOOKS.length} ספרים. 5 דקות ביום. ידע שנשאר.</p>
           </RevealSection>
 
           <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
@@ -979,7 +979,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Pricing ─── */}
-      <section className="py-12 sm:py-24 px-0 sm:px-4 bg-white/[0.01] border-y border-white/5">
+      <section id="pricing" className="py-12 sm:py-24 px-0 sm:px-4 bg-white/[0.01] border-y border-white/5">
         <div className="max-w-4xl mx-auto">
           <RevealSection className="text-center mb-8 sm:mb-12 px-4">
             <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">תוכניות ומחירים</h2>
@@ -1053,7 +1053,7 @@ export default function LandingPage() {
                 <p className="text-2xl sm:text-3xl font-bold text-gold mb-1">₪97</p>
                 <p className="text-[11px] sm:text-xs text-frost-white/40 mb-4 sm:mb-5">חד פעמי — כל הספרים</p>
                 <ul className="space-y-2 sm:space-y-2.5 text-xs sm:text-sm text-frost-white/60 text-right mb-5 sm:mb-6 flex-1">
-                  {['כל הספרים (4+)', 'AI ללא הגבלה', 'חוברות עבודה', 'עדכונים וספרים חדשים'].map(item => (
+                  {[`כל הספרים (${BOOKS.length}+)`, 'AI ללא הגבלה', 'חוברות עבודה', 'עדכונים וספרים חדשים'].map(item => (
                     <li key={item} className="flex items-center gap-2">
                       <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gold shrink-0" />
                       {item}
@@ -1080,7 +1080,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── FAQ ─── */}
-      <section className="py-12 sm:py-24 px-4">
+      <section id="faq" className="py-12 sm:py-24 px-4">
         <div className="max-w-3xl mx-auto">
           <RevealSection className="text-center mb-6 sm:mb-10">
             <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">שאלות נפוצות</h2>

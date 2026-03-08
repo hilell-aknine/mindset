@@ -192,7 +192,7 @@ export default function Onboarding({ onComplete }) {
             <div className="grid grid-cols-3 gap-3">
               {[
                 { num: '7', label: 'סוגי תרגילים' },
-                { num: '4', label: 'ספרים' },
+                { num: String(ALL_BOOKS.length), label: 'ספרים' },
                 { num: '15\'', label: 'לכל ספר' },
               ].map(s => (
                 <div key={s.label} className="glass-card p-3 text-center">

@@ -1,6 +1,12 @@
-import { Brain, Mail, Github } from 'lucide-react'
+import { Brain } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export default function Footer() {
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id)
+    if (el) el.scrollIntoView({ behavior: 'smooth' })
+  }
+
   return (
     <footer className="mt-auto border-t border-white/5 bg-white/[0.01]">
       <div className="max-w-5xl mx-auto px-4 py-8">
@@ -22,9 +28,9 @@ export default function Footer() {
           <div>
             <h4 className="text-xs font-bold text-frost-white/50 mb-3">המוצר</h4>
             <ul className="space-y-2 text-[11px] text-frost-white/30">
-              <li><a href="#" className="hover:text-frost-white/50 transition-colors">ספרים</a></li>
-              <li><a href="#" className="hover:text-frost-white/50 transition-colors">מחירים</a></li>
-              <li><a href="#" className="hover:text-frost-white/50 transition-colors">שאלות נפוצות</a></li>
+              <li><Link to="/home" className="hover:text-frost-white/50 transition-colors">ספרים</Link></li>
+              <li><button onClick={() => scrollToSection('pricing')} className="hover:text-frost-white/50 transition-colors">מחירים</button></li>
+              <li><button onClick={() => scrollToSection('faq')} className="hover:text-frost-white/50 transition-colors">שאלות נפוצות</button></li>
             </ul>
           </div>
 
@@ -32,9 +38,9 @@ export default function Footer() {
           <div>
             <h4 className="text-xs font-bold text-frost-white/50 mb-3">מידע</h4>
             <ul className="space-y-2 text-[11px] text-frost-white/30">
-              <li><a href="#" className="hover:text-frost-white/50 transition-colors">תנאי שימוש</a></li>
-              <li><a href="#" className="hover:text-frost-white/50 transition-colors">מדיניות פרטיות</a></li>
-              <li><a href="#" className="hover:text-frost-white/50 transition-colors">נגישות</a></li>
+              <li><span className="text-frost-white/20 cursor-default">תנאי שימוש</span></li>
+              <li><span className="text-frost-white/20 cursor-default">מדיניות פרטיות</span></li>
+              <li><span className="text-frost-white/20 cursor-default">נגישות</span></li>
             </ul>
           </div>
         </div>

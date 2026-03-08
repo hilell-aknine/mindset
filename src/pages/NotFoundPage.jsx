@@ -6,7 +6,7 @@ export default function NotFoundPage() {
 
   const links = [
     { label: 'דף הבית', path: '/home', icon: Home, color: 'text-gold' },
-    { label: 'הספרייה', path: '/home', icon: BookOpen, color: 'text-dusty-aqua' },
+    { label: 'הספרייה', path: '/book/atomic-habits', icon: BookOpen, color: 'text-dusty-aqua' },
     { label: 'סטטיסטיקות', path: '/stats', icon: BarChart3, color: 'text-muted-teal' },
   ]
 
