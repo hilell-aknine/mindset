@@ -11,10 +11,20 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
+      if (session?.user) {
+        setUser(session.user)
+      } else if (localStorage.getItem('mindset_guest') === 'true') {
+        // Restore guest session from localStorage
+        setIsGuest(true)
+        setUser({ id: 'guest', email: 'guest@mindset.local' })
+      }
       setLoading(false)
     }).catch(() => {
-      // Network error on initial load — allow guest mode
+      // Network error on initial load — try restoring guest mode
+      if (localStorage.getItem('mindset_guest') === 'true') {
+        setIsGuest(true)
+        setUser({ id: 'guest', email: 'guest@mindset.local' })
+      }
       setLoading(false)
     })
 
@@ -23,6 +33,7 @@ export function AuthProvider({ children }) {
       if (session?.user) {
         setIsGuest(false)
         setAuthError(null)
+        localStorage.removeItem('mindset_guest')
       }
       // Auto-handle token refresh failures
       if (event === 'TOKEN_REFRESHED') {
@@ -74,6 +85,7 @@ export function AuthProvider({ children }) {
     setAuthError(null)
     setIsGuest(true)
     setUser({ id: 'guest', email: 'guest@mindset.local' })
+    localStorage.setItem('mindset_guest', 'true')
   }
 
   const logout = async () => {
@@ -84,6 +96,7 @@ export function AuthProvider({ children }) {
     setIsGuest(false)
     setAuthError(null)
     localStorage.removeItem('mindset_player')
+    localStorage.removeItem('mindset_guest')
   }
 
   const isAuthenticated = !!user

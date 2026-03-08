@@ -351,8 +351,8 @@ export default function LessonPage() {
     }
     // Try first lesson in next chapter (if unlocked)
     const nextChapter = book?.chapters[ci + 1]
-    if (nextChapter && (player.isPremium || player.premiumBooks?.includes(bookSlug) || ci + 1 === 0)) {
-      return { title: nextChapter.lessons[0]?.title, ci: ci + 1, li: 0 }
+    if (nextChapter?.lessons?.[0] && (player.isPremium || player.premiumBooks?.includes(bookSlug) || ci + 1 === 0)) {
+      return { title: nextChapter.lessons[0].title, ci: ci + 1, li: 0 }
     }
     return null
   })()

@@ -138,7 +138,7 @@ export default function LessonComplete({ mistakes, totalExercises, onContinue, s
             className="w-full max-w-xs mx-auto flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base font-bold text-sm hover:brightness-110 transition-all active:scale-[0.98] animate-bounce-in mb-3"
             style={{ animationDelay: '0.7s' }}
           >
-            שיעור הבא: {nextLesson.title}
+            שיעור הבא: {nextLesson.title || 'המשך'}
             <ArrowLeft className="w-4 h-4" />
           </button>
         )}
