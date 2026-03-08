@@ -29,17 +29,18 @@ export function AuthProvider({ children }) {
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null)
       if (session?.user) {
+        setUser(session.user)
         setIsGuest(false)
         setAuthError(null)
         localStorage.removeItem('mindset_guest')
-      }
-      // Auto-handle token refresh failures
-      if (event === 'TOKEN_REFRESHED') {
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null)
+        setIsGuest(false)
         setAuthError(null)
       }
-      if (event === 'SIGNED_OUT') {
+      // Don't clear guest user on INITIAL_SESSION with no session
+      if (event === 'TOKEN_REFRESHED') {
         setAuthError(null)
       }
     })
