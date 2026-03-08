@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../../contexts/PlayerContext'
 import { getXPProgress, LEVEL_NAMES } from '../../config/constants'
@@ -13,6 +13,20 @@ export default function Header() {
   const levelName = LEVEL_NAMES[player.level - 1] || LEVEL_NAMES[0]
   const nextLevelName = LEVEL_NAMES[player.level] || null
 
+  const xpRef = useRef(null)
+
+  // Close XP popup on click outside
+  useEffect(() => {
+    if (!showXPDetails) return
+    const handler = (e) => {
+      if (xpRef.current && !xpRef.current.contains(e.target)) {
+        setShowXPDetails(false)
+      }
+    }
+    document.addEventListener('pointerdown', handler)
+    return () => document.removeEventListener('pointerdown', handler)
+  }, [showXPDetails])
+
   // Unread achievements badge
   const achievementCount = player.achievements?.length || 0
   const lastSeenAchievements = player.lastSeenAchievements || 0
@@ -24,7 +38,7 @@ export default function Header() {
         {/* Logo */}
         <button
           onClick={() => navigate('/home')}
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          className="flex items-center gap-2 hover:opacity-80 active:opacity-60 transition-opacity"
           aria-label="דף הבית - MindSet"
         >
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center">
@@ -56,7 +70,7 @@ export default function Header() {
           </div>
 
           {/* XP / Level — clickable on mobile to show details */}
-          <div className="relative">
+          <div className="relative" ref={xpRef}>
             <button
               onClick={() => setShowXPDetails(!showXPDetails)}
               className="flex items-center gap-2"
@@ -90,7 +104,7 @@ export default function Header() {
           {/* Leaderboard */}
           <button
             onClick={() => navigate('/leaderboard')}
-            className="p-1.5 rounded-lg hover:bg-white/5 transition-colors text-gold/50 hover:text-gold"
+            className="p-2.5 -m-1 rounded-lg hover:bg-white/5 active:bg-white/10 transition-colors text-gold/50 hover:text-gold"
             aria-label="טבלת מובילים"
           >
             <Crown className="w-4 h-4" aria-hidden="true" />
@@ -99,12 +113,12 @@ export default function Header() {
           {/* Stats — with achievement badge */}
           <button
             onClick={() => navigate('/stats')}
-            className="p-1.5 rounded-lg hover:bg-white/5 transition-colors text-frost-white/40 hover:text-frost-white/70 relative"
+            className="p-2.5 -m-1 rounded-lg hover:bg-white/5 active:bg-white/10 transition-colors text-frost-white/40 hover:text-frost-white/70 relative"
             aria-label={`סטטיסטיקות${newAchievements > 0 ? ` — ${newAchievements} הישגים חדשים` : ''}`}
           >
             <Settings className="w-4 h-4" aria-hidden="true" />
             {newAchievements > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-danger text-[8px] font-bold text-white flex items-center justify-center animate-bounce-in">
+              <span className="absolute top-0.5 right-0.5 z-[1] w-3.5 h-3.5 rounded-full bg-danger text-[8px] font-bold text-white flex items-center justify-center animate-bounce-in">
                 {newAchievements}
               </span>
             )}

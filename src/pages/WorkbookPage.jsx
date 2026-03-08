@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
-import { ArrowRight, Printer, Lock, Download, FileText } from 'lucide-react'
+import { ArrowRight, Printer, Lock } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
@@ -8,6 +8,16 @@ import nextFiveMoves from '../data/books/next-five-moves.json'
 import mindsetBook from '../data/books/mindset-book.json'
 
 const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook }
+
+const TYPE_LABELS = {
+  'multiple-choice': 'בחירה מרובה',
+  'fill-blank': 'השלמת משפט',
+  'compare': 'השוואה',
+  'improve': 'שיפור',
+  'order': 'סדר נכון',
+  'match': 'התאמה',
+  'identify': 'זיהוי',
+}
 
 export default function WorkbookPage() {
   const { slug } = useParams()
@@ -101,7 +111,7 @@ export default function WorkbookPage() {
                   {lesson.exercises.map((ex, ei) => (
                     <div key={ei} className="glass-card p-4 print:border print:border-gray-300 print:bg-white print:rounded-lg">
                       <p className="text-xs text-frost-white/30 print:text-gray-400 mb-1">
-                        תרגיל {ei + 1} — {ex.type}
+                        תרגיל {ei + 1} — {TYPE_LABELS[ex.type] || ex.type}
                       </p>
                       <p className="text-sm text-frost-white print:text-black mb-3 leading-relaxed">
                         {ex.question || ex.text || ex.template}

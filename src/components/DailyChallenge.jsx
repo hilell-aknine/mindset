@@ -123,50 +123,53 @@ export default function DailyChallenge({ onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-lg max-h-[85dvh] overflow-y-auto animate-slide-up">
-        <div className="glass-card p-5 sm:p-6 border-gold/20 bg-bg-base/95 backdrop-blur-xl">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-warning/15 flex items-center justify-center animate-heartbeat">
-                <Flame className="w-5 h-5 text-warning" />
+      <div className="relative z-10 w-full max-w-lg max-h-[85dvh] flex flex-col animate-slide-up">
+        <div className="glass-card p-5 sm:p-6 border-gold/20 bg-bg-base/95 backdrop-blur-xl flex flex-col overflow-hidden">
+          {/* Scrollable content */}
+          <div className="flex-1 overflow-y-auto min-h-0">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-warning/15 flex items-center justify-center animate-heartbeat">
+                  <Flame className="w-5 h-5 text-warning" />
+                </div>
+                <div>
+                  <h3 className="font-display text-lg font-bold text-frost-white">אתגר יומי</h3>
+                  <p className="text-[10px] text-frost-white/40">
+                    {exercise.bookIcon} {exercise.bookTitle} · {exercise.chapterTitle}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-display text-lg font-bold text-frost-white">אתגר יומי</h3>
-                <p className="text-[10px] text-frost-white/40">
-                  {exercise.bookIcon} {exercise.bookTitle} · {exercise.chapterTitle}
-                </p>
-              </div>
+              <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/5 text-frost-white/40 hover:text-frost-white" aria-label="סגור אתגר">
+                <X className="w-5 h-5" />
+              </button>
             </div>
-            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/5 text-frost-white/40 hover:text-frost-white" aria-label="סגור אתגר">
-              <X className="w-5 h-5" />
-            </button>
+
+            {/* Prize + challenge count */}
+            <div className="flex items-center gap-2 mb-5">
+              <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-gold/10 border border-gold/20">
+                <Trophy className="w-4 h-4 text-gold" />
+                <span className="text-xs text-gold font-medium">פרס: +{XP_DAILY_CHALLENGE} XP</span>
+              </div>
+              {challengeCount > 0 && (
+                <div className="flex items-center gap-1 px-3 py-2 rounded-xl bg-white/5 border border-white/5">
+                  <Zap className="w-3 h-3 text-dusty-aqua" />
+                  <span className="text-[10px] text-frost-white/40 font-medium">{challengeCount}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Exercise */}
+            <ExerciseRouter
+              exercise={exercise}
+              onAnswer={handleAnswer}
+              disabled={!!feedback}
+            />
           </div>
 
-          {/* Prize + challenge count */}
-          <div className="flex items-center gap-2 mb-5">
-            <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-gold/10 border border-gold/20">
-              <Trophy className="w-4 h-4 text-gold" />
-              <span className="text-xs text-gold font-medium">פרס: +{XP_DAILY_CHALLENGE} XP</span>
-            </div>
-            {challengeCount > 0 && (
-              <div className="flex items-center gap-1 px-3 py-2 rounded-xl bg-white/5 border border-white/5">
-                <Zap className="w-3 h-3 text-dusty-aqua" />
-                <span className="text-[10px] text-frost-white/40 font-medium">{challengeCount}</span>
-              </div>
-            )}
-          </div>
-
-          {/* Exercise */}
-          <ExerciseRouter
-            exercise={exercise}
-            onAnswer={handleAnswer}
-            disabled={!!feedback}
-          />
-
-          {/* Feedback */}
+          {/* Feedback — outside scroll area so it's always visible at bottom */}
           {feedback && (
-            <div className="mt-4">
+            <div className="mt-4 shrink-0">
               <FeedbackPanel
                 correct={feedback.correct}
                 explanation={feedback.explanation}

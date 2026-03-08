@@ -83,7 +83,7 @@ export default function OutOfHeartsModal({ onClose, onPurchase }) {
 
         <button
           onClick={onPurchase}
-          className="w-full py-3 rounded-xl bg-gradient-to-l from-gold to-warning text-bg-base font-bold text-sm mb-3 hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+          className="w-full py-3 rounded-xl bg-gradient-to-l from-gold to-warning text-bg-base font-bold text-sm mb-3 hover:opacity-90 active:opacity-80 transition-opacity flex items-center justify-center gap-2 active:scale-[0.98]"
           aria-label="שדרג לפרימיום — לבבות ללא הגבלה"
         >
           <Crown className="w-4 h-4" />
@@ -92,7 +92,7 @@ export default function OutOfHeartsModal({ onClose, onPurchase }) {
 
         <button
           onClick={onClose}
-          className="w-full py-3 rounded-xl border border-white/10 text-frost-white/50 text-sm hover:text-frost-white hover:border-white/20 transition-colors"
+          className="w-full py-3 rounded-xl border border-white/10 text-frost-white/50 text-sm hover:text-frost-white hover:border-white/20 active:bg-white/5 transition-colors active:scale-[0.98]"
         >
           אמתין
         </button>
