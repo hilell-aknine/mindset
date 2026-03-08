@@ -304,7 +304,7 @@ export default function LessonPage() {
   useEffect(() => {
     if (!halfwayShown && exercises.length >= 4 && currentIndex === Math.floor(exercises.length / 2)) {
       setHalfwayShown(true)
-      toast.show('🔥 חצי דרך! ממשיכים חזק', 'info')
+      toast.info('🔥 חצי דרך! ממשיכים חזק')
     }
   }, [currentIndex, exercises.length, halfwayShown, toast])
 
@@ -359,7 +359,7 @@ export default function LessonPage() {
           {/* Lesson title */}
           <div className="flex items-center gap-2 px-1">
             <span className="text-sm">{book.icon}</span>
-            <p className="text-[10px] text-frost-white/30 truncate">{chapter?.title} — {lesson.title}</p>
+            <p className="text-[10px] text-frost-white/30 truncate min-w-0">{chapter?.title} — {lesson.title}</p>
           </div>
           <div className="flex items-center gap-3">
             <button

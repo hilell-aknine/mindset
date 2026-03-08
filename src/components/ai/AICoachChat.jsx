@@ -18,14 +18,19 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
     messagesEnd.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // Escape to close, auto-focus input
+  // Escape to close, auto-focus input, prevent background scroll on mobile
   useEffect(() => {
     const handler = (e) => {
       if (e.key === 'Escape') onClose()
     }
     window.addEventListener('keydown', handler)
     inputRef.current?.focus()
-    return () => window.removeEventListener('keydown', handler)
+    // Prevent background scroll when chat is open (mobile full-screen)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', handler)
+      document.body.style.overflow = ''
+    }
   }, [onClose])
 
   const tokensLeft = player.tokens || 0

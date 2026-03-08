@@ -48,7 +48,7 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
 
   return (
     <div
-      className={`sticky bottom-0 border-t animate-slide-up ${
+      className={`sticky bottom-0 border-t animate-slide-up pb-[env(safe-area-inset-bottom)] ${
         correct
           ? 'bg-success/10 border-success/20'
           : 'bg-danger/10 border-danger/20 animate-shake'
