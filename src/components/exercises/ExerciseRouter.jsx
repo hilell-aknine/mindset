@@ -7,6 +7,7 @@ import Compare from './Compare'
 import Match from './Match'
 import Improve from './Improve'
 import Identify from './Identify'
+import Scenario from './Scenario'
 import HintButton from './HintButton'
 import ExerciseHelp from './ExerciseHelp'
 
@@ -45,6 +46,7 @@ const COMPONENTS = {
   'match': Match,
   'improve': Improve,
   'identify': Identify,
+  'scenario': Scenario,
 }
 
 const TYPE_LABELS = {
@@ -55,6 +57,7 @@ const TYPE_LABELS = {
   'order': { label: 'סדר נכון', emoji: '📋', difficulty: 3 },
   'match': { label: 'התאמה', emoji: '🔗', difficulty: 3 },
   'identify': { label: 'זיהוי', emoji: '🔍', difficulty: 3 },
+  'scenario': { label: 'תרחיש', emoji: '🎭', difficulty: 3 },
 }
 
 const DIFFICULTY_LABELS = {

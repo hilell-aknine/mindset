@@ -8,6 +8,7 @@ export function checkAnswer(exercise, userAnswer) {
   switch (exercise.type) {
     case 'multiple-choice':
     case 'fill-blank':
+    case 'scenario':
       return userAnswer === exercise.correct
 
     case 'improve':

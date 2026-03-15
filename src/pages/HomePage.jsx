@@ -4,6 +4,8 @@ import { usePlayer } from '../contexts/PlayerContext'
 import { BookOpen, Trophy, Flame, RotateCcw, BarChart2, Settings, Zap, Target, Crown, X, Sparkles } from 'lucide-react'
 import { getNextAchievements, CATEGORIES } from '../lib/achievements'
 import DailyChallenge from '../components/DailyChallenge'
+import SpacedReview from '../components/SpacedReview'
+import SmartNotification from '../components/SmartNotification'
 import StreakFreeze from '../components/StreakFreeze'
 import FeatureSpotlight from '../components/FeatureSpotlight'
 import { getActiveEvent, WEEKLY_GOALS, STREAK_MILESTONES } from '../lib/events'
@@ -34,11 +36,13 @@ const DAILY_QUOTES = [
 
 export default function HomePage() {
   const navigate = useNavigate()
-  const { player, streakMilestone, clearStreakMilestone } = usePlayer()
+  const { player, streakMilestone, clearStreakMilestone, getDueSRItems } = usePlayer()
   const [showDailyChallenge, setShowDailyChallenge] = useState(false)
+  const [showSpacedReview, setShowSpacedReview] = useState(false)
   const [showMilestone, setShowMilestone] = useState(false)
 
   const reviewCount = (player.reviewQueue || []).length
+  const srDueCount = getDueSRItems().length
   const today = new Date().toDateString()
   const dailyCompleted = player.dailyChallengeCompleted === today
   const activeEvent = getActiveEvent()
@@ -103,6 +107,29 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Smart Notification */}
+      <SmartNotification />
+
+      {/* Spaced Review Card */}
+      {srDueCount > 0 && (
+        <button
+          onClick={() => setShowSpacedReview(true)}
+          className="w-full glass-card p-4 mb-4 flex items-center gap-3 animate-fade-in transition-all border-dusty-aqua/20 hover:border-dusty-aqua/30 bg-dusty-aqua/5"
+          style={{ animationDelay: '0.03s' }}
+        >
+          <div className="w-12 h-12 rounded-xl bg-dusty-aqua/15 flex items-center justify-center">
+            <span className="text-xl">🧠</span>
+          </div>
+          <div className="flex-1 text-right">
+            <p className="text-sm font-semibold text-frost-white">חזרה מרווחת</p>
+            <p className="text-xs text-frost-white/40">{srDueCount} תרגילים לחיזוק הזיכרון</p>
+          </div>
+          <div className="px-3 py-1.5 rounded-lg bg-dusty-aqua/15 border border-dusty-aqua/30">
+            <span className="text-xs font-bold text-dusty-aqua">x{srDueCount}</span>
+          </div>
+        </button>
       )}
 
       {/* Active XP Event Banner */}
@@ -366,6 +393,11 @@ export default function HomePage() {
       {/* Daily Challenge Modal */}
       {showDailyChallenge && (
         <DailyChallenge onClose={() => setShowDailyChallenge(false)} />
+      )}
+
+      {/* Spaced Review Modal */}
+      {showSpacedReview && (
+        <SpacedReview onClose={() => setShowSpacedReview(false)} />
       )}
 
       {/* First-time feature spotlight */}

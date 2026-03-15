@@ -67,7 +67,7 @@ export default function OutOfHeartsModal({ onClose, onPurchase }) {
           </div>
         )}
 
-        {/* How hearts work */}
+        {/* How hearts work + premium benefits */}
         <div className="text-right space-y-1.5 mb-5 px-3 py-3 rounded-xl bg-white/3 border border-white/5">
           <p className="text-[10px] font-bold text-frost-white/50 mb-2">איך לבבות עובדים?</p>
           <p className="text-[10px] text-frost-white/35 flex items-center gap-2">
@@ -76,8 +76,20 @@ export default function OutOfHeartsModal({ onClose, onPurchase }) {
           <p className="text-[10px] text-frost-white/35 flex items-center gap-2">
             <span>⏱️</span> לב חוזר כל {HEART_RECOVERY_MINUTES} דקות
           </p>
-          <p className="text-[10px] text-frost-white/35 flex items-center gap-2">
-            <span>👑</span> פרימיום = לבבות ללא הגבלה
+        </div>
+        <div className="text-right space-y-1.5 mb-5 px-3 py-3 rounded-xl bg-gold/5 border border-gold/15">
+          <p className="text-[10px] font-bold text-gold/80 mb-2">מה כלול בפרימיום?</p>
+          <p className="text-[10px] text-frost-white/45 flex items-center gap-2">
+            <span>❤️</span> לבבות ללא הגבלה
+          </p>
+          <p className="text-[10px] text-frost-white/45 flex items-center gap-2">
+            <span>🛡️</span> הגנת רצף חינם כל יום
+          </p>
+          <p className="text-[10px] text-frost-white/45 flex items-center gap-2">
+            <span>🤖</span> מאמן AI ללא הגבלה
+          </p>
+          <p className="text-[10px] text-frost-white/45 flex items-center gap-2">
+            <span>🎭</span> שיחות סימולציה עם AI
           </p>
         </div>
 

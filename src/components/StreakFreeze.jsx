@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { Shield, Zap, Check } from 'lucide-react'
+import { Shield, Zap, Check, Award } from 'lucide-react'
 import { usePlayer } from '../contexts/PlayerContext'
 import { useSound } from '../hooks/useSound'
+import { getStreakTier, STREAK_TIERS } from '../config/constants'
 
 /**
  * Streak Freeze — spend tokens to protect your streak for a day
+ * Enhanced: streak tier badges (bronze/silver/gold/diamond) + shield reward at 7 days
  */
 export default function StreakFreeze() {
   const { player, updatePlayer } = usePlayer()
@@ -14,12 +16,17 @@ export default function StreakFreeze() {
   const today = new Date().toDateString()
   const hasFreeze = player.streakFreezeDate === today
   const canAfford = (player.tokens || 0) >= 2
+  const currentTier = getStreakTier(player.currentStreak)
+
+  // Premium users get free streak freeze
+  const freezeCost = player.isPremium ? 0 : 2
 
   const buyFreeze = () => {
-    if (hasFreeze || !canAfford) return
+    if (hasFreeze) return
+    if (!player.isPremium && !canAfford) return
     updatePlayer(prev => ({
       ...prev,
-      tokens: prev.tokens - 2,
+      tokens: player.isPremium ? prev.tokens : prev.tokens - freezeCost,
       streakFreezeDate: today,
     }))
     play('streakFreeze')
@@ -30,57 +37,92 @@ export default function StreakFreeze() {
   if (player.currentStreak < 2) return null
 
   const isHighStreak = player.currentStreak >= 7
+  const nextTier = STREAK_TIERS.find(t => t.days > player.currentStreak)
 
   return (
-    <div className={`glass-card p-3 flex items-center gap-3 animate-fade-in transition-all ${
-      hasFreeze ? 'border-dusty-aqua/20' : isHighStreak && !hasFreeze ? 'border-warning/15 animate-pulse-glow' : 'border-white/5'
-    } ${justBought ? 'animate-correct-pulse' : ''}`}>
-      <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
-        hasFreeze ? 'bg-dusty-aqua/15' : isHighStreak ? 'bg-warning/10' : 'bg-white/5'
-      } ${hasFreeze ? 'animate-glow-pulse' : ''}`}>
-        <Shield className={`w-4 h-4 ${hasFreeze ? 'text-dusty-aqua' : isHighStreak ? 'text-warning' : 'text-frost-white/30'}`} />
-      </div>
-      <div className="flex-1">
-        <p className="text-xs font-semibold text-frost-white flex items-center gap-1.5">
-          {hasFreeze ? (
-            <>
-              הרצף מוגן היום!
-              <Check className="w-3 h-3 text-dusty-aqua animate-bounce-in" />
-            </>
-          ) : isHighStreak ? (
-            <>
-              🔥 הגן על הרצף!
-            </>
-          ) : (
-            'הגנת רצף'
+    <div className="space-y-2">
+      {/* Streak tier badge */}
+      {currentTier && (
+        <div className={`glass-card p-2.5 flex items-center gap-2.5 animate-fade-in ${currentTier.bg} border-white/5`}>
+          <div className={`w-8 h-8 rounded-lg ${currentTier.bg} flex items-center justify-center`}>
+            <Award className={`w-4 h-4 ${currentTier.color}`} />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm">{currentTier.emoji}</span>
+              <span className={`text-xs font-bold ${currentTier.color}`}>דרגת רצף: {currentTier.label}</span>
+            </div>
+            {nextTier && (
+              <p className="text-[9px] text-frost-white/30">
+                עוד {nextTier.days - player.currentStreak} ימים ל{nextTier.emoji} {nextTier.label}
+              </p>
+            )}
+          </div>
+          {player.streakShieldEarned && (
+            <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-dusty-aqua/10 border border-dusty-aqua/20">
+              <Shield className="w-3 h-3 text-dusty-aqua" />
+              <span className="text-[9px] text-dusty-aqua font-bold">מגן</span>
+            </div>
           )}
-        </p>
-        <p className="text-[10px] text-frost-white/40">
-          {hasFreeze
-            ? `רצף של ${player.currentStreak} ימים לא יאופס`
-            : isHighStreak
-              ? `אל תפסיד ${player.currentStreak} ימים ברצף — הגן עכשיו!`
-              : `הגן על הרצף (${player.currentStreak} ימים) ליום אחד`
-          }
-        </p>
+        </div>
+      )}
+
+      {/* Freeze card */}
+      <div className={`glass-card p-3 flex items-center gap-3 animate-fade-in transition-all ${
+        hasFreeze ? 'border-dusty-aqua/20' : isHighStreak && !hasFreeze ? 'border-warning/15 animate-pulse-glow' : 'border-white/5'
+      } ${justBought ? 'animate-correct-pulse' : ''}`}>
+        <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
+          hasFreeze ? 'bg-dusty-aqua/15' : isHighStreak ? 'bg-warning/10' : 'bg-white/5'
+        } ${hasFreeze ? 'animate-glow-pulse' : ''}`}>
+          <Shield className={`w-4 h-4 ${hasFreeze ? 'text-dusty-aqua' : isHighStreak ? 'text-warning' : 'text-frost-white/30'}`} />
+        </div>
+        <div className="flex-1">
+          <p className="text-xs font-semibold text-frost-white flex items-center gap-1.5">
+            {hasFreeze ? (
+              <>
+                הרצף מוגן היום!
+                <Check className="w-3 h-3 text-dusty-aqua animate-bounce-in" />
+              </>
+            ) : isHighStreak ? (
+              '🔥 הגן על הרצף!'
+            ) : (
+              'הגנת רצף'
+            )}
+          </p>
+          <p className="text-[10px] text-frost-white/40">
+            {hasFreeze
+              ? `רצף של ${player.currentStreak} ימים לא יאופס`
+              : isHighStreak
+                ? `אל תפסיד ${player.currentStreak} ימים ברצף — הגן עכשיו!`
+                : `הגן על הרצף (${player.currentStreak} ימים) ליום אחד`
+            }
+          </p>
+        </div>
+        {!hasFreeze && (
+          <button
+            onClick={buyFreeze}
+            disabled={!player.isPremium && !canAfford}
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 ${
+              isHighStreak
+                ? 'bg-warning/15 border-warning/30 text-warning hover:bg-warning/20'
+                : 'bg-dusty-aqua/10 border-dusty-aqua/20 text-dusty-aqua hover:bg-dusty-aqua/15'
+            }`}
+            aria-label={player.isPremium
+              ? 'הפעל הגנת רצף (חינם לפרימיום)'
+              : `קנה הגנת רצף ב-${freezeCost} אסימונים${!canAfford ? ' — אין מספיק אסימונים' : ''}`
+            }
+          >
+            {player.isPremium ? (
+              <span>חינם 👑</span>
+            ) : (
+              <><Zap className="w-3 h-3" />{freezeCost}</>
+            )}
+          </button>
+        )}
+        {justBought && (
+          <span className="text-xs text-dusty-aqua font-bold animate-elastic-in">מוגן!</span>
+        )}
       </div>
-      {!hasFreeze && (
-        <button
-          onClick={buyFreeze}
-          disabled={!canAfford}
-          className={`flex items-center gap-1 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 ${
-            isHighStreak
-              ? 'bg-warning/15 border-warning/30 text-warning hover:bg-warning/20'
-              : 'bg-dusty-aqua/10 border-dusty-aqua/20 text-dusty-aqua hover:bg-dusty-aqua/15'
-          }`}
-          aria-label={`קנה הגנת רצף ב-2 אסימונים${!canAfford ? ' — אין מספיק אסימונים' : ''}`}
-        >
-          <Zap className="w-3 h-3" />2
-        </button>
-      )}
-      {justBought && (
-        <span className="text-xs text-dusty-aqua font-bold animate-elastic-in">מוגן!</span>
-      )}
     </div>
   )
 }

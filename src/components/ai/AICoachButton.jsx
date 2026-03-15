@@ -1,9 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
-import { MessageCircle } from 'lucide-react'
+import { MessageCircle, Theater } from 'lucide-react'
+import { usePlayer } from '../../contexts/PlayerContext'
 import AICoachChat from './AICoachChat'
+import AIScenarioChat from './AIScenarioChat'
 
 export default function AICoachButton({ bookSlug, systemPrompt }) {
+  const { player } = usePlayer()
   const [open, setOpen] = useState(false)
+  const [mode, setMode] = useState('chat') // 'chat' or 'scenario'
   const [hasNewMessage, setHasNewMessage] = useState(false)
 
   const toggleOpen = useCallback(() => {
@@ -11,6 +15,12 @@ export default function AICoachButton({ bookSlug, systemPrompt }) {
       if (!prev) setHasNewMessage(false)
       return !prev
     })
+  }, [])
+
+  const openScenario = useCallback(() => {
+    setMode('scenario')
+    setOpen(true)
+    setHasNewMessage(false)
   }, [])
 
   // Keyboard shortcut: Ctrl+M to toggle AI coach
@@ -35,8 +45,9 @@ export default function AICoachButton({ bookSlug, systemPrompt }) {
 
   return (
     <>
+      {/* Main AI button */}
       <button
-        onClick={toggleOpen}
+        onClick={() => { setMode('chat'); toggleOpen() }}
         className={`fixed bottom-6 left-6 z-30 w-14 h-14 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua text-frost-white shadow-lg shadow-deep-petrol/30 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform ${
           hasNewMessage ? 'animate-heartbeat' : ''
         }`}
@@ -44,16 +55,34 @@ export default function AICoachButton({ bookSlug, systemPrompt }) {
         title="מאמן AI (Ctrl+M)"
       >
         <MessageCircle className="w-6 h-6" />
-        {/* Notification dot */}
         {hasNewMessage && (
           <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-gold border-2 border-bg-base animate-pulse" />
         )}
       </button>
 
-      {open && (
+      {/* Scenario button (premium) */}
+      {player.isPremium && (
+        <button
+          onClick={openScenario}
+          className="fixed bottom-6 left-[5.5rem] z-30 w-11 h-11 rounded-xl bg-gradient-to-br from-gold to-warning text-bg-base shadow-lg shadow-gold/20 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+          aria-label="סימולציה AI"
+          title="סימולציה — תרגול תרחישים"
+        >
+          <Theater className="w-5 h-5" />
+        </button>
+      )}
+
+      {open && mode === 'chat' && (
         <AICoachChat
           bookSlug={bookSlug}
           systemPrompt={systemPrompt}
+          onClose={() => setOpen(false)}
+        />
+      )}
+
+      {open && mode === 'scenario' && (
+        <AIScenarioChat
+          bookSlug={bookSlug}
           onClose={() => setOpen(false)}
         />
       )}

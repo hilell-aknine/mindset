@@ -4,7 +4,8 @@ import { useAuth } from './AuthContext'
 import {
   DEFAULT_PLAYER, MAX_HEARTS, FREE_DAILY_TOKENS,
   HEART_RECOVERY_MINUTES, getLevelForXP, XP_CORRECT_ANSWER,
-  XP_LESSON_COMPLETE, XP_PERFECT_LESSON, getComboBonus
+  XP_LESSON_COMPLETE, XP_PERFECT_LESSON, getComboBonus,
+  SR_INTERVALS, XP_SR_REVIEW
 } from '../config/constants'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
@@ -104,12 +105,16 @@ export function PlayerProvider({ children }) {
         setStreakMilestone(milestone)
       }
 
+      // Streak shield earned at 7 days
+      const streakShieldEarned = prev.streakShieldEarned || newStreak >= 7
+
       return {
         ...prev,
         currentStreak: newStreak,
         longestStreak: Math.max(newStreak, prev.longestStreak),
         lastLoginDate: today,
         comebackUnlocked,
+        streakShieldEarned,
         // Award milestone XP bonus
         xp: milestone ? prev.xp + milestone.xpBonus : prev.xp,
       }
@@ -125,6 +130,89 @@ export function PlayerProvider({ children }) {
       if (prev.lastWeekReset === today) return prev
       return { ...prev, weeklyXP: 0, lastWeekReset: today }
     })
+  }
+
+  // Track learning day + hour for heatmap and smart notifications
+  const trackLearningSession = () => {
+    setPlayer(prev => {
+      const now = new Date()
+      const dateKey = now.toISOString().split('T')[0] // "2026-03-15"
+      const hour = now.getHours().toString()
+      const learningDays = { ...(prev.learningDays || {}), [dateKey]: true }
+      const learningHours = { ...(prev.learningHours || {}) }
+      learningHours[hour] = (learningHours[hour] || 0) + 1
+      return { ...prev, learningDays, learningHours }
+    })
+  }
+
+  // Add to spaced repetition queue (called on wrong answer)
+  const addToSpacedReview = (bookSlug, chapterIndex, lessonIndex, exerciseIndex) => {
+    setPlayer(prev => {
+      const queue = prev.spacedReviewQueue || []
+      // Check if already in SR queue
+      const exists = queue.some(q =>
+        q.bookSlug === bookSlug &&
+        q.chapterIndex === chapterIndex &&
+        q.lessonIndex === lessonIndex &&
+        q.exerciseIndex === exerciseIndex
+      )
+      if (exists) return prev
+
+      const tomorrow = new Date()
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      const item = {
+        bookSlug,
+        chapterIndex,
+        lessonIndex,
+        exerciseIndex,
+        nextReviewDate: tomorrow.toISOString().split('T')[0],
+        interval: 0, // index into SR_INTERVALS
+        correctCount: 0,
+      }
+      return { ...prev, spacedReviewQueue: [...queue, item] }
+    })
+  }
+
+  // Handle SR review result — promote or reset interval
+  const handleSRReview = (itemIndex, isCorrect) => {
+    setPlayer(prev => {
+      const queue = [...(prev.spacedReviewQueue || [])]
+      if (!queue[itemIndex]) return prev
+      const item = { ...queue[itemIndex] }
+
+      if (isCorrect) {
+        const nextInterval = Math.min(item.interval + 1, SR_INTERVALS.length - 1)
+        if (nextInterval >= SR_INTERVALS.length - 1 && item.correctCount >= 2) {
+          // Mastered — remove from queue
+          queue.splice(itemIndex, 1)
+        } else {
+          const days = SR_INTERVALS[nextInterval].days
+          const nextDate = new Date()
+          nextDate.setDate(nextDate.getDate() + days)
+          item.interval = nextInterval
+          item.correctCount = item.correctCount + 1
+          item.nextReviewDate = nextDate.toISOString().split('T')[0]
+          queue[itemIndex] = item
+        }
+        const xpBonus = Math.round(XP_SR_REVIEW * SR_INTERVALS[Math.min(item.interval, SR_INTERVALS.length - 1)].xpMultiplier)
+        return { ...prev, spacedReviewQueue: queue, xp: prev.xp + xpBonus }
+      } else {
+        // Reset to first interval
+        const tomorrow = new Date()
+        tomorrow.setDate(tomorrow.getDate() + 1)
+        item.interval = 0
+        item.correctCount = 0
+        item.nextReviewDate = tomorrow.toISOString().split('T')[0]
+        queue[itemIndex] = item
+        return { ...prev, spacedReviewQueue: queue }
+      }
+    })
+  }
+
+  // Get items due for review today
+  const getDueSRItems = () => {
+    const today = new Date().toISOString().split('T')[0]
+    return (player.spacedReviewQueue || []).filter(item => item.nextReviewDate <= today)
   }
 
   const recoverHearts = () => {
@@ -203,6 +291,7 @@ export function PlayerProvider({ children }) {
 
   // Game actions
   const onCorrectAnswer = useCallback(() => {
+    trackLearningSession()
     updatePlayer(prev => {
       const newCombo = (prev.comboStreak || 0) + 1
       const comboBonus = getComboBonus(newCombo)
@@ -220,13 +309,23 @@ export function PlayerProvider({ children }) {
   }, [updatePlayer])
 
   const onWrongAnswer = useCallback(() => {
-    updatePlayer(prev => ({
-      ...prev,
-      hearts: Math.max(0, prev.hearts - 1),
-      totalWrong: prev.totalWrong + 1,
-      comboStreak: 0, // Reset combo on wrong answer
-      lastHeartLost: prev.hearts <= 1 ? new Date().toISOString() : (prev.lastHeartLost || new Date().toISOString()),
-    }))
+    updatePlayer(prev => {
+      // Premium users don't lose hearts
+      if (prev.isPremium) {
+        return {
+          ...prev,
+          totalWrong: prev.totalWrong + 1,
+          comboStreak: 0,
+        }
+      }
+      return {
+        ...prev,
+        hearts: Math.max(0, prev.hearts - 1),
+        totalWrong: prev.totalWrong + 1,
+        comboStreak: 0,
+        lastHeartLost: prev.hearts <= 1 ? new Date().toISOString() : (prev.lastHeartLost || new Date().toISOString()),
+      }
+    })
   }, [updatePlayer])
 
   const spendToken = useCallback(() => {
@@ -280,7 +379,8 @@ export function PlayerProvider({ children }) {
     <PlayerContext.Provider value={{
       player, loaded, updatePlayer,
       onCorrectAnswer, onWrongAnswer, spendToken, completeLesson,
-      streakMilestone, clearStreakMilestone: () => setStreakMilestone(null)
+      streakMilestone, clearStreakMilestone: () => setStreakMilestone(null),
+      addToSpacedReview, handleSRReview, getDueSRItems, trackLearningSession,
     }}>
       {children}
     </PlayerContext.Provider>
@@ -329,6 +429,13 @@ function mapFromDB(row) {
     nightOwlUnlocked: row.night_owl_unlocked ?? false,
     earlyBirdUnlocked: row.early_bird_unlocked ?? false,
     comebackUnlocked: row.comeback_unlocked ?? false,
+    spacedReviewQueue: row.spaced_review_queue ?? [],
+    streakShieldEarned: row.streak_shield_earned ?? false,
+    dailyChallengeStreak: row.daily_challenge_streak ?? 0,
+    dailyChallengePerfects: row.daily_challenge_perfects ?? 0,
+    learningHours: row.learning_hours ?? {},
+    lastNotificationDate: row.last_notification_date ?? null,
+    learningDays: row.learning_days ?? {},
   }
 }
 
@@ -367,5 +474,12 @@ function mapToDB(player) {
     night_owl_unlocked: player.nightOwlUnlocked,
     early_bird_unlocked: player.earlyBirdUnlocked,
     comeback_unlocked: player.comebackUnlocked,
+    spaced_review_queue: player.spacedReviewQueue,
+    streak_shield_earned: player.streakShieldEarned,
+    daily_challenge_streak: player.dailyChallengeStreak,
+    daily_challenge_perfects: player.dailyChallengePerfects,
+    learning_hours: player.learningHours,
+    last_notification_date: player.lastNotificationDate,
+    learning_days: player.learningDays,
   }
 }

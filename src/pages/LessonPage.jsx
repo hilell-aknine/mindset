@@ -32,6 +32,7 @@ const EXERCISE_TYPE_NAMES = {
   'order': 'סדר נכון',
   'match': 'התאמה',
   'identify': 'זיהוי',
+  'scenario': 'תרחיש',
 }
 
 // Mini confetti particles for correct answers — scales up with combo
@@ -101,7 +102,7 @@ function XPFloat({ xp, combo, speedBonus, eventMultiplier }) {
 export default function LessonPage() {
   const { bookSlug, chapterIndex, lessonIndex } = useParams()
   const navigate = useNavigate()
-  const { player, updatePlayer, onCorrectAnswer, onWrongAnswer, completeLesson } = usePlayer()
+  const { player, updatePlayer, onCorrectAnswer, onWrongAnswer, completeLesson, addToSpacedReview } = usePlayer()
   const toast = useToast()
   const { play } = useSound()
   const announce = useAnnounce()
@@ -259,6 +260,14 @@ export default function LessonPage() {
           q.exerciseIndex === item.exerciseIndex
         )
         if (exists) return prev
+
+        // Add to spaced repetition queue
+        addToSpacedReview(
+          item.bookSlug,
+          item.chapterIndex,
+          item.lessonIndex,
+          item.exerciseIndex
+        )
 
         // Check if hearts ran out
         if (prev.hearts <= 1) {

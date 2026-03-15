@@ -4,7 +4,8 @@ import { usePlayer } from '../contexts/PlayerContext'
 import { LEVEL_NAMES, getXPProgress, LEVEL_THRESHOLDS } from '../config/constants'
 import { ACHIEVEMENTS, RARITY, CATEGORIES, getAchievementsByCategory } from '../lib/achievements'
 import { getActiveEvent, WEEKLY_GOALS, STREAK_MILESTONES } from '../lib/events'
-import { ArrowRight, Trophy, Target, Flame, Brain, Heart, Zap, TrendingUp, BookOpen, Calendar, Award, Share2 } from 'lucide-react'
+import { ArrowRight, Trophy, Target, Flame, Brain, Heart, Zap, TrendingUp, BookOpen, Calendar, Award, Share2, Activity } from 'lucide-react'
+import { getStreakTier, SR_INTERVALS } from '../config/constants'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
@@ -80,6 +81,100 @@ function ProgressRing({ value, max, size = 80, strokeWidth = 6, color = '#D4AF37
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
         {children}
+      </div>
+    </div>
+  )
+}
+
+// GitHub-style learning heatmap (90 days)
+function LearningHeatmap({ learningDays }) {
+  const days = []
+  const today = new Date()
+  for (let i = 89; i >= 0; i--) {
+    const d = new Date(today)
+    d.setDate(d.getDate() - i)
+    const key = d.toISOString().split('T')[0]
+    days.push({ date: key, active: !!learningDays[key] })
+  }
+
+  const totalActive = days.filter(d => d.active).length
+
+  return (
+    <div>
+      <div className="flex flex-wrap gap-[3px] justify-center mb-2" dir="ltr">
+        {days.map((d, i) => (
+          <div
+            key={i}
+            className={`w-[10px] h-[10px] rounded-[2px] transition-all ${
+              d.active ? 'bg-success/70' : 'bg-white/5'
+            }`}
+            title={`${d.date}${d.active ? ' — למדת!' : ''}`}
+          />
+        ))}
+      </div>
+      <div className="flex items-center justify-between text-[9px] text-frost-white/25 px-1">
+        <span>לפני 90 יום</span>
+        <span className="text-frost-white/50 font-bold">{totalActive} ימי למידה</span>
+        <span>היום</span>
+      </div>
+    </div>
+  )
+}
+
+// Retention score based on SR queue
+function RetentionScore({ srQueue }) {
+  const total = srQueue.length
+  if (total === 0) return null
+
+  // Calculate mastery: higher interval = better retention
+  const totalScore = srQueue.reduce((acc, item) => {
+    const interval = item.interval || 0
+    return acc + (interval / (SR_INTERVALS.length - 1)) * 100
+  }, 0)
+  const avgRetention = Math.round(totalScore / total)
+
+  const today = new Date().toISOString().split('T')[0]
+  const dueToday = srQueue.filter(item => item.nextReviewDate <= today).length
+
+  return (
+    <div>
+      <div className="flex items-center gap-4 mb-3">
+        <div className="text-center">
+          <p className="text-3xl font-bold text-dusty-aqua">{avgRetention}%</p>
+          <p className="text-[10px] text-frost-white/30">שימור ממוצע</p>
+        </div>
+        <div className="flex-1 space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-frost-white/40 w-16">שיא</span>
+            <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+              <div className="h-full rounded-full bg-dusty-aqua/60 transition-all" style={{ width: `${avgRetention}%` }} />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center justify-between text-[10px]">
+        <span className="text-frost-white/30">{total} פריטים בתור חזרה</span>
+        {dueToday > 0 && (
+          <span className="text-warning font-bold">{dueToday} לחזרה היום</span>
+        )}
+      </div>
+
+      {/* SR interval distribution */}
+      <div className="flex items-end gap-1 h-8 mt-3 justify-center">
+        {SR_INTERVALS.map((sr, i) => {
+          const count = srQueue.filter(item => item.interval === i).length
+          const height = total > 0 ? Math.max(4, (count / total) * 32) : 4
+          return (
+            <div key={i} className="flex flex-col items-center gap-0.5">
+              <div
+                className="w-8 rounded-t bg-dusty-aqua/40 transition-all"
+                style={{ height: `${height}px` }}
+              />
+              <span className="text-[8px] text-frost-white/25">{sr.label}</span>
+              {count > 0 && <span className="text-[7px] text-frost-white/40">{count}</span>}
+            </div>
+          )
+        })}
       </div>
     </div>
   )
@@ -242,6 +337,42 @@ export default function StatsPage() {
         </div>
         <ProgressChart books={BOOKS} completedLessons={player.completedLessons} />
       </div>
+
+      {/* Learning Heatmap */}
+      <div className="glass-card p-5 mb-6 animate-fade-in" style={{ animationDelay: '0.36s' }}>
+        <div className="flex items-center gap-2 mb-3">
+          <Activity className="w-4 h-4 text-success" />
+          <h3 className="font-display text-sm font-bold text-frost-white">מפת למידה (90 יום)</h3>
+        </div>
+        <LearningHeatmap learningDays={player.learningDays || {}} />
+      </div>
+
+      {/* Retention Score */}
+      {(player.spacedReviewQueue || []).length > 0 && (
+        <div className="glass-card p-5 mb-6 animate-fade-in" style={{ animationDelay: '0.37s' }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Brain className="w-4 h-4 text-dusty-aqua" />
+            <h3 className="font-display text-sm font-bold text-frost-white">ציון שימור ידע</h3>
+          </div>
+          <RetentionScore srQueue={player.spacedReviewQueue || []} />
+        </div>
+      )}
+
+      {/* Streak Tier Badge */}
+      {getStreakTier(player.currentStreak) && (() => {
+        const tier = getStreakTier(player.currentStreak)
+        return (
+          <div className={`glass-card p-4 mb-6 animate-fade-in ${tier.bg} border-white/5`} style={{ animationDelay: '0.38s' }}>
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">{tier.emoji}</span>
+              <div>
+                <p className={`text-sm font-bold ${tier.color}`}>דרגת רצף: {tier.label}</p>
+                <p className="text-[10px] text-frost-white/40">{player.currentStreak} ימים רצופים</p>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Achievements — categorized */}
       <h3 className="font-display text-lg font-bold text-frost-white mb-4 animate-fade-in" style={{ animationDelay: '0.4s' }}>
