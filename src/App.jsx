@@ -6,6 +6,7 @@ import { useToast } from './contexts/ToastContext'
 import LandingPage from './pages/LandingPage'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
+import BottomNav from './components/layout/BottomNav'
 import Toast from './components/shared/Toast'
 import Spinner from './components/shared/Spinner'
 import Onboarding from './components/Onboarding'
@@ -99,12 +100,14 @@ function OnboardingGate({ children }) {
   return children
 }
 
-function PageLayout({ children }) {
+function PageLayout({ children, hideFooter = false }) {
   return (
     <>
       <Header />
-      {children}
-      <Footer />
+      <div className="animate-page-enter has-bottom-nav">
+        {children}
+      </div>
+      {!hideFooter && <Footer />}
     </>
   )
 }
@@ -154,6 +157,7 @@ export default function App() {
       <AnnouncerProvider>
       <Toast />
       <OfflineDetector />
+      <BottomNav />
       <Routes>
         <Route
           path="/"

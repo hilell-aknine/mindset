@@ -297,13 +297,13 @@ export default function Onboarding({ onComplete }) {
         )}
       </div>
 
-      {/* Bottom buttons */}
-      <div className="px-6 pb-8 pt-4 relative z-10">
+      {/* Bottom buttons — safe area padding for notch devices */}
+      <div className="px-6 pt-4 relative z-10" style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom, 2rem))' }}>
         <div className="max-w-sm mx-auto flex items-center gap-3">
           {step > 0 && (
             <button
               onClick={goBack}
-              className="p-3 rounded-xl border border-white/10 text-frost-white/50 hover:text-frost-white hover:border-white/20 transition-all"
+              className="p-3.5 rounded-2xl border border-white/10 text-frost-white/50 hover:text-frost-white hover:border-white/20 transition-all min-w-[48px] min-h-[48px] flex items-center justify-center"
               aria-label="חזור"
             >
               <ChevronLeft className="w-5 h-5 rotate-180" />
@@ -312,7 +312,7 @@ export default function Onboarding({ onComplete }) {
           <button
             onClick={goNext}
             disabled={isLast && !selectedBook}
-            className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base hover:brightness-110 active:scale-[0.98]"
+            className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl font-bold text-base transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base hover:brightness-110 active:scale-[0.98] min-h-[52px]"
           >
             {isLast ? 'התחל ללמוד!' : 'המשך'}
             <ArrowLeft className="w-4 h-4" />

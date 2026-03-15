@@ -288,7 +288,7 @@ export default function BookPage() {
                         <button
                           key={li}
                           onClick={() => navigate(`/lesson/${slug}/${ci}/${li}`)}
-                          className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-right transition-all ${
+                          className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-right transition-all press-scale min-h-[56px] ${
                             completed
                               ? 'bg-success/10 border border-success/20 hover:bg-success/15'
                               : isContinue

@@ -258,7 +258,7 @@ export default function HomePage() {
             <button
               key={book.slug}
               onClick={() => navigate(`/book/${book.slug}`)}
-              className="glass-card p-4 flex items-center gap-3 text-right hover:border-gold/20 active:bg-white/5 active:scale-[0.98] transition-all group overflow-hidden w-full animate-fade-in"
+              className="glass-card p-4 flex items-center gap-3 text-right hover:border-gold/20 active:bg-white/5 press-scale transition-all group overflow-hidden w-full animate-fade-in min-h-[72px]"
               style={{ animationDelay: `${0.2 + idx * 0.05}s` }}
             >
               <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-2xl sm:text-3xl shrink-0 group-hover:scale-105 transition-transform">
@@ -282,57 +282,37 @@ export default function HomePage() {
         })}
       </div>
 
-      {/* Quick actions */}
-      <div className="grid grid-cols-4 gap-2 sm:gap-3 mt-6">
+      {/* Quick actions — 2-column layout for better touch targets */}
+      <div className="grid grid-cols-2 gap-3 mt-6">
         {/* Review */}
         <button
           onClick={() => navigate('/review')}
-          className="glass-card p-3 text-center hover:border-gold/20 active:bg-white/5 active:scale-[0.97] transition-all animate-fade-in"
+          className="glass-card p-4 flex items-center gap-3 hover:border-gold/20 active:bg-white/5 press-scale transition-all animate-fade-in"
           style={{ animationDelay: '0.4s' }}
         >
-          <div className="w-9 h-9 rounded-xl bg-warning/10 flex items-center justify-center mx-auto mb-2">
-            <RotateCcw className="w-4 h-4 text-warning" />
+          <div className="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center shrink-0">
+            <RotateCcw className="w-5 h-5 text-warning" />
           </div>
-          <p className="text-[10px] text-frost-white/60">חזרה</p>
-          {reviewCount > 0 && (
-            <span className="text-[9px] text-gold font-bold">{reviewCount}</span>
-          )}
+          <div className="text-right">
+            <p className="text-xs font-semibold text-frost-white/70">חזרה</p>
+            {reviewCount > 0 && (
+              <span className="text-[10px] text-gold font-bold">{reviewCount} תרגילים</span>
+            )}
+          </div>
         </button>
 
         {/* Leaderboard */}
         <button
           onClick={() => navigate('/leaderboard')}
-          className="glass-card p-3 text-center hover:border-gold/20 active:bg-white/5 active:scale-[0.97] transition-all animate-fade-in"
+          className="glass-card p-4 flex items-center gap-3 hover:border-gold/20 active:bg-white/5 press-scale transition-all animate-fade-in"
           style={{ animationDelay: '0.43s' }}
         >
-          <div className="w-9 h-9 rounded-xl bg-gold/10 flex items-center justify-center mx-auto mb-2">
-            <Crown className="w-4 h-4 text-gold" />
+          <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center shrink-0">
+            <Crown className="w-5 h-5 text-gold" />
           </div>
-          <p className="text-[10px] text-frost-white/60">מובילים</p>
-        </button>
-
-        {/* Stats */}
-        <button
-          onClick={() => navigate('/stats')}
-          className="glass-card p-3 text-center hover:border-gold/20 active:bg-white/5 active:scale-[0.97] transition-all animate-fade-in"
-          style={{ animationDelay: '0.46s' }}
-        >
-          <div className="w-9 h-9 rounded-xl bg-dusty-aqua/10 flex items-center justify-center mx-auto mb-2">
-            <BarChart2 className="w-4 h-4 text-dusty-aqua" />
+          <div className="text-right">
+            <p className="text-xs font-semibold text-frost-white/70">מובילים</p>
           </div>
-          <p className="text-[10px] text-frost-white/60">סטטיסטיקות</p>
-        </button>
-
-        {/* Settings */}
-        <button
-          onClick={() => navigate('/settings')}
-          className="glass-card p-3 text-center hover:border-gold/20 active:bg-white/5 active:scale-[0.97] transition-all animate-fade-in"
-          style={{ animationDelay: '0.5s' }}
-        >
-          <div className="w-9 h-9 rounded-xl bg-frost-white/5 flex items-center justify-center mx-auto mb-2">
-            <Settings className="w-4 h-4 text-frost-white/40" />
-          </div>
-          <p className="text-[10px] text-frost-white/60">הגדרות</p>
         </button>
       </div>
 

@@ -48,46 +48,57 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
 
   return (
     <div
-      className={`sticky bottom-0 border-t animate-slide-up pb-[env(safe-area-inset-bottom)] ${
+      className={`fixed bottom-0 left-0 right-0 z-40 border-t animate-bottom-sheet ${
         correct
-          ? 'bg-success/10 border-success/20'
-          : 'bg-danger/10 border-danger/20 animate-shake'
+          ? 'bg-[#0a0a12]/95 border-success/20'
+          : 'bg-[#0a0a12]/95 border-danger/20 animate-shake'
       }`}
+      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       role="status"
       aria-live="assertive"
     >
-      <div className="max-w-2xl mx-auto px-4 py-4">
+      {/* Drag handle hint */}
+      <div className="flex justify-center pt-2 pb-1">
+        <div className="w-8 h-1 rounded-full bg-white/10" />
+      </div>
+
+      <div className="max-w-2xl mx-auto px-4 pb-4">
+        {/* Status icon + message row */}
         <div className="flex items-start gap-3 mb-3">
           {correct ? (
-            <CheckCircle className="w-6 h-6 text-success shrink-0 mt-0.5 animate-bounce-in" />
+            <div className="w-10 h-10 rounded-full bg-success/15 flex items-center justify-center shrink-0 animate-bounce-in">
+              <CheckCircle className="w-6 h-6 text-success" />
+            </div>
           ) : (
-            <XCircle className="w-6 h-6 text-danger shrink-0 mt-0.5 animate-shake" />
+            <div className="w-10 h-10 rounded-full bg-danger/15 flex items-center justify-center shrink-0">
+              <XCircle className="w-6 h-6 text-danger animate-shake" />
+            </div>
           )}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <p className={`font-bold text-sm ${correct ? 'text-success' : 'text-danger'}`}>
+              <p className={`font-bold text-base ${correct ? 'text-success' : 'text-danger'}`}>
                 {randomMessage}
               </p>
               {showCombo && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning/15 border border-warning/30 animate-combo-scale">
-                  <Zap className="w-3 h-3 text-warning fill-current" />
-                  <span className="text-[10px] font-bold text-warning">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-warning/15 border border-warning/30 animate-combo-scale">
+                  <Zap className="w-3.5 h-3.5 text-warning fill-current" />
+                  <span className="text-[11px] font-bold text-warning">
                     {getComboLabel(comboStreak)} x{comboStreak}
                   </span>
                 </span>
               )}
               {/* XP earned badge */}
               {correct && earnedXP > 0 && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gold/10 border border-gold/20 animate-bounce-in">
-                  <Star className="w-3 h-3 text-gold fill-current" />
-                  <span className="text-[10px] font-bold text-gold-text">+{earnedXP} XP</span>
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gold/10 border border-gold/20 animate-bounce-in">
+                  <Star className="w-3.5 h-3.5 text-gold fill-current" />
+                  <span className="text-[11px] font-bold text-gold-text">+{earnedXP} XP</span>
                 </span>
               )}
             </div>
             {explanation && (
-              <div className={`flex items-start gap-1.5 mt-1.5 ${!correct ? 'bg-white/3 rounded-lg p-2 -mx-2' : ''}`}>
-                {!correct && <Lightbulb className="w-3.5 h-3.5 text-warning shrink-0 mt-0.5" />}
-                <p className="text-xs text-frost-white/60 leading-relaxed">
+              <div className={`flex items-start gap-2 mt-2 ${!correct ? 'bg-white/3 rounded-xl p-3 -mx-1' : ''}`}>
+                {!correct && <Lightbulb className="w-4 h-4 text-warning shrink-0 mt-0.5" />}
+                <p className="text-sm text-frost-white/60 leading-relaxed">
                   {explanation}
                 </p>
               </div>
@@ -95,12 +106,13 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
           </div>
         </div>
 
+        {/* Continue button — 48px minimum height for mobile */}
         <button
           ref={btnRef}
           onClick={onContinue}
-          className={`w-full py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90 active:scale-[0.98] relative overflow-hidden ${
+          className={`w-full py-4 rounded-2xl font-bold text-base transition-all hover:opacity-90 active:scale-[0.98] relative overflow-hidden ${
             correct
-              ? 'bg-success text-white animate-correct-pulse'
+              ? 'bg-success text-white'
               : 'bg-danger text-white'
           }`}
         >

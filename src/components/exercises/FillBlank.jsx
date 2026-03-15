@@ -75,7 +75,7 @@ export default function FillBlank({ exercise, onAnswer, disabled }) {
               disabled={disabled}
               aria-pressed={isSelected}
               aria-label={`מילה: ${text}`}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+              className={`px-4 py-3 rounded-xl text-sm font-medium transition-all min-h-[44px] ${
                 isCorrectAnswer ? 'bg-success/20 text-success border border-success/30 scale-105' :
                 isWrongSelection ? 'bg-danger/20 text-danger border border-danger/30' :
                 isSelected ? 'bg-gold/20 text-gold border border-gold/30 scale-105 shadow-lg shadow-gold/10' :
@@ -92,14 +92,13 @@ export default function FillBlank({ exercise, onAnswer, disabled }) {
         <button
           onClick={handleCheck}
           disabled={selected === null}
-          className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all active:scale-[0.98] ${
+          className={`w-full py-4 rounded-2xl font-bold text-base transition-all active:scale-[0.98] min-h-[52px] ${
             selected !== null
               ? 'bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 animate-pulse-ready'
               : 'bg-white/5 text-frost-white/30 cursor-not-allowed'
           }`}
         >
           בדוק
-          {selected !== null && <span className="text-[10px] font-normal mr-2 opacity-60">(Enter ↵)</span>}
         </button>
       )}
     </div>

@@ -135,7 +135,7 @@ export default function LessonComplete({ mistakes, totalExercises, onContinue, s
         {nextLesson && onNextLesson && (
           <button
             onClick={onNextLesson}
-            className="w-full max-w-xs mx-auto flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base font-bold text-sm hover:brightness-110 transition-all active:scale-[0.98] animate-bounce-in mb-3"
+            className="w-full max-w-xs mx-auto flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base font-bold text-base hover:brightness-110 transition-all active:scale-[0.98] animate-bounce-in mb-3 min-h-[52px]"
             style={{ animationDelay: '0.7s' }}
           >
             שיעור הבא: {nextLesson.title || 'המשך'}
@@ -146,7 +146,7 @@ export default function LessonComplete({ mistakes, totalExercises, onContinue, s
         {/* Continue (back to book) button */}
         <button
           onClick={onContinue}
-          className={`w-full max-w-xs mx-auto flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm transition-all active:scale-[0.98] animate-bounce-in ${
+          className={`w-full max-w-xs mx-auto flex items-center justify-center gap-2 py-4 rounded-2xl font-bold text-base transition-all active:scale-[0.98] animate-bounce-in min-h-[52px] ${
             nextLesson ? 'bg-white/5 text-frost-white/60 hover:bg-white/10' : 'bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90'
           }`}
           style={{ animationDelay: nextLesson ? '0.8s' : '0.7s' }}

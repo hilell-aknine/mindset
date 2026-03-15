@@ -124,7 +124,7 @@ export default function Match({ exercise, onAnswer, disabled }) {
                 disabled={disabled || matched}
                 aria-pressed={selectedLeft === i}
                 aria-label={`${i + 1}. ${pair.left}${matched ? ' — מחובר' : ''}`}
-                className={`w-full px-3 py-3 rounded-xl border text-sm text-right transition-all relative ${
+                className={`w-full px-3 py-3 rounded-xl border text-sm text-right transition-all relative min-h-[44px] ${
                   style ? `${style.border} ${style.bg}` :
                   selectedLeft === i ? 'border-gold bg-gold/10 text-gold scale-[1.02]' :
                   'border-white/10 bg-bg-card hover:border-white/20 text-frost-white/70'
@@ -155,7 +155,7 @@ export default function Match({ exercise, onAnswer, disabled }) {
                 onKeyDown={(e) => handleKeyDown(e, 'right', originalIndex)}
                 disabled={disabled || matched || selectedLeft === null}
                 aria-label={`${HEBREW_LETTERS[shuffledRight.indexOf(shuffledRight.find(s => s.originalIndex === originalIndex))]}. ${text}${matched ? ' — מחובר' : ''}`}
-                className={`w-full px-3 py-3 rounded-xl border text-sm text-right transition-all relative ${
+                className={`w-full px-3 py-3 rounded-xl border text-sm text-right transition-all relative min-h-[44px] ${
                   style ? `${style.border} ${style.bg}` :
                   selectedLeft !== null && !matched
                     ? 'border-white/15 bg-bg-card hover:border-gold/30 hover:bg-gold/5 text-frost-white/70'
@@ -184,7 +184,7 @@ export default function Match({ exercise, onAnswer, disabled }) {
             const correct = matchedPairs.every(p => p.left === p.right)
             onAnswer(correct, exercise.explanation)
           }}
-          className="w-full py-3.5 rounded-xl font-bold text-sm transition-all bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90"
+          className="w-full py-4 rounded-2xl font-bold text-base min-h-[52px] transition-all bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90"
         >
           בדוק
         </button>

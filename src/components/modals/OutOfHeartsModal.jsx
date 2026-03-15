@@ -32,8 +32,8 @@ export default function OutOfHeartsModal({ onClose, onPurchase }) {
   }, [player.lastHeartLost])
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg-base/80 backdrop-blur-md p-4" role="dialog" aria-modal="true" aria-label="נגמרו הלבבות">
-      <div ref={modalRef} className="glass-card max-w-sm w-full p-6 text-center animate-bounce-in">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-bg-base/80 backdrop-blur-md p-0 sm:p-4" role="dialog" aria-modal="true" aria-label="נגמרו הלבבות">
+      <div ref={modalRef} className="glass-card max-w-sm w-full p-6 text-center animate-bottom-sheet sm:animate-bounce-in rounded-t-3xl sm:rounded-2xl" style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}>
         {/* Hearts display */}
         <div className="w-16 h-16 rounded-2xl bg-danger/20 mx-auto mb-4 flex items-center justify-center relative">
           <Heart className="w-8 h-8 text-danger animate-heartbeat" />
@@ -95,7 +95,7 @@ export default function OutOfHeartsModal({ onClose, onPurchase }) {
 
         <button
           onClick={onPurchase}
-          className="w-full py-3 rounded-xl bg-gradient-to-l from-gold to-warning text-bg-base font-bold text-sm mb-3 hover:opacity-90 active:opacity-80 transition-opacity flex items-center justify-center gap-2 active:scale-[0.98]"
+          className="w-full py-4 rounded-2xl bg-gradient-to-l from-gold to-warning text-bg-base font-bold text-base mb-3 hover:opacity-90 active:opacity-80 transition-opacity flex items-center justify-center gap-2 active:scale-[0.98] min-h-[52px]"
           aria-label="שדרג לפרימיום — לבבות ללא הגבלה"
         >
           <Crown className="w-4 h-4" />
@@ -104,7 +104,7 @@ export default function OutOfHeartsModal({ onClose, onPurchase }) {
 
         <button
           onClick={onClose}
-          className="w-full py-3 rounded-xl border border-white/10 text-frost-white/50 text-sm hover:text-frost-white hover:border-white/20 active:bg-white/5 transition-colors active:scale-[0.98]"
+          className="w-full py-4 rounded-2xl border border-white/10 text-frost-white/50 text-base hover:text-frost-white hover:border-white/20 active:bg-white/5 transition-colors active:scale-[0.98] min-h-[52px]"
         >
           אמתין
         </button>

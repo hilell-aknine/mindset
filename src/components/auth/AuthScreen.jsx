@@ -92,7 +92,7 @@ export default function AuthScreen() {
             <button
               onClick={handleGoogle}
               disabled={loading}
-              className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-xl bg-white text-gray-800 font-medium text-sm hover:bg-gray-100 transition-colors disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-white text-gray-800 font-medium text-base hover:bg-gray-100 transition-colors disabled:opacity-50 min-h-[52px]"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -110,7 +110,7 @@ export default function AuthScreen() {
             {/* Email */}
             <button
               onClick={() => setMode('email-login')}
-              className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-xl bg-bg-card border border-white/10 text-frost-white font-medium text-sm hover:bg-bg-card-hover transition-colors"
+              className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-bg-card border border-white/10 text-frost-white font-medium text-base hover:bg-bg-card-hover transition-colors min-h-[52px]"
             >
               <Mail className="w-5 h-5" />
               התחבר עם אימייל
@@ -126,7 +126,7 @@ export default function AuthScreen() {
             {/* Guest */}
             <button
               onClick={handleGuest}
-              className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-xl border border-white/10 text-frost-white/60 text-sm hover:text-frost-white hover:border-white/20 transition-colors"
+              className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl border border-white/10 text-frost-white/60 text-base hover:text-frost-white hover:border-white/20 transition-colors min-h-[52px]"
             >
               <User className="w-5 h-5" />
               המשך כאורח
@@ -150,7 +150,7 @@ export default function AuthScreen() {
                 placeholder="אימייל"
                 autoComplete="email"
                 aria-invalid={!!emailError}
-                className={`w-full px-4 py-3 rounded-xl bg-bg-card border text-frost-white placeholder:text-frost-white/30 text-sm focus:outline-none transition-colors ${
+                className={`w-full px-4 py-3.5 rounded-xl bg-bg-card border text-frost-white placeholder:text-frost-white/30 text-base focus:outline-none transition-colors ${
                   emailError ? 'border-danger/50 focus:border-danger' : 'border-white/10 focus:border-gold/50'
                 }`}
                 dir="ltr"
@@ -172,13 +172,13 @@ export default function AuthScreen() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="סיסמה"
                   autoComplete={mode === 'email-login' ? 'current-password' : 'new-password'}
-                  className="w-full px-4 py-3 pl-10 rounded-xl bg-bg-card border border-white/10 text-frost-white placeholder:text-frost-white/30 text-sm focus:border-gold/50 focus:outline-none transition-colors"
+                  className="w-full px-4 py-3.5 pl-10 rounded-xl bg-bg-card border border-white/10 text-frost-white placeholder:text-frost-white/30 text-base focus:border-gold/50 focus:outline-none transition-colors"
                   dir="ltr"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-frost-white/30 hover:text-frost-white/60 transition-colors"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 text-frost-white/30 hover:text-frost-white/60 transition-colors p-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
                   aria-label={showPassword ? 'הסתר סיסמה' : 'הצג סיסמה'}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -204,7 +204,7 @@ export default function AuthScreen() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3.5 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-50 active:scale-[0.98]"
+              className="w-full px-6 py-4 rounded-2xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-medium text-base hover:opacity-90 transition-opacity disabled:opacity-50 active:scale-[0.98] min-h-[52px]"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin mx-auto" />

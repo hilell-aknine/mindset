@@ -334,6 +334,94 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
   -webkit-tap-highlight-color: transparent;
 }
 
+/* ─── MOBILE UX FOUNDATIONS ─── */
+
+/* Global touch optimization — eliminate 300ms tap delay & highlight */
+@layer base {
+  button, a, [role="button"], [role="radio"], input, select, textarea {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Prevent iOS text size adjustment */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Prevent overscroll bounce on iOS (applied to body, not root for modals) */
+  body {
+    overscroll-behavior-y: contain;
+  }
+
+  /* Prevent pull-to-refresh on Chrome Android */
+  #root {
+    overscroll-behavior-y: contain;
+  }
+
+  /* Prevent iOS input zoom — inputs must be ≥16px */
+  input, select, textarea {
+    font-size: max(16px, 1em);
+  }
+
+  /* Smooth scrolling for programmatic scrolls */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Prevent text selection on interactive game elements */
+  button, [role="radio"], [role="radiogroup"], .glass-card {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Bottom nav spacer — pages with bottom nav need extra padding */
+.has-bottom-nav {
+  padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Bottom sheet animation */
+@keyframes bottomSheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.animate-bottom-sheet {
+  animation: bottomSheetUp 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+/* Page transition */
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-page-enter {
+  animation: pageEnter 0.25s ease-out forwards;
+}
+
+/* Active press state for all interactive cards */
+.press-scale {
+  transition: transform 0.1s ease-out;
+}
+.press-scale:active {
+  transform: scale(0.97);
+}
+
+/* iOS momentum scrolling for overflow containers */
+.scroll-momentum {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
+
+/* Bottom nav active indicator */
+@keyframes navDotIn {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+.nav-dot-in {
+  animation: navDotIn 0.2s ease-out forwards;
+}
+
 /* Print styles */
 @media print {
   .glass-card { background: white !important; border-color: #e5e7eb !important; }

@@ -21,7 +21,7 @@ export default function Toast() {
   if (toasts.length === 0) return null
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 w-full max-w-sm px-4" role="status" aria-live="polite">
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[60] flex flex-col gap-2 w-full max-w-sm px-4" role="status" aria-live="polite">
       {toasts.slice(0, 3).map((toast, i) => {
         const Icon = icons[toast.type] || icons.info
         const color = colors[toast.type] || colors.info

@@ -70,7 +70,7 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
               role="radio"
               aria-checked={isSelected}
               aria-label={`${LETTERS[i]}: ${option}`}
-              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border text-right transition-all ${
+              className={`w-full flex items-center gap-3 px-4 py-4 rounded-2xl border text-right transition-all min-h-[56px] ${
                 isCorrect ? 'border-success bg-success/10 text-success' :
                 isWrong ? 'border-danger bg-danger/10 text-danger animate-shake' :
                 isEliminated ? 'border-white/5 bg-bg-card/50 opacity-40 line-through' :
@@ -99,14 +99,13 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
           onClick={handleCheck}
           disabled={selected === null}
           aria-label="בדוק תשובה (Enter)"
-          className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all active:scale-[0.98] ${
+          className={`w-full py-4 rounded-2xl font-bold text-base transition-all active:scale-[0.98] min-h-[52px] ${
             selected !== null
               ? 'bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 animate-pulse-ready'
               : 'bg-white/5 text-frost-white/30 cursor-not-allowed'
           }`}
         >
           בדוק תשובה
-          {selected !== null && <span className="text-[10px] font-normal mr-2 opacity-60">(Enter ↵)</span>}
         </button>
       )}
     </div>

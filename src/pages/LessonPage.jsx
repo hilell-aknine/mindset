@@ -398,7 +398,7 @@ export default function LessonPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate(`/book/${bookSlug}`)}
-              className="p-1.5 rounded-lg hover:bg-white/5 transition-colors"
+              className="p-2.5 -m-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-label="חזרה לספר"
             >
               <X className="w-5 h-5 text-frost-white/40" />
@@ -430,12 +430,12 @@ export default function LessonPage() {
             {/* Timer toggle */}
             <button
               onClick={() => setTimerEnabled(t => !t)}
-              className={`p-1.5 rounded-lg transition-colors ${
+              className={`p-2.5 -m-1 rounded-xl transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center ${
                 timerEnabled ? 'bg-dusty-aqua/15 text-dusty-aqua' : 'hover:bg-white/5 text-frost-white/20'
               }`}
-              title={timerEnabled ? 'כבה טיימר' : 'הפעל טיימר (+XP בונוס)'}
+              aria-label={timerEnabled ? 'כבה טיימר' : 'הפעל טיימר (+XP בונוס)'}
             >
-              <Timer className="w-4 h-4" />
+              <Timer className="w-4.5 h-4.5" />
             </button>
 
             {/* Hearts */}

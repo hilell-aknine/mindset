@@ -137,7 +137,7 @@ export default function SortOrder({ exercise, onAnswer, disabled }) {
               onTouchEnd={handleTouchEnd}
               role="listitem"
               aria-label={`${item.text} — מיקום ${index + 1}`}
-              className={`flex items-center gap-2 px-3 py-3 rounded-xl border transition-all duration-200 select-none ${
+              className={`flex items-center gap-2 px-3 py-3 rounded-xl border transition-all duration-200 select-none min-h-[44px] ${
                 isCorrectPosition ? 'border-success bg-success/10' :
                 isWrongPosition ? 'border-danger bg-danger/10 animate-shake' :
                 isDragging ? 'border-gold bg-gold/10 opacity-50 scale-[0.95] shadow-lg shadow-gold/10' :
@@ -203,10 +203,9 @@ export default function SortOrder({ exercise, onAnswer, disabled }) {
       {!disabled && (
         <button
           onClick={handleCheck}
-          className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 transition-all active:scale-[0.98] animate-pulse-ready"
+          className="w-full py-4 rounded-2xl font-bold text-base min-h-[52px] bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 transition-all active:scale-[0.98] animate-pulse-ready"
         >
           בדוק
-          <span className="text-[10px] font-normal mr-2 opacity-60">(Enter ↵)</span>
         </button>
       )}
     </div>

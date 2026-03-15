@@ -58,7 +58,7 @@ export default function Compare({ exercise, onAnswer, disabled }) {
               role="radio"
               aria-checked={isSelected}
               aria-label={`אפשרות ${i + 1}: ${option.label} — ${option.text}`}
-              className={`p-4 rounded-xl border text-right transition-all relative ${
+              className={`p-4 rounded-2xl border text-right transition-all relative min-h-[80px] ${
                 isCorrect ? 'border-success bg-success/10' :
                 isWrong ? 'border-danger bg-danger/10 animate-shake' :
                 isSelected ? 'border-gold bg-gold/10' :
@@ -102,14 +102,13 @@ export default function Compare({ exercise, onAnswer, disabled }) {
         <button
           onClick={handleCheck}
           disabled={selected === null}
-          className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all active:scale-[0.98] ${
+          className={`w-full py-4 rounded-2xl font-bold text-base transition-all active:scale-[0.98] min-h-[52px] ${
             selected !== null
               ? 'bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 animate-pulse-ready'
               : 'bg-white/5 text-frost-white/30 cursor-not-allowed'
           }`}
         >
           בדוק
-          {selected !== null && <span className="text-[10px] font-normal mr-2 opacity-60">(Enter ↵)</span>}
         </button>
       )}
     </div>
