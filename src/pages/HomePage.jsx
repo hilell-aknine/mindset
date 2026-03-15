@@ -17,6 +17,11 @@ import mindsetBook from '../data/books/mindset-book.json'
 
 const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook]
 
+const BOOK_COVERS = {
+  'strengths-finder': '/backgrounds/raw-diamond.png',
+  'atomic-habits': '/backgrounds/gold-dominos.png',
+}
+
 const DAILY_QUOTES = [
   { text: 'אתה לא צריך להיות מושלם כדי להתחיל, אבל צריך להתחיל כדי להשתפר.', source: 'הרגלים אטומים' },
   { text: 'כשאתה שם לב למה שעובד לך — אתה מתחזק. זו מהות החוזקות.', source: 'חוזקות' },
@@ -98,7 +103,11 @@ export default function HomePage() {
       {showMilestone && streakMilestone && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={() => { setShowMilestone(false); clearStreakMilestone() }}>
           <div className="glass-card p-8 text-center max-w-sm mx-4 border-gold/30 animate-bounce-in">
-            <div className="text-6xl mb-4">{streakMilestone.emoji}</div>
+            <img
+              src={streakMilestone.days >= 30 ? '/backgrounds/lion-flame.png' : '/backgrounds/golden-chain.png'}
+              alt=""
+              className="w-24 h-24 rounded-2xl object-cover mx-auto mb-4 shadow-lg shadow-gold/20"
+            />
             <h3 className="font-display text-2xl font-bold text-gold mb-2">{streakMilestone.title}</h3>
             <p className="text-frost-white/60 text-sm mb-3">{streakMilestone.reward}</p>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/15 border border-gold/30">
@@ -119,9 +128,11 @@ export default function HomePage() {
           className="w-full glass-card p-4 mb-4 flex items-center gap-3 animate-fade-in transition-all border-dusty-aqua/20 hover:border-dusty-aqua/30 bg-dusty-aqua/5"
           style={{ animationDelay: '0.03s' }}
         >
-          <div className="w-12 h-12 rounded-xl bg-dusty-aqua/15 flex items-center justify-center">
-            <span className="text-xl">🧠</span>
-          </div>
+          <img
+            src="/backgrounds/drawer-glow.png"
+            alt=""
+            className="w-14 h-14 rounded-xl object-cover shrink-0"
+          />
           <div className="flex-1 text-right">
             <p className="text-sm font-semibold text-frost-white">חזרה מרווחת</p>
             <p className="text-xs text-frost-white/40">{srDueCount} תרגילים לחיזוק הזיכרון</p>
@@ -173,9 +184,11 @@ export default function HomePage() {
         return (
           <div className="glass-card p-4 mb-4 animate-fade-in border-warning/10" data-spotlight="streak" style={{ animationDelay: '0.1s' }}>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-warning/20 flex items-center justify-center">
-                <Flame className="w-5 h-5 text-warning" />
-              </div>
+              <img
+                src={player.currentStreak >= 30 ? '/backgrounds/lion-flame.png' : '/backgrounds/golden-chain.png'}
+                alt=""
+                className="w-12 h-12 rounded-xl object-cover shrink-0"
+              />
               <div className="flex-1">
                 <p className="text-sm font-semibold text-frost-white">רצף של {player.currentStreak} ימים!</p>
                 {nextMilestone ? (
@@ -215,15 +228,11 @@ export default function HomePage() {
         }`}
         style={{ animationDelay: '0.15s' }}
       >
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-          dailyCompleted ? 'bg-success/15' : 'bg-gold/15'
-        }`}>
-          {dailyCompleted ? (
-            <Trophy className="w-6 h-6 text-success" />
-          ) : (
-            <Target className="w-6 h-6 text-gold" />
-          )}
-        </div>
+        <img
+          src="/backgrounds/hourglass-brain.png"
+          alt=""
+          className={`w-14 h-14 rounded-xl object-cover shrink-0 ${dailyCompleted ? 'opacity-50 grayscale' : ''}`}
+        />
         <div className="flex-1 text-right">
           <p className="text-sm font-semibold text-frost-white">
             {dailyCompleted ? 'אתגר יומי הושלם!' : 'אתגר יומי'}
@@ -261,9 +270,17 @@ export default function HomePage() {
               className="glass-card p-4 flex items-center gap-3 text-right hover:border-gold/20 active:bg-white/5 press-scale transition-all group overflow-hidden w-full animate-fade-in min-h-[72px]"
               style={{ animationDelay: `${0.2 + idx * 0.05}s` }}
             >
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-2xl sm:text-3xl shrink-0 group-hover:scale-105 transition-transform">
-                {book.icon}
-              </div>
+              {BOOK_COVERS[book.slug] ? (
+                <img
+                  src={BOOK_COVERS[book.slug]}
+                  alt=""
+                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover shrink-0 group-hover:scale-105 transition-transform"
+                />
+              ) : (
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-2xl sm:text-3xl shrink-0 group-hover:scale-105 transition-transform">
+                  {book.icon}
+                </div>
+              )}
               <div className="flex-1 min-w-0 overflow-hidden">
                 <h3 className="font-display text-base sm:text-lg font-bold text-frost-white truncate">{book.title}</h3>
                 <p className="text-xs text-frost-white/40 mt-0.5">{book.author}</p>

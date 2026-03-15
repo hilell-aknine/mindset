@@ -107,9 +107,11 @@ export default function ReviewPage() {
           <h2 className="font-display text-xl font-bold text-frost-white">חזרה</h2>
         </div>
         <div className="text-center py-16 animate-fade-in">
-          <div className="w-20 h-20 rounded-3xl bg-success/10 mx-auto mb-4 flex items-center justify-center">
-            <PartyPopper className="w-10 h-10 text-success" />
-          </div>
+          <img
+            src="/backgrounds/firefly-jar.png"
+            alt=""
+            className="w-28 h-28 rounded-3xl object-cover mx-auto mb-4 shadow-lg shadow-gold/10"
+          />
           <h3 className="font-display text-xl font-bold text-frost-white mb-2">אין תרגילים לחזרה!</h3>
           <p className="text-sm text-frost-white/40 mb-6">כל התשובות שלך נכונות. כל הכבוד!</p>
 

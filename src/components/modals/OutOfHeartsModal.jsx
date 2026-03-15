@@ -34,13 +34,12 @@ export default function OutOfHeartsModal({ onClose, onPurchase }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-bg-base/80 backdrop-blur-md p-0 sm:p-4" role="dialog" aria-modal="true" aria-label="נגמרו הלבבות">
       <div ref={modalRef} className="glass-card max-w-sm w-full p-6 text-center animate-bottom-sheet sm:animate-bounce-in rounded-t-3xl sm:rounded-2xl" style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}>
-        {/* Hearts display */}
-        <div className="w-16 h-16 rounded-2xl bg-danger/20 mx-auto mb-4 flex items-center justify-center relative">
-          <Heart className="w-8 h-8 text-danger animate-heartbeat" />
-          <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-bg-base border-2 border-danger/30 flex items-center justify-center text-[10px] font-bold text-danger">
-            {player.hearts || 0}
-          </span>
-        </div>
+        {/* Broken hourglass image */}
+        <img
+          src="/backgrounds/broken-hourglass.png"
+          alt=""
+          className="w-24 h-24 rounded-2xl object-cover mx-auto mb-4 shadow-lg shadow-danger/10 animate-fade-in"
+        />
 
         <h3 className="font-display text-xl font-bold text-frost-white mb-2">נגמרו הלבבות!</h3>
 

@@ -12,6 +12,11 @@ import mindsetBook from '../data/books/mindset-book.json'
 
 const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook }
 
+const BOOK_COVERS = {
+  'strengths-finder': '/backgrounds/raw-diamond.png',
+  'atomic-habits': '/backgrounds/gold-dominos.png',
+}
+
 const TYPE_ICONS = {
   'multiple-choice': '🎯',
   'fill-blank': '✏️',
@@ -106,7 +111,11 @@ export default function BookPage() {
           <h2 className="font-display text-xl font-bold text-frost-white">{book.title}</h2>
           <p className="text-xs text-frost-white/40">{book.author}</p>
         </div>
-        <span className="text-3xl">{book.icon}</span>
+        {BOOK_COVERS[slug] ? (
+          <img src={BOOK_COVERS[slug]} alt="" className="w-12 h-12 rounded-xl object-cover" />
+        ) : (
+          <span className="text-3xl">{book.icon}</span>
+        )}
       </div>
 
       {/* Book progress card with stats */}

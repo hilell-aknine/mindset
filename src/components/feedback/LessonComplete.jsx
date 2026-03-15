@@ -42,6 +42,13 @@ export default function LessonComplete({ mistakes, totalExercises, onContinue, s
       )}
 
       <div className="text-center animate-fade-in">
+        {/* Hero image — golden key */}
+        <img
+          src="/backgrounds/golden-key.png"
+          alt=""
+          className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl object-cover mx-auto mb-5 animate-bounce-in shadow-lg shadow-gold/20"
+        />
+
         {/* Stars with stagger animation */}
         <div className="flex items-center justify-center gap-3 mb-6">
           {[1, 2, 3].map(i => (
