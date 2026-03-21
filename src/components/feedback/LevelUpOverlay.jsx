@@ -61,8 +61,9 @@ export default function LevelUpOverlay({ level, onClose }) {
         {/* Level badge */}
         <div className="relative mx-auto mb-6 w-28 h-28">
           <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-gold to-warning animate-pulse-glow" />
-          <div className="relative w-full h-full rounded-3xl bg-gradient-to-br from-gold to-warning flex items-center justify-center">
-            <Trophy className="w-14 h-14 text-bg-base" />
+          <div className="relative w-full h-full rounded-3xl overflow-hidden">
+            <img src="/backgrounds/spiral-stairs.png" alt="" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gold/10" />
           </div>
           {/* Sparkle decorations */}
           {isHighLevel && (

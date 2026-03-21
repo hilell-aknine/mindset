@@ -41,6 +41,7 @@ export const SR_INTERVALS = [
 ]
 
 export const XP_SR_REVIEW = 15 // Base XP for spaced repetition review
+export const XP_CHAPTER_AUDIO = 30 // Bonus XP for listening to chapter audio summary
 
 // Streak tier badges
 export const STREAK_TIERS = [
@@ -110,6 +111,8 @@ export const DEFAULT_PLAYER = {
   lastNotificationDate: null,
   // Progress tracking
   learningDays: {}, // { "2026-03-15": true, ... } — heatmap data
+  // Audio summaries listened
+  listenedAudioSummaries: {}, // { "atomic-habits:0": true, ... } — bookSlug:chapterIndex
 }
 
 export const getLevelName = (level) => {

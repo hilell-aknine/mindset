@@ -83,9 +83,7 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center">
-            <Bot className="w-4 h-4 text-frost-white" />
-          </div>
+          <img src="/backgrounds/ai-coach.png" alt="" className="w-8 h-8 rounded-lg object-cover" />
           <div>
             <p className="text-sm font-bold text-frost-white">מאמן AI</p>
             <div className="flex items-center gap-1">

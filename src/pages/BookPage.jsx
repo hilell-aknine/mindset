@@ -4,17 +4,23 @@ import { usePlayer } from '../contexts/PlayerContext'
 import { ArrowRight, Lock, Check, Play, Clock, Star, Zap, Trophy, RotateCcw, FileText } from 'lucide-react'
 import PurchaseModal from '../components/modals/PurchaseModal'
 import AICoachButton from '../components/ai/AICoachButton'
+import ChapterAudioSummary from '../components/ChapterAudioSummary'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
 import mindsetBook from '../data/books/mindset-book.json'
+import indistractable from '../data/books/indistractable.json'
 
-const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook }
+const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook, 'indistractable': indistractable }
 
 const BOOK_COVERS = {
   'strengths-finder': '/backgrounds/raw-diamond.png',
   'atomic-habits': '/backgrounds/gold-dominos.png',
+  'happy-chemicals': '/backgrounds/happy-molecule.png',
+  'next-five-moves': '/backgrounds/chess-knight.png',
+  'mindset-book': '/backgrounds/brain-lightbulb.png',
+  'indistractable': '/backgrounds/focus-shield.png',
 }
 
 const TYPE_ICONS = {
@@ -338,6 +344,15 @@ export default function BookPage() {
                         </button>
                       )
                     })}
+
+                    {/* Audio summary — visible when chapter is 100% complete */}
+                    {progress.percent === 100 && (
+                      <ChapterAudioSummary
+                        bookSlug={slug}
+                        chapterIndex={ci}
+                        chapterTitle={chapter.title}
+                      />
+                    )}
                   </div>
                 )}
 

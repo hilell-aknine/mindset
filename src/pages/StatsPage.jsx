@@ -228,8 +228,9 @@ export default function StatsPage() {
       </div>
 
       {/* Level card with ring */}
-      <div className="glass-card p-6 mb-6 animate-fade-in" style={{ animationDelay: '0.05s' }}>
-        <div className="flex items-center gap-5">
+      <div className="glass-card p-6 mb-6 animate-fade-in relative overflow-hidden" style={{ animationDelay: '0.05s' }}>
+        <img src="/backgrounds/brain-tech.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-10 pointer-events-none" aria-hidden="true" />
+        <div className="relative flex items-center gap-5">
           <ProgressRing value={player.xp - currentThreshold} max={nextThreshold - currentThreshold} size={80}>
             <span className="font-display text-lg font-bold text-gold">{player.level}</span>
           </ProgressRing>

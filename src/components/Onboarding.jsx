@@ -178,11 +178,20 @@ export default function Onboarding({ onComplete }) {
             className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl object-cover mb-6 animate-bounce-in shadow-lg shadow-gold/20"
           />
         ) : current.visual === 'brain' ? (
-          <img
-            src="/backgrounds/hero-book-brain.png"
-            alt=""
-            className="w-28 h-16 sm:w-36 sm:h-20 rounded-2xl object-cover mb-6 animate-bounce-in shadow-lg shadow-deep-petrol/30"
-          />
+          <>
+            <video
+              autoPlay loop muted playsInline
+              className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl object-cover mb-6 animate-bounce-in shadow-lg shadow-deep-petrol/30 hidden sm:block"
+              aria-hidden="true"
+            >
+              <source src="/book-brain-video.mp4" type="video/mp4" />
+            </video>
+            <img
+              src="/backgrounds/hero-book-brain.png"
+              alt=""
+              className="w-28 h-16 sm:hidden rounded-2xl object-cover mb-6 animate-bounce-in shadow-lg shadow-deep-petrol/30"
+            />
+          </>
         ) : (
           <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center mb-6 animate-bounce-in">
             <current.icon className="w-10 h-10 text-frost-white" />

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import ReactConfetti from 'react-confetti'
-import { Star, Trophy, ArrowLeft, Sparkles, Zap, Timer, Share2 } from 'lucide-react'
+import { Star, Trophy, ArrowLeft, Sparkles, Zap, Timer, Share2, Headphones } from 'lucide-react'
 import { XP_LESSON_COMPLETE, XP_PERFECT_LESSON } from '../../config/constants'
 import { getActiveEvent, getXPMultiplier } from '../../lib/events'
 
-export default function LessonComplete({ mistakes, totalExercises, onContinue, speedBonus = 0, nextLesson = null, onNextLesson = null }) {
+export default function LessonComplete({ mistakes, totalExercises, onContinue, speedBonus = 0, nextLesson = null, onNextLesson = null, chapterComplete = false }) {
   const [showConfetti, setShowConfetti] = useState(true)
   const [starsRevealed, setStarsRevealed] = useState(0)
   const [showBreakdown, setShowBreakdown] = useState(false)
@@ -42,12 +42,29 @@ export default function LessonComplete({ mistakes, totalExercises, onContinue, s
       )}
 
       <div className="text-center animate-fade-in">
-        {/* Hero image — golden key */}
-        <img
-          src="/backgrounds/golden-key.png"
-          alt=""
-          className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl object-cover mx-auto mb-5 animate-bounce-in shadow-lg shadow-gold/20"
-        />
+        {/* Hero — perfect: 3 stars book, otherwise: golden key (video on desktop, image on mobile) */}
+        {isPerfect ? (
+          <img
+            src="/backgrounds/perfect-lesson.png"
+            alt=""
+            className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl object-cover mx-auto mb-5 animate-bounce-in shadow-lg shadow-gold/20"
+          />
+        ) : (
+          <>
+            <video
+              autoPlay loop muted playsInline
+              className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl object-cover mx-auto mb-5 animate-bounce-in shadow-lg shadow-gold/20 hidden sm:block"
+              aria-hidden="true"
+            >
+              <source src="/golden-key-video.mp4" type="video/mp4" />
+            </video>
+            <img
+              src="/backgrounds/golden-key.png"
+              alt=""
+              className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl object-cover mx-auto mb-5 animate-bounce-in shadow-lg shadow-gold/20 sm:hidden"
+            />
+          </>
+        )}
 
         {/* Stars with stagger animation */}
         <div className="flex items-center justify-center gap-3 mb-6">
@@ -161,6 +178,16 @@ export default function LessonComplete({ mistakes, totalExercises, onContinue, s
           {nextLesson ? 'חזרה לספר' : 'המשך'}
           <ArrowLeft className="w-4 h-4" />
         </button>
+
+        {/* Chapter complete — audio summary hint */}
+        {chapterComplete && (
+          <div className="flex items-center justify-center gap-2 mt-4 px-4 py-2.5 rounded-xl bg-dusty-aqua/10 border border-dusty-aqua/20 animate-fade-in max-w-xs mx-auto" style={{ animationDelay: '1.1s' }}>
+            <Headphones className="w-4 h-4 text-dusty-aqua shrink-0" />
+            <p className="text-[11px] text-frost-white/60">
+              סיימת את הפרק! סיכום שמיעה ממתין לך בעמוד הספר
+            </p>
+          </div>
+        )}
 
         {/* Share button */}
         {isPerfect && navigator.share && (

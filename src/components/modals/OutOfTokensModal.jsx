@@ -39,9 +39,11 @@ export default function OutOfTokensModal({ onClose, onPurchase }) {
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="glass-card max-w-sm w-full p-6 text-center animate-fade-in" role="dialog" aria-label="נגמרו הטוקנים">
-        <div className="w-16 h-16 rounded-2xl bg-gold/20 mx-auto mb-4 flex items-center justify-center">
-          <Zap className="w-8 h-8 text-gold" />
-        </div>
+        <img
+          src="/backgrounds/locked-books.png"
+          alt=""
+          className="w-24 h-24 rounded-2xl object-cover mx-auto mb-4 shadow-lg shadow-gold/10"
+        />
         <h3 className="font-display text-xl font-bold text-frost-white mb-2">נגמרה האנרגיה!</h3>
         <p className="text-sm text-frost-white/50 mb-3">
           הטוקנים נגמרו. מחר תקבל 3 טוקנים חדשים, או שדרג לפרימיום לגישה בלתי מוגבלת למאמן AI.

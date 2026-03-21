@@ -60,6 +60,11 @@ export default function PurchaseModal({ bookSlug, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-bg-base/80 backdrop-blur-md p-4" role="dialog" aria-modal="true" aria-label="בחר תוכנית">
       <div ref={modalRef} className="glass-card max-w-md w-full p-6 animate-slide-up sm:animate-fade-in">
+        <img
+          src="/backgrounds/locked-books.png"
+          alt=""
+          className="w-20 h-20 rounded-2xl object-cover mx-auto mb-4 shadow-lg shadow-gold/10"
+        />
         <h3 className="font-display text-xl font-bold text-frost-white text-center mb-6">
           בחר תוכנית
         </h3>

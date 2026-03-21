@@ -14,12 +14,17 @@ import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
 import mindsetBook from '../data/books/mindset-book.json'
+import indistractable from '../data/books/indistractable.json'
 
-const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook]
+const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable]
 
 const BOOK_COVERS = {
   'strengths-finder': '/backgrounds/raw-diamond.png',
   'atomic-habits': '/backgrounds/gold-dominos.png',
+  'happy-chemicals': '/backgrounds/happy-molecule.png',
+  'next-five-moves': '/backgrounds/chess-knight.png',
+  'mindset-book': '/backgrounds/brain-lightbulb.png',
+  'indistractable': '/backgrounds/focus-shield.png',
 }
 
 const DAILY_QUOTES = [
@@ -104,7 +109,7 @@ export default function HomePage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={() => { setShowMilestone(false); clearStreakMilestone() }}>
           <div className="glass-card p-8 text-center max-w-sm mx-4 border-gold/30 animate-bounce-in">
             <img
-              src={streakMilestone.days >= 30 ? '/backgrounds/lion-flame.png' : '/backgrounds/golden-chain.png'}
+              src={streakMilestone.days >= 100 ? '/backgrounds/lion-flame.png' : streakMilestone.days >= 30 ? '/backgrounds/streak-30.png' : '/backgrounds/golden-chain.png'}
               alt=""
               className="w-24 h-24 rounded-2xl object-cover mx-auto mb-4 shadow-lg shadow-gold/20"
             />
@@ -185,7 +190,7 @@ export default function HomePage() {
           <div className="glass-card p-4 mb-4 animate-fade-in border-warning/10" data-spotlight="streak" style={{ animationDelay: '0.1s' }}>
             <div className="flex items-center gap-3">
               <img
-                src={player.currentStreak >= 30 ? '/backgrounds/lion-flame.png' : '/backgrounds/golden-chain.png'}
+                src={player.currentStreak >= 100 ? '/backgrounds/lion-flame.png' : player.currentStreak >= 30 ? '/backgrounds/streak-30.png' : '/backgrounds/golden-chain.png'}
                 alt=""
                 className="w-12 h-12 rounded-xl object-cover shrink-0"
               />

@@ -127,9 +127,11 @@ export default function DailyChallenge({ onClose }) {
               <X className="w-5 h-5" />
             </button>
 
-            <div className="w-16 h-16 rounded-2xl bg-success/15 flex items-center justify-center mx-auto mb-4">
-              {isPerfect ? <Star className="w-8 h-8 text-gold fill-gold" /> : <Trophy className="w-8 h-8 text-success" />}
-            </div>
+            <img
+              src={isPerfect ? '/backgrounds/xp-stopwatch.png' : '/backgrounds/trophies-bg.png'}
+              alt=""
+              className="w-20 h-20 rounded-2xl object-cover mx-auto mb-4 shadow-lg shadow-gold/10"
+            />
             <h3 className="font-display text-2xl font-bold text-frost-white mb-2">
               {isPerfect ? 'מושלם!' : completed ? 'מצוין!' : 'כבר סיימת היום!'}
             </h3>

@@ -5,15 +5,16 @@ import {
   DEFAULT_PLAYER, MAX_HEARTS, FREE_DAILY_TOKENS,
   HEART_RECOVERY_MINUTES, getLevelForXP, XP_CORRECT_ANSWER,
   XP_LESSON_COMPLETE, XP_PERFECT_LESSON, getComboBonus,
-  SR_INTERVALS, XP_SR_REVIEW
+  SR_INTERVALS, XP_SR_REVIEW, XP_CHAPTER_AUDIO
 } from '../config/constants'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
 import mindsetBook from '../data/books/mindset-book.json'
+import indistractable from '../data/books/indistractable.json'
 
-const ALL_BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook }
+const ALL_BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook, 'indistractable': indistractable }
 import { getXPMultiplier, checkStreakMilestone } from '../lib/events'
 
 const PlayerContext = createContext(null)
@@ -375,10 +376,26 @@ export function PlayerProvider({ children }) {
     })
   }, [updatePlayer])
 
+  const completeAudioSummary = useCallback((bookSlug, chapterIndex) => {
+    updatePlayer(prev => {
+      const key = `${bookSlug}:${chapterIndex}`
+      if (prev.listenedAudioSummaries?.[key]) return prev // already earned
+      const multiplier = getXPMultiplier()
+      const earnedXP = Math.round(XP_CHAPTER_AUDIO * multiplier)
+      return {
+        ...prev,
+        xp: prev.xp + earnedXP,
+        weeklyXP: (prev.weeklyXP || 0) + earnedXP,
+        listenedAudioSummaries: { ...(prev.listenedAudioSummaries || {}), [key]: true },
+      }
+    })
+  }, [updatePlayer])
+
   return (
     <PlayerContext.Provider value={{
       player, loaded, updatePlayer,
       onCorrectAnswer, onWrongAnswer, spendToken, completeLesson,
+      completeAudioSummary,
       streakMilestone, clearStreakMilestone: () => setStreakMilestone(null),
       addToSpacedReview, handleSRReview, getDueSRItems, trackLearningSession,
     }}>
@@ -436,6 +453,7 @@ function mapFromDB(row) {
     learningHours: row.learning_hours ?? {},
     lastNotificationDate: row.last_notification_date ?? null,
     learningDays: row.learning_days ?? {},
+    listenedAudioSummaries: row.listened_audio_summaries ?? {},
   }
 }
 
@@ -481,5 +499,6 @@ function mapToDB(player) {
     learning_hours: player.learningHours,
     last_notification_date: player.lastNotificationDate,
     learning_days: player.learningDays,
+    listened_audio_summaries: player.listenedAudioSummaries,
   }
 }

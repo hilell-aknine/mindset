@@ -12,8 +12,9 @@ import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
 import mindsetBook from '../data/books/mindset-book.json'
+import indistractable from '../data/books/indistractable.json'
 
-const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook]
+const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable]
 
 const bookImages = {
   'atomic-habits': '/books/atomic-habits.png',
@@ -21,6 +22,7 @@ const bookImages = {
   'happy-chemicals': '/books/happy-chemicals.png',
   'next-five-moves': '/books/next-five-moves.png',
   'mindset-book': '/books/mindset-book.png',
+  'indistractable': '/books/indistractable.png',
 }
 
 const EXERCISE_TYPES = [
@@ -769,6 +771,14 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-bg-base/60 via-transparent to-bg-base/60 pointer-events-none" />
         <div className="max-w-5xl mx-auto relative z-10">
           <RevealSection className="text-center mb-8 sm:mb-10">
+            <img
+              src="/backgrounds/game-controller.png"
+              alt=""
+              width={120}
+              height={120}
+              loading="lazy"
+              className="w-20 h-20 sm:w-28 sm:h-28 mx-auto mb-4 sm:mb-6 rounded-2xl object-cover drop-shadow-[0_0_30px_rgba(47,133,146,0.3)]"
+            />
             <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">
               לא קריאה פסיבית —{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-l from-gold to-dusty-aqua">
@@ -803,7 +813,7 @@ export default function LandingPage() {
       {/* ─── Gamification Features ─── */}
       <section className="py-12 sm:py-24 px-4 relative overflow-hidden">
         <img
-          src="/backgrounds/gamification-bg.png"
+          src="/backgrounds/hexagons-bg.png"
           alt=""
           width={1200}
           height={800}

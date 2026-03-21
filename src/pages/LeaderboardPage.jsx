@@ -150,6 +150,16 @@ export default function LeaderboardPage() {
         </span>
       </div>
 
+      {/* Podium hero image */}
+      <div className="relative rounded-2xl overflow-hidden mb-4 animate-fade-in" style={{ animationDelay: '0.04s' }}>
+        <img
+          src="/backgrounds/leaderboard-podium.png"
+          alt=""
+          className="w-full h-32 object-cover opacity-40"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/60 to-transparent" />
+      </div>
+
       {/* League badge + tier progress */}
       <div className={`glass-card p-4 mb-4 ${league.border} animate-fade-in`} style={{ animationDelay: '0.05s' }}>
         <div className="flex items-center gap-3 mb-3">

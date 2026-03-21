@@ -366,6 +366,9 @@ export default function LessonPage() {
     return null
   })()
 
+  // Check if this is the last lesson in the chapter (for audio summary hint)
+  const isLastInChapter = chapter && parseInt(lessonIndex) === chapter.lessons.length - 1
+
   if (isComplete) {
     return (
       <LessonComplete
@@ -375,6 +378,7 @@ export default function LessonPage() {
         speedBonus={totalSpeedBonus}
         nextLesson={nextLessonInfo}
         onNextLesson={nextLessonInfo ? () => navigate(`/lesson/${bookSlug}/${nextLessonInfo.ci}/${nextLessonInfo.li}`) : null}
+        chapterComplete={isLastInChapter}
       />
     )
   }
