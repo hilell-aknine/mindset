@@ -39,7 +39,7 @@ export default function Reading({ exercise, onAnswer, disabled }) {
           </div>
         </div>
 
-        <div className="text-xs sm:text-sm text-frost-white/75 leading-relaxed sm:leading-[1.8] whitespace-pre-wrap max-h-[45vh] overflow-y-auto overscroll-contain">
+        <div className="text-xs sm:text-sm text-frost-white/75 leading-relaxed sm:leading-[1.8] whitespace-pre-wrap">
           {exercise.passage}
         </div>
       </div>

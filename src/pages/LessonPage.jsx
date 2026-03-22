@@ -386,7 +386,7 @@ export default function LessonPage() {
   }
 
   return (
-    <div className="min-h-dvh flex flex-col">
+    <div className="h-dvh flex flex-col overflow-hidden">
       {/* Mini confetti on correct answer — scales with combo */}
       <MiniConfetti active={showConfetti} combo={comboStreak} />
 
@@ -471,7 +471,7 @@ export default function LessonPage() {
       </div>
 
       {/* Exercise with slide animation */}
-      <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
+      <div className="flex-1 min-h-0 max-w-2xl mx-auto w-full px-4 py-6 overflow-y-auto">
         {currentExercise && (
           <div
             key={currentIndex}
