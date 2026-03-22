@@ -1,3 +1,13 @@
+import atomicHabits from '../data/books/atomic-habits.json'
+import happyChemicals from '../data/books/happy-chemicals.json'
+import mindsetBook from '../data/books/mindset-book.json'
+import nextFiveMoves from '../data/books/next-five-moves.json'
+import strengthsFinder from '../data/books/strengths-finder.json'
+import indistractable from '../data/books/indistractable.json'
+
+const ALL_BOOKS = [atomicHabits, happyChemicals, mindsetBook, nextFiveMoves, strengthsFinder, indistractable]
+const TOTAL_LESSONS = ALL_BOOKS.reduce((sum, book) => sum + book.chapters.reduce((s, ch) => s + ch.lessons.length, 0), 0)
+
 // Rarity tiers with colors
 export const RARITY = {
   common: { label: 'נפוץ', color: 'text-frost-white/60', bg: 'bg-white/5', border: 'border-white/10' },
@@ -20,7 +30,7 @@ export const ACHIEVEMENTS = [
   { id: 'first_lesson', icon: '🎯', title: 'צעד ראשון', description: 'סיים שיעור ראשון', category: 'lessons', rarity: 'common', check: (p) => Object.keys(p.completedLessons).length >= 1 },
   { id: 'five_lessons', icon: '⭐', title: 'לומד מתמיד', description: 'סיים 5 שיעורים', category: 'lessons', rarity: 'common', check: (p) => Object.keys(p.completedLessons).length >= 5 },
   { id: 'ten_lessons', icon: '📖', title: 'קורא נלהב', description: 'סיים 10 שיעורים', category: 'lessons', rarity: 'rare', check: (p) => Object.keys(p.completedLessons).length >= 10 },
-  { id: 'all_lessons', icon: '🏆', title: 'מאסטר', description: 'סיים את כל השיעורים', category: 'lessons', rarity: 'legendary', check: (p) => Object.keys(p.completedLessons).length >= 15 },
+  { id: 'all_lessons', icon: '🏆', title: 'מאסטר', description: 'סיים את כל השיעורים', category: 'lessons', rarity: 'legendary', check: (p) => Object.keys(p.completedLessons).length >= TOTAL_LESSONS },
   { id: 'perfect_lesson', icon: '💯', title: 'מושלם', description: 'שיעור ללא שגיאות', category: 'lessons', rarity: 'common', check: (p) => p.perfectLessons > 0 },
   { id: 'perfect_3', icon: '🏅', title: 'פרפקציוניסט', description: '3 שיעורים מושלמים', category: 'lessons', rarity: 'rare', check: (p) => (p.perfectLessons || 0) >= 3 },
   { id: 'perfect_5', icon: '✨', title: 'ללא רבב', description: '5 שיעורים מושלמים', category: 'lessons', rarity: 'epic', check: (p) => (p.perfectLessons || 0) >= 5 },

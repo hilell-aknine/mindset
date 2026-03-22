@@ -97,11 +97,7 @@ Each chapter's first lesson starts with a `type: "reading"` exercise — an orig
 - Legal footer: "מדריך לא רשמי. אינו קשור למחברים המקוריים."
 
 ## Known Issues (from QA audit 2026-03-22)
-- `checkMatchAnswer` in `gameEngine.js` only validates identity-order pairs (0↔0, 1↔1) — breaks on shuffled match exercises
-- Speed bonus XP displayed but never added to actual `player.xp`
-- `sendBeacon` on tab close sends POST to Supabase (needs PATCH) — last-second saves lost
 - Missing images: `/books/indistractable.png`, `/backgrounds/focus-shield.png` — need generation
-- `all_lessons` achievement threshold hardcoded at 15 — triggers prematurely with 6 books
 
 ## Environment Variables
 ```

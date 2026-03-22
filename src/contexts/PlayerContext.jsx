@@ -266,11 +266,21 @@ export function PlayerProvider({ children }) {
         if (!isGuest && user?.id) {
           const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
           const body = JSON.stringify(mapToDB(data))
-          // Use sendBeacon for reliable save on close
+          // Use fetch with keepalive for reliable PATCH on close
           try {
-            navigator.sendBeacon?.(
+            fetch(
               `${supabase.supabaseUrl}/rest/v1/mindset_users?user_id=eq.${user.id}`,
-              new Blob([body], { type: 'application/json' })
+              {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'apikey': supabase.supabaseKey,
+                  'Authorization': `Bearer ${supabase.supabaseKey}`,
+                  'Prefer': 'return=minimal',
+                },
+                body,
+                keepalive: true,
+              }
             )
           } catch {}
         }
@@ -291,14 +301,14 @@ export function PlayerProvider({ children }) {
   }, [savePlayer])
 
   // Game actions
-  const onCorrectAnswer = useCallback(() => {
+  const onCorrectAnswer = useCallback((speedBonus = 0) => {
     trackLearningSession()
     updatePlayer(prev => {
       const newCombo = (prev.comboStreak || 0) + 1
       const comboBonus = getComboBonus(newCombo)
       const multiplier = getXPMultiplier()
       const baseXP = XP_CORRECT_ANSWER + comboBonus
-      const earnedXP = Math.round(baseXP * multiplier)
+      const earnedXP = Math.round(baseXP * multiplier) + speedBonus
       return {
         ...prev,
         xp: prev.xp + earnedXP,

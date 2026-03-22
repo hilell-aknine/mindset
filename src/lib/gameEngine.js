@@ -41,7 +41,14 @@ export function checkAnswer(exercise, userAnswer) {
 
 function checkMatchAnswer(exercise, userPairs) {
   if (!userPairs || userPairs.length !== exercise.pairs.length) return false
-  return userPairs.every(([leftIdx, rightIdx]) => leftIdx === rightIdx)
+  // Compare by content: each user pair [leftIdx, rightIdx] means
+  // "left item at leftIdx was matched with right item at rightIdx"
+  // Correct when pairs[leftIdx].left goes with pairs[rightIdx].right
+  return userPairs.every(([leftIdx, rightIdx]) => {
+    const correctRight = exercise.pairs[leftIdx]?.right
+    const selectedRight = exercise.pairs[rightIdx]?.right
+    return correctRight === selectedRight
+  })
 }
 
 function checkIdentifyAnswer(exercise, selection) {

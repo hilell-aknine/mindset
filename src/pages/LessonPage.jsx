@@ -216,7 +216,7 @@ export default function LessonPage() {
         }))
       }
 
-      onCorrectAnswer()
+      onCorrectAnswer(speedBonus)
       setFeedback({ correct: true, explanation })
 
       // Show mini confetti — bigger burst on high combos
