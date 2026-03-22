@@ -6,6 +6,9 @@ export function checkAnswer(exercise, userAnswer) {
   if (!exercise || userAnswer == null) return false
 
   switch (exercise.type) {
+    case 'reading':
+      return true // Reading passages are always "correct"
+
     case 'multiple-choice':
     case 'fill-blank':
     case 'scenario':

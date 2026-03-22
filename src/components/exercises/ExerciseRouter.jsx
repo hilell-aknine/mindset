@@ -8,6 +8,7 @@ import Match from './Match'
 import Improve from './Improve'
 import Identify from './Identify'
 import Scenario from './Scenario'
+import Reading from './Reading'
 import HintButton from './HintButton'
 import ExerciseHelp from './ExerciseHelp'
 
@@ -47,6 +48,7 @@ const COMPONENTS = {
   'improve': Improve,
   'identify': Identify,
   'scenario': Scenario,
+  'reading': Reading,
 }
 
 const TYPE_LABELS = {
@@ -58,9 +60,11 @@ const TYPE_LABELS = {
   'match': { label: 'התאמה', emoji: '🔗', difficulty: 3 },
   'identify': { label: 'זיהוי', emoji: '🔍', difficulty: 3 },
   'scenario': { label: 'תרחיש', emoji: '🎭', difficulty: 3 },
+  'reading': { label: 'קטע קריאה', emoji: '📖', difficulty: 0 },
 }
 
 const DIFFICULTY_LABELS = {
+  0: { text: 'קריאה', color: 'text-dusty-aqua/50', dots: 0 },
   1: { text: 'קל', color: 'text-success/50', dots: 1 },
   2: { text: 'בינוני', color: 'text-warning/50', dots: 2 },
   3: { text: 'מאתגר', color: 'text-danger/50', dots: 3 },
@@ -87,7 +91,7 @@ export default function ExerciseRouter({ exercise, onAnswer, disabled, tokens, o
         <div className="flex items-center gap-2 mb-3 animate-fade-in">
           <span className="text-sm">{typeInfo.emoji}</span>
           <span className="text-[10px] font-bold text-frost-white/30 tracking-wide">{typeInfo.label}</span>
-          {diff && (
+          {diff && diff.dots > 0 && (
             <div className="flex items-center gap-1 mr-auto" aria-label={`רמת קושי: ${diff.text}`}>
               {[1, 2, 3].map(i => (
                 <div key={i} className={`w-1.5 h-1.5 rounded-full ${i <= diff.dots ? (
@@ -100,13 +104,13 @@ export default function ExerciseRouter({ exercise, onAnswer, disabled, tokens, o
         </div>
       )}
 
-      {/* Context passage — helps users who haven't read the book */}
-      {exercise.context && (
+      {/* Context passage — helps users who haven't read the book (skip for reading type) */}
+      {exercise.context && exercise.type !== 'reading' && (
         <ContextPassage text={exercise.context} />
       )}
 
-      {/* Hint button — only show when not answered yet and tokens available */}
-      {!disabled && tokens != null && (
+      {/* Hint button — only show when not answered yet and tokens available (skip for reading type) */}
+      {!disabled && tokens != null && exercise.type !== 'reading' && (
         <HintButton
           exercise={exercise}
           tokens={tokens}

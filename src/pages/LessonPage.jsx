@@ -33,6 +33,7 @@ const EXERCISE_TYPE_NAMES = {
   'match': 'התאמה',
   'identify': 'זיהוי',
   'scenario': 'תרחיש',
+  'reading': 'קטע קריאה',
 }
 
 // Mini confetti particles for correct answers — scales up with combo

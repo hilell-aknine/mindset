@@ -47,7 +47,7 @@ All pages lazy-loaded except LandingPage. Auth-protected routes redirect to `/` 
 ```
 
 ### Game Engine (`src/lib/gameEngine.js`)
-7 exercise types with answer validation: `multiple-choice`, `fill-blank`, `order`, `compare`, `match`, `improve`, `identify`. ExerciseRouter dispatches to the correct component.
+8 exercise types with answer validation: `multiple-choice`, `fill-blank`, `order`, `compare`, `match`, `improve`, `identify`, `reading`. ExerciseRouter dispatches to the correct component. The `reading` type is always correct (awards XP for reading a passage).
 
 ### Game Constants (`src/config/constants.js`)
 All tunable values: XP amounts, heart recovery (20min), token limits, level thresholds (0→8000 XP across 8 levels), streak tiers, spaced repetition intervals, combo system, pricing.
