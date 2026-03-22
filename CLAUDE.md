@@ -58,7 +58,7 @@ Static JSON files in `src/data/books/` (6 books, ~9K lines total). Structure: `{
 Books: `atomic-habits`, `happy-chemicals`, `mindset-book`, `next-five-moves`, `strengths-finder`, `indistractable`
 
 ### Adding a New Book
-When adding a book, update ALL 5 files (missing any causes silent failures):
+When adding a book, update ALL 7 files (missing any causes silent failures):
 1. `src/data/books/<slug>.json` — the book data file
 2. `src/pages/BookPage.jsx` — import + add to `BOOKS` dict + `BOOK_COVERS` map
 3. `src/pages/HomePage.jsx` — import + add to `BOOKS` array + `BOOK_COVERS` map
@@ -67,12 +67,16 @@ When adding a book, update ALL 5 files (missing any causes silent failures):
 6. `src/pages/LessonPage.jsx` — import + add to `BOOKS` dict (CRITICAL: without this, lessons 404)
 7. `src/pages/ReviewPage.jsx` — import + add to `BOOKS` dict + `BOOKS_LIST` array
 
+### Reading Passages
+Each chapter's first lesson starts with a `type: "reading"` exercise — an original Hebrew passage summarizing the chapter's key ideas + 3 key points. Always included when adding new chapters. Structure: `{ type: "reading", passage, question, keyPoints: [...], explanation }`. Copyright-safe: all content must be rephrased, never quoted.
+
 ### Key Patterns
 - **BOOK_COVERS mapping** — `BookPage.jsx` and `HomePage.jsx` both have a `BOOK_COVERS` dict mapping book slugs → image paths in `/backgrounds/`. Keep both in sync.
 - **Streak images** — Tiered: `<30d → golden-chain.png`, `30-99d → streak-30.png`, `100+d → lion-flame.png`
 - **LessonComplete** — Shows `perfect-lesson.png` for 0 mistakes, `golden-key-video.mp4` (desktop) / `golden-key.png` (mobile) otherwise
 - **Video backgrounds** — Desktop: `<video>` with mp4. Mobile: static `<img>` fallback. Pattern: `hidden sm:block` / `sm:hidden`
 - **Code splitting** — Vite manual chunks: `vendor` (React), `supabase`, `data` (book JSONs)
+- **Mobile-first sizing** — Use `text-xs sm:text-sm`, `p-3 sm:p-5` pattern. Touch targets ≥44px. Long content needs `max-h-[Xvh] overflow-y-auto` so buttons stay visible.
 
 ### Supabase
 8 tables (all prefixed `mindset_`): `users`, `books`, `chapters`, `lessons`, `questions`, `user_progress`, `review_queue`, `ai_chats`. RLS enabled. Public read for content tables, auth-only for user data.
@@ -93,7 +97,6 @@ When adding a book, update ALL 5 files (missing any causes silent failures):
 - Legal footer: "מדריך לא רשמי. אינו קשור למחברים המקוריים."
 
 ## Known Issues (from QA audit 2026-03-22)
-- `LessonPage.jsx` and `ReviewPage.jsx` missing `indistractable` import — book lessons 404
 - `checkMatchAnswer` in `gameEngine.js` only validates identity-order pairs (0↔0, 1↔1) — breaks on shuffled match exercises
 - Speed bonus XP displayed but never added to actual `player.xp`
 - `sendBeacon` on tab close sends POST to Supabase (needs PATCH) — last-second saves lost
