@@ -369,7 +369,7 @@ export default function HomePage() {
       })()}
 
       {/* Stats summary */}
-      <div className="grid grid-cols-4 gap-2 sm:gap-3 mt-4" data-spotlight="xp">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-4" data-spotlight="xp">
         <div className="glass-card p-3 text-center animate-fade-in" style={{ animationDelay: '0.55s' }}>
           <p className="text-2xl font-bold text-gold">{player.xp.toLocaleString()}</p>
           <p className="text-[10px] text-frost-white/40 mt-1">XP</p>

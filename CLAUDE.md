@@ -53,7 +53,19 @@ All pages lazy-loaded except LandingPage. Auth-protected routes redirect to `/` 
 All tunable values: XP amounts, heart recovery (20min), token limits, level thresholds (0→8000 XP across 8 levels), streak tiers, spaced repetition intervals, combo system, pricing.
 
 ### Book Data
-Static JSON files in `src/data/books/` (5 books, ~7.5K lines total). Structure: `{ slug, title, author, icon, systemPrompt, chapters: [{ lessons: [{ exercises: [...] }] }] }`. First chapter of each book is free (`isFree: true`).
+Static JSON files in `src/data/books/` (6 books, ~9K lines total). Structure: `{ slug, title, author, icon, systemPrompt, chapters: [{ lessons: [{ exercises: [...] }] }] }`. First chapter of each book is free (`isFree: true`).
+
+Books: `atomic-habits`, `happy-chemicals`, `mindset-book`, `next-five-moves`, `strengths-finder`, `indistractable`
+
+### Adding a New Book
+When adding a book, update ALL 5 files (missing any causes silent failures):
+1. `src/data/books/<slug>.json` — the book data file
+2. `src/pages/BookPage.jsx` — import + add to `BOOKS` dict + `BOOK_COVERS` map
+3. `src/pages/HomePage.jsx` — import + add to `BOOKS` array + `BOOK_COVERS` map
+4. `src/pages/LandingPage.jsx` — import + add to `BOOKS` array + `bookImages` map
+5. `src/contexts/PlayerContext.jsx` — import + add to `ALL_BOOKS` dict
+6. `src/pages/LessonPage.jsx` — import + add to `BOOKS` dict (CRITICAL: without this, lessons 404)
+7. `src/pages/ReviewPage.jsx` — import + add to `BOOKS` dict + `BOOKS_LIST` array
 
 ### Key Patterns
 - **BOOK_COVERS mapping** — `BookPage.jsx` and `HomePage.jsx` both have a `BOOK_COVERS` dict mapping book slugs → image paths in `/backgrounds/`. Keep both in sync.
@@ -79,6 +91,14 @@ Static JSON files in `src/data/books/` (5 books, ~7.5K lines total). Structure: 
 - Rephrase all principles in original words
 - Use scenario-based questions only
 - Legal footer: "מדריך לא רשמי. אינו קשור למחברים המקוריים."
+
+## Known Issues (from QA audit 2026-03-22)
+- `LessonPage.jsx` and `ReviewPage.jsx` missing `indistractable` import — book lessons 404
+- `checkMatchAnswer` in `gameEngine.js` only validates identity-order pairs (0↔0, 1↔1) — breaks on shuffled match exercises
+- Speed bonus XP displayed but never added to actual `player.xp`
+- `sendBeacon` on tab close sends POST to Supabase (needs PATCH) — last-second saves lost
+- Missing images: `/books/indistractable.png`, `/backgrounds/focus-shield.png` — need generation
+- `all_lessons` achievement threshold hardcoded at 15 — triggers prematurely with 6 books
 
 ## Environment Variables
 ```

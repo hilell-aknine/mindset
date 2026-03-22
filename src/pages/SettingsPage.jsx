@@ -160,7 +160,7 @@ export default function SettingsPage() {
         <p className="text-xs text-frost-white/40 mb-3">
           כמה XP תרצה לצבור בשבוע? יעד גבוה = התקדמות מהירה.
         </p>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {WEEKLY_GOALS.map(goal => {
             const isSelected = (player.weeklyXPGoal || 250) === goal.xp
             return (
