@@ -109,7 +109,7 @@ export default function Match({ exercise, onAnswer, disabled }) {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-6">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-6">
         {/* Left column */}
         <div className="space-y-2" role="group" aria-label="צד ימין — בחר ראשון">
           {exercise.pairs.map((pair, i) => {
@@ -124,7 +124,7 @@ export default function Match({ exercise, onAnswer, disabled }) {
                 disabled={disabled || matched}
                 aria-pressed={selectedLeft === i}
                 aria-label={`${i + 1}. ${pair.left}${matched ? ' — מחובר' : ''}`}
-                className={`w-full px-3 py-3 rounded-xl border text-sm text-right transition-all relative min-h-[44px] ${
+                className={`w-full px-3 py-3 rounded-xl border text-xs sm:text-sm text-right transition-all relative min-h-[44px] ${
                   style ? `${style.border} ${style.bg}` :
                   selectedLeft === i ? 'border-gold bg-gold/10 text-gold scale-[1.02]' :
                   'border-white/10 bg-bg-card hover:border-white/20 text-frost-white/70'
@@ -155,7 +155,7 @@ export default function Match({ exercise, onAnswer, disabled }) {
                 onKeyDown={(e) => handleKeyDown(e, 'right', originalIndex)}
                 disabled={disabled || matched || selectedLeft === null}
                 aria-label={`${HEBREW_LETTERS[shuffledRight.indexOf(shuffledRight.find(s => s.originalIndex === originalIndex))]}. ${text}${matched ? ' — מחובר' : ''}`}
-                className={`w-full px-3 py-3 rounded-xl border text-sm text-right transition-all relative min-h-[44px] ${
+                className={`w-full px-3 py-3 rounded-xl border text-xs sm:text-sm text-right transition-all relative min-h-[44px] ${
                   style ? `${style.border} ${style.bg}` :
                   selectedLeft !== null && !matched
                     ? 'border-white/15 bg-bg-card hover:border-gold/30 hover:bg-gold/5 text-frost-white/70'

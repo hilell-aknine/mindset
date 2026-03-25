@@ -88,7 +88,7 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
                 {LETTERS[i]}
                 <span className="absolute -top-1 -left-1 text-[8px] text-frost-white/25 font-mono bg-white/5 rounded px-1">{i + 1}</span>
               </span>
-              <span className="text-sm leading-relaxed">{option}</span>
+              <span className="text-xs sm:text-sm leading-relaxed flex-1 min-w-0 break-words">{option}</span>
             </button>
           )
         })}

@@ -62,7 +62,7 @@ export default function FillBlank({ exercise, onAnswer, disabled }) {
 
       {/* Word bank */}
       <p className="text-[10px] text-frost-white/30 mb-2">בחר מילה:</p>
-      <div className="flex flex-wrap gap-2 mb-6" role="group" aria-label="בנק מילים">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-6" role="group" aria-label="בנק מילים">
         {shuffledOptions.map(({ text, originalIndex }) => {
           const isSelected = selected === originalIndex
           const isCorrectAnswer = disabled && originalIndex === exercise.correct

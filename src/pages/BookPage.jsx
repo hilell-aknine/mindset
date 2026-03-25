@@ -256,7 +256,7 @@ export default function BookPage() {
               >
                 {/* Chapter header */}
                 <div className="flex items-center gap-3 mb-3 relative z-10">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl shrink-0 ${
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center text-xl shrink-0 ${
                     progress.percent === 100
                       ? 'bg-success/20 text-success'
                       : unlocked

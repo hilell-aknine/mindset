@@ -59,7 +59,7 @@ export default function PurchaseModal({ bookSlug, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-bg-base/80 backdrop-blur-md p-4" role="dialog" aria-modal="true" aria-label="בחר תוכנית">
-      <div ref={modalRef} className="glass-card max-w-md w-full p-6 animate-slide-up sm:animate-fade-in">
+      <div ref={modalRef} className="glass-card max-w-md w-full p-6 animate-slide-up sm:animate-fade-in max-h-[85dvh] overflow-y-auto">
         <img
           src="/backgrounds/locked-books.png"
           alt=""

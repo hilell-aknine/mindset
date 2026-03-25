@@ -11,8 +11,9 @@ import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
 import mindsetBook from '../data/books/mindset-book.json'
+import indistractable from '../data/books/indistractable.json'
 
-const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook]
+const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable]
 
 // Simple bar chart component
 function ProgressChart({ books, completedLessons }) {

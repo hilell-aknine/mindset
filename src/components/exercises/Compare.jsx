@@ -79,7 +79,7 @@ export default function Compare({ exercise, onAnswer, disabled }) {
               }`}>
                 {option.label}
               </span>
-              <p className={`text-sm leading-relaxed ${
+              <p className={`text-xs sm:text-sm leading-relaxed break-words ${
                 isCorrect ? 'text-success' :
                 isWrong ? 'text-danger' :
                 'text-frost-white/70'

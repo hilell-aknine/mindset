@@ -132,7 +132,7 @@ export default function LessonPage() {
   const autoAdvanceRef = useRef(null)
 
   const currentExercise = exercises[currentIndex]
-  const progress = exercises.length > 0 ? ((currentIndex) / exercises.length) * 100 : 0
+  const progress = exercises.length > 0 ? ((currentIndex + 0.5) / exercises.length) * 100 : 0
   const comboStreak = player.comboStreak || 0
 
   // Reset combo at lesson start + play start sound
@@ -162,6 +162,13 @@ export default function LessonPage() {
       hasReset.current = false
     }
   }, [lessonKey])
+
+  // Cleanup auto-advance timer on unmount
+  useEffect(() => {
+    return () => {
+      if (autoAdvanceRef.current) clearTimeout(autoAdvanceRef.current)
+    }
+  }, [])
 
   // Announce exercise to screen readers
   useEffect(() => {

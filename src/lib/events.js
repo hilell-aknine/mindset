@@ -3,6 +3,20 @@
  * Based on research: "Double XP weekends led to 50% surge in activity"
  */
 
+function getIsraelTime() {
+  const now = new Date()
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Jerusalem',
+    hour: 'numeric',
+    hourCycle: 'h23',
+    weekday: 'short',
+  }).formatToParts(now)
+  const weekday = parts.find(p => p.type === 'weekday').value
+  const hour = parseInt(parts.find(p => p.type === 'hour').value)
+  const dayMap = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }
+  return { day: dayMap[weekday], hour }
+}
+
 const EVENTS = [
   {
     id: 'double_xp_weekend',
@@ -12,9 +26,7 @@ const EVENTS = [
     multiplier: 2,
     // Active on Friday evening to Saturday evening (Israel time)
     isActive: () => {
-      const now = new Date()
-      const day = now.getDay() // 0=Sun, 5=Fri, 6=Sat
-      const hour = now.getHours()
+      const { day, hour } = getIsraelTime()
       // Friday 18:00 to Saturday 23:59
       return (day === 5 && hour >= 18) || day === 6
     },
@@ -26,7 +38,7 @@ const EVENTS = [
     description: '+50% XP ללמידה בבוקר',
     multiplier: 1.5,
     isActive: () => {
-      const hour = new Date().getHours()
+      const { hour } = getIsraelTime()
       return hour >= 6 && hour < 9
     },
   },
@@ -37,7 +49,7 @@ const EVENTS = [
     description: '+50% XP ללמידה בלילה',
     multiplier: 1.5,
     isActive: () => {
-      const hour = new Date().getHours()
+      const { hour } = getIsraelTime()
       return hour >= 22 || hour < 1
     },
   },
@@ -69,8 +81,7 @@ export function getNextEvent() {
   const active = getActiveEvent()
   if (active) return { event: active, status: 'active' }
 
-  const hour = new Date().getHours()
-  const day = new Date().getDay()
+  const { hour, day } = getIsraelTime()
 
   // Check what's coming next
   if (hour < 6) return { event: EVENTS[1], status: 'upcoming', hint: 'מתחיל ב-06:00' } // morning boost
