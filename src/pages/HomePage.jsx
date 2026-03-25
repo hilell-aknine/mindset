@@ -93,7 +93,7 @@ export default function HomePage() {
           : 'מה תרצה ללמוד היום?'
 
   return (
-    <main className="flex-1 max-w-2xl mx-auto w-full px-4 pt-6 pb-24 overflow-hidden">
+    <main className="flex-1 max-w-2xl mx-auto w-full px-4 pt-6 pb-24">
       {/* Welcome */}
       <div className="mb-6 animate-fade-in">
         <h2 className="font-display text-2xl font-bold text-frost-white mb-1 truncate">

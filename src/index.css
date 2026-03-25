@@ -33,18 +33,18 @@
     color: var(--color-frost-white);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
   }
 
   body {
     min-height: 100dvh;
+    overflow-x: clip;
   }
 
   #root {
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 }
 
@@ -395,8 +395,8 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
     scroll-behavior: smooth;
   }
 
-  /* Prevent text selection on interactive game elements */
-  button, [role="radio"], [role="radiogroup"], .glass-card {
+  /* Prevent text selection on interactive game elements (not glass-card — blocks touch scroll) */
+  button, [role="radio"], [role="radiogroup"] {
     -webkit-user-select: none;
     user-select: none;
   }
@@ -437,6 +437,12 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
 .scroll-momentum {
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
+  touch-action: pan-y;
+}
+
+/* Ensure main content areas are scrollable on touch */
+main, [class*="has-bottom-nav"] {
+  touch-action: pan-y pan-x;
 }
 
 /* Bottom nav active indicator */
