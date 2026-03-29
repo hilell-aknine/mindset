@@ -58,7 +58,7 @@ Static JSON files in `src/data/books/` (6 books, ~9K lines total). Structure: `{
 Books: `atomic-habits`, `happy-chemicals`, `mindset-book`, `next-five-moves`, `strengths-finder`, `indistractable`
 
 ### Adding a New Book
-When adding a book, update ALL 7 files (missing any causes silent failures):
+When adding a book, update ALL 8 files (missing any causes silent failures):
 1. `src/data/books/<slug>.json` — the book data file
 2. `src/pages/BookPage.jsx` — import + add to `BOOKS` dict + `BOOK_COVERS` map
 3. `src/pages/HomePage.jsx` — import + add to `BOOKS` array + `BOOK_COVERS` map
@@ -66,6 +66,7 @@ When adding a book, update ALL 7 files (missing any causes silent failures):
 5. `src/contexts/PlayerContext.jsx` — import + add to `ALL_BOOKS` dict
 6. `src/pages/LessonPage.jsx` — import + add to `BOOKS` dict (CRITICAL: without this, lessons 404)
 7. `src/pages/ReviewPage.jsx` — import + add to `BOOKS` dict + `BOOKS_LIST` array
+8. `src/lib/achievements.js` — import + add to `ALL_BOOKS` array (used to calculate `TOTAL_LESSONS` for all_lessons achievement)
 
 ### Reading Passages
 Each chapter's first lesson starts with a `type: "reading"` exercise — an original Hebrew passage summarizing the chapter's key ideas + 3 key points. Always included when adding new chapters. Structure: `{ type: "reading", passage, question, keyPoints: [...], explanation }`. Copyright-safe: all content must be rephrased, never quoted.
@@ -77,6 +78,7 @@ Each chapter's first lesson starts with a `type: "reading"` exercise — an orig
 - **Video backgrounds** — Desktop: `<video>` with mp4. Mobile: static `<img>` fallback. Pattern: `hidden sm:block` / `sm:hidden`
 - **Code splitting** — Vite manual chunks: `vendor` (React), `supabase`, `data` (book JSONs)
 - **Mobile-first sizing** — Use `text-xs sm:text-sm`, `p-3 sm:p-5` pattern. Touch targets ≥44px. Long content needs `max-h-[Xvh] overflow-y-auto` so buttons stay visible.
+- **LessonPage layout** — Uses `h-dvh` (not `min-h-dvh`) + `flex flex-col overflow-hidden`. Exercise area has `flex-1 min-h-0 overflow-y-auto` for internal scrolling. `min-h-dvh` causes content to push below viewport with no scroll on mobile.
 
 ### Supabase
 8 tables (all prefixed `mindset_`): `users`, `books`, `chapters`, `lessons`, `questions`, `user_progress`, `review_queue`, `ai_chats`. RLS enabled. Public read for content tables, auth-only for user data.
@@ -98,6 +100,9 @@ Each chapter's first lesson starts with a `type: "reading"` exercise — an orig
 
 ## Known Issues (from QA audit 2026-03-22)
 - Missing images: `/books/indistractable.png`, `/backgrounds/focus-shield.png` — need generation
+
+## Remote Server
+A secondary machine (`192.168.1.125`, SSH via paramiko) is available on the LAN for heavy tasks. Not needed for normal MindSet development — the app deploys via Vercel on git push. Could be used for bulk image generation/optimization if needed.
 
 ## Environment Variables
 ```

@@ -6,8 +6,18 @@ import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
 import mindsetBook from '../data/books/mindset-book.json'
+import indistractable from '../data/books/indistractable.json'
 
-const ALL_BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook]
+const ALL_BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable]
+
+const BOOK_COVERS = {
+  'strengths-finder': '/backgrounds/raw-diamond.png',
+  'atomic-habits': '/backgrounds/gold-dominos.png',
+  'happy-chemicals': '/backgrounds/happy-molecule.png',
+  'next-five-moves': '/backgrounds/chess-knight.png',
+  'mindset-book': '/backgrounds/brain-lightbulb.png',
+  'indistractable': '/backgrounds/focus-shield.png',
+}
 
 const STEPS = [
   {
@@ -214,7 +224,7 @@ export default function Onboarding({ onComplete }) {
             </p>
             <div className="grid grid-cols-3 gap-3">
               {[
-                { num: '7', label: 'סוגי תרגילים' },
+                { num: '8', label: 'סוגי תרגילים' },
                 { num: String(ALL_BOOKS.length), label: 'ספרים' },
                 { num: '15\'', label: 'לכל ספר' },
               ].map(s => (
@@ -288,9 +298,17 @@ export default function Onboarding({ onComplete }) {
                 }`}
                 style={{ animationDelay: `${i * 0.1}s` }}
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-xl shrink-0">
-                  {book.icon}
-                </div>
+                {BOOK_COVERS[book.slug] ? (
+                  <img
+                    src={BOOK_COVERS[book.slug]}
+                    alt=""
+                    className="w-12 h-12 rounded-xl object-cover shrink-0"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-xl shrink-0">
+                    {book.icon}
+                  </div>
+                )}
                 <div className="flex-1 text-right min-w-0">
                   <h3 className="font-display text-sm font-bold text-frost-white truncate">{book.title}</h3>
                   <p className="text-[11px] text-frost-white/40">{book.author}</p>
