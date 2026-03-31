@@ -7,7 +7,7 @@ import { WEEKLY_GOALS } from '../lib/events'
 import {
   ArrowRight, Volume2, VolumeX, Trash2, LogOut, User, Target,
   Download, Shield, Info, ChevronDown, BookOpen, Zap, Crown,
-  Type, MonitorOff
+  Type, MonitorOff, Sun, Moon
 } from 'lucide-react'
 
 export default function SettingsPage() {
@@ -21,6 +21,7 @@ export default function SettingsPage() {
   const [expandedSection, setExpandedSection] = useState(null)
   const [fontSize, setFontSize] = useState(() => localStorage.getItem('mindset_font_size') || 'normal')
   const [reducedMotion, setReducedMotion] = useState(() => localStorage.getItem('mindset_reduced_motion') === 'true')
+  const [theme, setTheme] = useState(() => localStorage.getItem('mindset_theme') || 'dark')
 
   const handleToggleSound = () => {
     const newState = toggle()
@@ -40,6 +41,15 @@ export default function SettingsPage() {
     setReducedMotion(next)
     localStorage.setItem('mindset_reduced_motion', String(next))
     document.documentElement.classList.toggle('reduce-motion', next)
+  }
+
+  const handleThemeToggle = () => {
+    const next = theme === 'dark' ? 'light' : 'dark'
+    setTheme(next)
+    localStorage.setItem('mindset_theme', next)
+    document.documentElement.classList.toggle('light', next === 'light')
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content',
+      next === 'light' ? '#f5f5f7' : '#0a0a12')
   }
 
   const handleSetWeeklyGoal = (xp) => {
@@ -269,6 +279,28 @@ export default function SettingsPage() {
             </div>
             <div className={`w-10 h-6 rounded-full transition-colors flex items-center ${
               reducedMotion ? 'bg-dusty-aqua justify-end' : 'bg-white/10 justify-start'
+            }`}>
+              <div className="w-5 h-5 rounded-full bg-white m-0.5 shadow-sm transition-all" />
+            </div>
+          </button>
+        </div>
+
+        {/* Light/Dark mode toggle */}
+        <div className="glass-card p-4 animate-fade-in" style={{ animationDelay: '0.117s' }}>
+          <button
+            onClick={handleThemeToggle}
+            className="w-full flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              {theme === 'light' ? (
+                <Sun className="w-5 h-5 text-gold" />
+              ) : (
+                <Moon className="w-5 h-5 text-dusty-aqua" />
+              )}
+              <span className="text-sm text-frost-white">מצב בהיר</span>
+            </div>
+            <div className={`w-10 h-6 rounded-full transition-colors flex items-center ${
+              theme === 'light' ? 'bg-gold justify-end' : 'bg-white/10 justify-start'
             }`}>
               <div className="w-5 h-5 rounded-full bg-white m-0.5 shadow-sm transition-all" />
             </div>

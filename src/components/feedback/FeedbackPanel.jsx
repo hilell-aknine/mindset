@@ -120,7 +120,7 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
             <>
               <span className="relative z-10">המשך</span>
               {/* Auto-advance progress bar */}
-              <div className="absolute inset-0 bg-white/15 origin-left" style={{ animation: 'shrinkBar 1.5s linear forwards' }} />
+              <div className="absolute inset-0 bg-white/15 origin-left" style={{ animation: 'shrinkBar 3.5s linear forwards' }} />
             </>
           ) : 'הבנתי, הלאה'}
         </button>

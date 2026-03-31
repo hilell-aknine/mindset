@@ -17,6 +17,68 @@
   --font-body: "Heebo", sans-serif;
 }
 
+/* ─── LIGHT MODE OVERRIDES ─── */
+html.light {
+  --color-frost-white: #1a1a2e;
+  --color-bg-base: #f5f5f7;
+  --color-bg-card: rgba(255, 255, 255, 0.75);
+  --color-bg-card-hover: rgba(255, 255, 255, 0.9);
+  --color-gold-text: #a88a1e;
+  --color-deep-petrol: #004d5a;
+  --color-muted-teal: #007a87;
+  --color-dusty-aqua: #1f7080;
+}
+
+html.light .glass-card {
+  background: var(--color-bg-card);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(12px);
+}
+html.light .glass-card:hover {
+  background: var(--color-bg-card-hover);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+/* Scrollbar in light mode */
+html.light ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); }
+html.light ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.25); }
+
+/* Selection in light mode */
+html.light ::selection { background: var(--color-gold); color: #fff; }
+
+/* Gradient text stays visible in light mode */
+html.light .gradient-text {
+  background: linear-gradient(to left, #a88a1e, var(--color-dusty-aqua));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* bg-white/X utilities become subtle dark tints in light mode */
+html.light [class*="bg-white\\/"] { --tw-bg-opacity: 1; }
+html.light .bg-white\/5 { background: rgba(0, 0, 0, 0.03); }
+html.light .bg-white\/10 { background: rgba(0, 0, 0, 0.05); }
+html.light .bg-white\/15 { background: rgba(0, 0, 0, 0.08); }
+html.light .bg-white\/20 { background: rgba(0, 0, 0, 0.1); }
+
+/* border-white/X in light mode */
+html.light [class*="border-white\\/5"] { border-color: rgba(0, 0, 0, 0.06); }
+html.light [class*="border-white\\/10"] { border-color: rgba(0, 0, 0, 0.08); }
+
+/* Hover states */
+html.light [class*="hover\\:bg-white\\/5"]:hover { background: rgba(0, 0, 0, 0.04); }
+html.light [class*="hover\\:bg-white\\/10"]:hover { background: rgba(0, 0, 0, 0.06); }
+
+/* Hardcoded dark backgrounds used in components */
+html.light [style*="background"][style*="0a0a12"],
+html.light .bg-\\[\\#0a0a12\\] { background-color: #f5f5f7 !important; }
+
+/* Progress shimmer in light mode */
+html.light .progress-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.06) 50%, transparent 100%);
+  background-size: 200% 100%;
+}
+
 /* Reset moved to @layer base so Tailwind utilities can override */
 @layer base {
   * {

@@ -39,7 +39,7 @@ export default function Reading({ exercise, onAnswer, disabled }) {
           </div>
         </div>
 
-        <div className="text-xs sm:text-sm text-frost-white/75 leading-relaxed sm:leading-[1.8] whitespace-pre-wrap max-h-[45dvh] overflow-y-auto">
+        <div className="text-sm sm:text-base font-medium text-frost-white/90 leading-relaxed sm:leading-[1.9] whitespace-pre-wrap max-h-[45dvh] overflow-y-auto">
           {exercise.passage}
         </div>
       </div>
@@ -57,7 +57,7 @@ export default function Reading({ exercise, onAnswer, disabled }) {
                 <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gold/15 flex items-center justify-center shrink-0 mt-0.5">
                   <span className="text-[9px] sm:text-[10px] font-bold text-gold">{i + 1}</span>
                 </span>
-                <p className="text-xs sm:text-sm text-frost-white/70 leading-relaxed flex-1">{point}</p>
+                <p className="text-xs sm:text-sm text-frost-white/85 leading-relaxed flex-1">{point}</p>
               </li>
             ))}
           </ul>

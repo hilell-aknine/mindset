@@ -133,7 +133,7 @@ export default function LeaderboardPage() {
       <div className="flex items-center gap-3 mb-5 animate-fade-in">
         <button
           onClick={() => navigate('/home')}
-          className="p-2.5 -m-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors"
+          className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors"
           aria-label="חזרה לדף הבית"
         >
           <ArrowRight className="w-5 h-5 text-frost-white/60" />
@@ -260,15 +260,16 @@ export default function LeaderboardPage() {
       </div>
 
       {/* Podium — Top 3 */}
-      <div className="flex items-end justify-center gap-2 mb-5 animate-fade-in" style={{ animationDelay: '0.14s' }}>
+      <div className="flex items-end justify-center gap-2 mb-5">
         {[1, 0, 2].map((podiumIdx) => {
           const p = leaderboard[podiumIdx]
           if (!p) return null
           const heights = ['h-24', 'h-16', 'h-12']
           const colors = ['from-gold/20 to-gold/5 border-gold/30', 'from-frost-white/10 to-frost-white/5 border-frost-white/15', 'from-[#cd7f32]/15 to-[#cd7f32]/5 border-[#cd7f32]/20']
+          const podiumDelays = ['0.1s', '0.2s', '0.3s']
           const actualRank = podiumIdx + 1
           return (
-            <div key={podiumIdx} className="flex flex-col items-center flex-1 max-w-[120px]">
+            <div key={podiumIdx} className="flex flex-col items-center flex-1 max-w-[120px] animate-fade-in" style={{ animationDelay: podiumDelays[podiumIdx] }}>
               <span className="text-lg mb-1">{p.avatar}</span>
               <p className={`text-[10px] font-bold truncate max-w-full ${p.isMe ? 'text-gold' : 'text-frost-white/70'}`}>{p.name}</p>
               <p className="text-[9px] text-frost-white/30 mb-1">{p.xp.toLocaleString()} XP</p>
@@ -289,10 +290,26 @@ export default function LeaderboardPage() {
           const inDemotionZone = p.rank >= demotionCutoff && prevLeague
 
           return (
+            <div key={i}>
+              {/* Promotion zone divider */}
+              {p.rank === promotionCutoff + 1 && nextLeague && (
+                <div className="flex items-center gap-2 my-2 px-2">
+                  <div className="flex-1 h-px bg-success/20" />
+                  <span className="text-[9px] text-success/50 font-bold">קו העלייה ▲</span>
+                  <div className="flex-1 h-px bg-success/20" />
+                </div>
+              )}
+              {/* Demotion zone divider */}
+              {p.rank === demotionCutoff && prevLeague && (
+                <div className="flex items-center gap-2 my-2 px-2">
+                  <div className="flex-1 h-px bg-danger/20" />
+                  <span className="text-[9px] text-danger/50 font-bold">קו הירידה ▼</span>
+                  <div className="flex-1 h-px bg-danger/20" />
+                </div>
+              )}
             <div
-              key={i}
-              className={`glass-card px-3 py-2.5 flex items-center gap-2.5 transition-all animate-fade-in ${
-                p.isMe ? 'border-gold/30 bg-gold/5 ring-1 ring-gold/20' :
+              className={`glass-card px-3 py-3 flex items-center gap-2.5 transition-all animate-fade-in ${
+                p.isMe ? 'border-gold/30 bg-gold/5 ring-1 ring-gold/20 shadow-[0_0_12px_rgba(212,175,55,0.15)]' :
                 inPromotionZone ? 'border-success/10' :
                 inDemotionZone ? 'border-danger/10' :
                 getRankBg(p.rank)
@@ -332,6 +349,7 @@ export default function LeaderboardPage() {
               <span className={`text-sm font-bold ${p.isMe ? 'text-gold' : 'text-frost-white/50'}`}>
                 {p.xp.toLocaleString()}
               </span>
+            </div>
             </div>
           )
         })}

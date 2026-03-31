@@ -37,6 +37,26 @@ const EXERCISE_TYPE_NAMES = {
   'reading': 'קטע קריאה',
 }
 
+// --- Lesson progress persistence (survives refresh) ---
+const PROGRESS_PREFIX = 'mindset_lesson_progress_'
+
+function saveProgress(lessonKey, data) {
+  try {
+    localStorage.setItem(PROGRESS_PREFIX + lessonKey, JSON.stringify({ ...data, savedAt: Date.now() }))
+  } catch {}
+}
+
+function loadProgress(lessonKey) {
+  try {
+    const raw = localStorage.getItem(PROGRESS_PREFIX + lessonKey)
+    return raw ? JSON.parse(raw) : null
+  } catch { return null }
+}
+
+function clearProgress(lessonKey) {
+  try { localStorage.removeItem(PROGRESS_PREFIX + lessonKey) } catch {}
+}
+
 // Mini confetti particles for correct answers — scales up with combo
 function MiniConfetti({ active, combo = 0 }) {
   if (!active) return null
@@ -114,9 +134,14 @@ export default function LessonPage() {
   const lesson = chapter?.lessons[parseInt(lessonIndex)]
   const exercises = lesson?.exercises || []
 
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const lessonKey = `${bookSlug}:${chapterIndex}:${lessonIndex}`
+  const savedProgress = loadProgress(lessonKey)
+
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    return (savedProgress && savedProgress.currentIndex < exercises.length) ? savedProgress.currentIndex : 0
+  })
   const [feedback, setFeedback] = useState(null)
-  const [mistakes, setMistakes] = useState(0)
+  const [mistakes, setMistakes] = useState(() => savedProgress?.mistakes || 0)
   const [isComplete, setIsComplete] = useState(false)
   const [levelUp, setLevelUp] = useState(null)
   const [newAchievement, setNewAchievement] = useState(null)
@@ -127,7 +152,7 @@ export default function LessonPage() {
   const [floatingXP, setFloatingXP] = useState(null)
   const [timerEnabled, setTimerEnabled] = useState(false)
   const timerTimeLeft = useRef(TIMER_DURATION)
-  const [totalSpeedBonus, setTotalSpeedBonus] = useState(0)
+  const [totalSpeedBonus, setTotalSpeedBonus] = useState(() => savedProgress?.totalSpeedBonus || 0)
   const [halfwayShown, setHalfwayShown] = useState(false)
   const autoAdvanceRef = useRef(null)
 
@@ -139,14 +164,14 @@ export default function LessonPage() {
   const hasReset = useRef(false)
 
   // Reset all state when navigating to a different lesson (same component, new params)
-  const lessonKey = `${bookSlug}:${chapterIndex}:${lessonIndex}`
   const prevLessonKey = useRef(lessonKey)
   useEffect(() => {
     if (prevLessonKey.current !== lessonKey) {
       prevLessonKey.current = lessonKey
-      setCurrentIndex(0)
+      const saved = loadProgress(lessonKey)
+      setCurrentIndex((saved && saved.currentIndex < exercises.length) ? saved.currentIndex : 0)
       setFeedback(null)
-      setMistakes(0)
+      setMistakes(saved?.mistakes || 0)
       setIsComplete(false)
       setLevelUp(null)
       setNewAchievement(null)
@@ -156,12 +181,19 @@ export default function LessonPage() {
       setShowConfetti(false)
       setFloatingXP(null)
       setTimerEnabled(false)
-      setTotalSpeedBonus(0)
+      setTotalSpeedBonus(saved?.totalSpeedBonus || 0)
       setHalfwayShown(false)
       timerTimeLeft.current = TIMER_DURATION
       hasReset.current = false
     }
-  }, [lessonKey])
+  }, [lessonKey, exercises.length])
+
+  // Persist exercise progress for refresh recovery
+  useEffect(() => {
+    if (!isComplete && exercises.length > 0) {
+      saveProgress(lessonKey, { currentIndex, mistakes, totalSpeedBonus })
+    }
+  }, [currentIndex, mistakes, totalSpeedBonus, isComplete, lessonKey, exercises.length])
 
   // Cleanup auto-advance timer on unmount
   useEffect(() => {
@@ -244,7 +276,7 @@ export default function LessonPage() {
           }
           return prev
         })
-      }, 1500)
+      }, 3500)
     } else {
       play('wrong')
       // Haptic feedback — stronger for wrong
@@ -324,6 +356,7 @@ export default function LessonPage() {
       completeLesson(bookSlug, parseInt(chapterIndex), parseInt(lessonIndex), mistakes)
       play('lessonComplete')
       setIsComplete(true)
+      clearProgress(lessonKey)
     } else {
       // Animate exercise transition
       play('transition')

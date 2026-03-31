@@ -13,6 +13,7 @@ import Onboarding from './components/Onboarding'
 import ErrorBoundary from './components/ErrorBoundary'
 import AdminGuard from './components/admin/AdminGuard'
 import { AnnouncerProvider } from './components/Announcer'
+import InstallPrompt from './components/InstallPrompt'
 
 // Lazy-loaded pages for code splitting
 const HomePage = lazy(() => import('./pages/HomePage'))
@@ -150,6 +151,11 @@ export default function App() {
     if (localStorage.getItem('mindset_reduced_motion') === 'true') {
       document.documentElement.classList.add('reduce-motion')
     }
+
+    if (localStorage.getItem('mindset_theme') === 'light') {
+      document.documentElement.classList.add('light')
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#f5f5f7')
+    }
   }, [])
 
   return (
@@ -158,6 +164,7 @@ export default function App() {
       <Toast />
       <OfflineDetector />
       <BottomNav />
+      <InstallPrompt />
       <Routes>
         <Route
           path="/"

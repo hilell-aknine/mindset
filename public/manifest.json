@@ -9,7 +9,22 @@
   "theme_color": "#0a0a12",
   "dir": "rtl",
   "lang": "he",
+  "id": "/",
+  "scope": "/",
+  "prefer_related_applications": false,
   "categories": ["education", "games"],
+  "shortcuts": [
+    {
+      "name": "המשך ללמוד",
+      "url": "/home",
+      "icons": [{ "src": "/favicon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "טבלת מובילים",
+      "url": "/leaderboard",
+      "icons": [{ "src": "/favicon-192.png", "sizes": "192x192" }]
+    }
+  ],
   "icons": [
     {
       "src": "/favicon-192.png",
