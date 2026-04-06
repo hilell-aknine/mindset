@@ -301,7 +301,7 @@ export default function HomePage() {
               {BOOK_COVERS[book.slug] ? (
                 <img
                   src={BOOK_COVERS[book.slug]}
-                  alt=""
+                  alt={book.title}
                   className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover shrink-0 group-hover:scale-105 transition-transform"
                 />
               ) : (

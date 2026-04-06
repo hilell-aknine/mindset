@@ -40,6 +40,16 @@ html.light .glass-card:hover {
   border-color: rgba(0, 0, 0, 0.12);
 }
 
+/* Light mode text opacity boosts — frost-white/XX is too faint on light bg */
+html.light .text-frost-white\/20 { color: oklab(0.228 0.009 -0.037 / 0.45); }
+html.light .text-frost-white\/25 { color: oklab(0.228 0.009 -0.037 / 0.5); }
+html.light .text-frost-white\/30 { color: oklab(0.228 0.009 -0.037 / 0.55); }
+html.light .text-frost-white\/35 { color: oklab(0.228 0.009 -0.037 / 0.6); }
+html.light .text-frost-white\/40 { color: oklab(0.228 0.009 -0.037 / 0.65); }
+html.light .text-frost-white\/50 { color: oklab(0.228 0.009 -0.037 / 0.7); }
+html.light .text-frost-white\/60 { color: oklab(0.228 0.009 -0.037 / 0.75); }
+html.light .text-frost-white\/70 { color: oklab(0.228 0.009 -0.037 / 0.85); }
+
 /* Scrollbar in light mode */
 html.light ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); }
 html.light ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.25); }
@@ -99,14 +109,14 @@ html.light .progress-shimmer {
 
   body {
     min-height: 100dvh;
-    overflow-x: clip;
+    overflow-x: hidden;
   }
 
   #root {
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    overflow-x: clip;
+    overflow-x: hidden;
   }
 }
 

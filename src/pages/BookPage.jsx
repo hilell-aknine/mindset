@@ -115,7 +115,7 @@ export default function BookPage() {
           <p className="text-xs text-frost-white/40">{book.author}</p>
         </div>
         {BOOK_COVERS[slug] ? (
-          <img src={BOOK_COVERS[slug]} alt="" className="w-12 h-12 rounded-xl object-cover" />
+          <img src={BOOK_COVERS[slug]} alt={book.title} className="w-12 h-12 rounded-xl object-cover" />
         ) : (
           <span className="text-3xl">{book.icon}</span>
         )}

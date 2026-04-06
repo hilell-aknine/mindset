@@ -54,7 +54,7 @@ export default function BottomNav() {
                   </span>
                 )}
               </div>
-              <span className={`text-[9px] mt-0.5 font-medium ${isActive ? 'text-gold' : 'text-frost-white/25'}`}>
+              <span className={`text-[11px] mt-0.5 font-medium ${isActive ? 'text-gold' : 'text-frost-white/40'}`}>
                 {item.label}
               </span>
               {isActive && (

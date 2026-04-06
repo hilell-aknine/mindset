@@ -101,7 +101,7 @@ export default function Improve({ exercise, onAnswer, disabled }) {
           className={`w-full py-4 rounded-2xl font-bold text-base min-h-[52px] transition-all active:scale-[0.98] ${
             selected !== null
               ? 'bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 animate-pulse-ready'
-              : 'bg-white/5 text-frost-white/30 cursor-not-allowed'
+              : 'bg-white/10 text-frost-white/30 cursor-not-allowed opacity-50 border border-white/10'
           }`}
         >
           בדוק

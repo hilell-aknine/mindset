@@ -55,7 +55,7 @@ export default function Header() {
           className="flex items-center gap-2 min-h-[44px] min-w-[44px] hover:opacity-80 active:opacity-60 transition-opacity"
           aria-label="דף הבית - MindSet"
         >
-          <img src="/backgrounds/mindset-logo.png" alt="" className="w-8 h-8 rounded-lg object-cover" />
+          <img src="/backgrounds/mindset-logo.png" alt="MindSet" className="w-8 h-8 rounded-lg object-cover" />
           <span className="font-display font-bold text-frost-white text-sm hidden sm:block">MindSet</span>
         </button>
 
