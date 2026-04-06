@@ -2,10 +2,10 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../../contexts/PlayerContext'
 import { HEART_RECOVERY_MINUTES } from '../../config/constants'
-import { Heart, Clock, Crown, RotateCcw } from 'lucide-react'
+import { Heart, Clock, RotateCcw } from 'lucide-react'
 import { useFocusTrap } from '../../hooks/useFocusTrap'
 
-export default function OutOfHeartsModal({ onClose, onPurchase, reviewCount = 0 }) {
+export default function OutOfHeartsModal({ onClose, reviewCount = 0 }) {
   const navigate = useNavigate()
   const { player } = usePlayer()
   const [timeStr, setTimeStr] = useState('')
@@ -56,7 +56,7 @@ export default function OutOfHeartsModal({ onClose, onPurchase, reviewCount = 0 
         </div>
 
         <p className="text-sm text-frost-white/50 mb-4">
-          המתן שהלבבות יתאוששו או שדרג לפרימיום
+          המתן שהלבבות יתאוששו
         </p>
 
         {/* Live countdown */}
@@ -78,31 +78,6 @@ export default function OutOfHeartsModal({ onClose, onPurchase, reviewCount = 0 
             <span>⏱️</span> לב חוזר כל {HEART_RECOVERY_MINUTES} דקות
           </p>
         </div>
-        <div className="text-right space-y-1.5 mb-5 px-3 py-3 rounded-xl bg-gold/5 border border-gold/15">
-          <p className="text-[10px] font-bold text-gold/80 mb-2">מה כלול בפרימיום?</p>
-          <p className="text-[10px] text-frost-white/45 flex items-center gap-2">
-            <span>❤️</span> לבבות ללא הגבלה
-          </p>
-          <p className="text-[10px] text-frost-white/45 flex items-center gap-2">
-            <span>🛡️</span> הגנת רצף חינם כל יום
-          </p>
-          <p className="text-[10px] text-frost-white/45 flex items-center gap-2">
-            <span>🤖</span> מאמן AI ללא הגבלה
-          </p>
-          <p className="text-[10px] text-frost-white/45 flex items-center gap-2">
-            <span>🎭</span> שיחות סימולציה עם AI
-          </p>
-        </div>
-
-        <button
-          onClick={onPurchase}
-          className="w-full py-4 rounded-2xl bg-gradient-to-l from-gold to-warning text-bg-base font-bold text-base mb-3 hover:opacity-90 active:opacity-80 transition-opacity flex items-center justify-center gap-2 active:scale-[0.98] min-h-[52px]"
-          aria-label="שדרג לפרימיום — לבבות ללא הגבלה"
-        >
-          <Crown className="w-4 h-4" />
-          שדרג לפרימיום — לבבות ללא הגבלה
-        </button>
-
         {reviewCount > 0 && (
           <button
             onClick={() => { onClose(); navigate('/review') }}

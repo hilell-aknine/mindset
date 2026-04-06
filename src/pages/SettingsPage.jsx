@@ -6,7 +6,7 @@ import { useSound } from '../hooks/useSound'
 import { WEEKLY_GOALS } from '../lib/events'
 import {
   ArrowRight, Volume2, VolumeX, Trash2, LogOut, User, Target,
-  Download, Shield, Info, ChevronDown, BookOpen, Zap, Crown,
+  Download, Shield, Info, ChevronDown, BookOpen, Zap,
   Type, MonitorOff, Sun, Moon
 } from 'lucide-react'
 
@@ -129,11 +129,6 @@ export default function SettingsPage() {
         <div className="flex items-center gap-4 mb-4">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center relative">
             <User className="w-7 h-7 text-frost-white" />
-            {player.isPremium && (
-              <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gold flex items-center justify-center">
-                <Crown className="w-3 h-3 text-bg-base" />
-              </div>
-            )}
           </div>
           <div>
             <p className="font-semibold text-frost-white text-sm">
@@ -305,24 +300,6 @@ export default function SettingsPage() {
               <div className="w-5 h-5 rounded-full bg-white m-0.5 shadow-sm transition-all" />
             </div>
           </button>
-        </div>
-
-        {/* Premium status */}
-        <div
-          className="glass-card w-full p-4 flex items-center justify-between animate-fade-in"
-          style={{ animationDelay: '0.12s' }}
-        >
-          <div className="flex items-center gap-3">
-            <Crown className={`w-5 h-5 ${player.isPremium ? 'text-gold' : 'text-frost-white/30'}`} />
-            <span className="text-sm text-frost-white">סטטוס</span>
-          </div>
-          <span className={`text-xs font-bold px-3 py-1 rounded-full ${
-            player.isPremium
-              ? 'bg-gold/20 text-gold'
-              : 'bg-white/5 text-frost-white/40'
-          }`}>
-            {player.isPremium ? 'פרימיום' : 'חינם'}
-          </span>
         </div>
 
         {/* Learning stats section (collapsible) */}

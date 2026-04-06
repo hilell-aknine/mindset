@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Shield, Zap, Check, Award } from 'lucide-react'
+import { Shield, Check, Award } from 'lucide-react'
 import { usePlayer } from '../contexts/PlayerContext'
 import { useSound } from '../hooks/useSound'
 import { getStreakTier, STREAK_TIERS } from '../config/constants'
@@ -15,18 +15,12 @@ export default function StreakFreeze() {
 
   const today = new Date().toDateString()
   const hasFreeze = player.streakFreezeDate === today
-  const canAfford = (player.tokens || 0) >= 2
   const currentTier = getStreakTier(player.currentStreak)
-
-  // Premium users get free streak freeze
-  const freezeCost = player.isPremium ? 0 : 2
 
   const buyFreeze = () => {
     if (hasFreeze) return
-    if (!player.isPremium && !canAfford) return
     updatePlayer(prev => ({
       ...prev,
-      tokens: player.isPremium ? prev.tokens : prev.tokens - freezeCost,
       streakFreezeDate: today,
     }))
     play('streakFreeze')
@@ -101,22 +95,15 @@ export default function StreakFreeze() {
         {!hasFreeze && (
           <button
             onClick={buyFreeze}
-            disabled={!player.isPremium && !canAfford}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 ${
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all active:scale-95 ${
               isHighStreak
                 ? 'bg-warning/15 border-warning/30 text-warning hover:bg-warning/20'
                 : 'bg-dusty-aqua/10 border-dusty-aqua/20 text-dusty-aqua hover:bg-dusty-aqua/15'
             }`}
-            aria-label={player.isPremium
-              ? 'הפעל הגנת רצף (חינם לפרימיום)'
-              : `קנה הגנת רצף ב-${freezeCost} אסימונים${!canAfford ? ' — אין מספיק אסימונים' : ''}`
-            }
+            aria-label="הפעל הגנת רצף"
           >
-            {player.isPremium ? (
-              <span>חינם 👑</span>
-            ) : (
-              <><Zap className="w-3 h-3" />{freezeCost}</>
-            )}
+            <Shield className="w-3 h-3" />
+            הפעל
           </button>
         )}
         {justBought && (

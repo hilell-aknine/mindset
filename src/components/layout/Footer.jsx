@@ -29,7 +29,6 @@ export default function Footer() {
             <h4 className="text-xs font-bold text-frost-white/50 mb-3">המוצר</h4>
             <ul className="space-y-2 text-[11px] text-frost-white/30">
               <li><Link to="/home" className="hover:text-frost-white/50 transition-colors">ספרים</Link></li>
-              <li><button onClick={() => scrollToSection('pricing')} className="hover:text-frost-white/50 transition-colors">מחירים</button></li>
               <li><button onClick={() => scrollToSection('faq')} className="hover:text-frost-white/50 transition-colors">שאלות נפוצות</button></li>
             </ul>
           </div>

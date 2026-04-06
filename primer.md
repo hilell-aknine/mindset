@@ -3,13 +3,14 @@
 
 ## Current State
 - **Status:** Active
-- **Last task completed:** Registered 4 missing books (grit, power-of-now, seven-habits, thinking-fast-slow) across all 7 app files
-- **Next planned task:** Generate cover images for 4 new books, then git push to deploy
+- **Last task completed:** Removed all pricing/premium UI — everything is free and open
+- **Next planned task:** Generate cover images for 4 new books
 - **Blocking issues:** None
 
 ## Recent Changes
 | Date | What Changed | Files Affected |
 |------|-------------|----------------|
+| 2026-04-06 | Removed all pricing/premium/locked UI (14 files) | BookPage, LessonPage, OutOfHeartsModal, OutOfTokensModal, AICoachButton, AIScenarioChat, AICoachChat, StreakFreeze, WorkbookPage, SettingsPage, LandingPage, Footer, SettingsTab, PlayerContext |
 | 2026-04-06 | Registered 4 missing books in all 7 app files | HomePage, BookPage, LessonPage, PlayerContext, ReviewPage, LandingPage, achievements.js |
 | 2026-04-06 | UX improvements via mindset-ux.at topology | OutOfHeartsModal, Header, LessonPage, FeedbackPanel, ExerciseRouter, Scenario, Match, Identify, HomePage |
 | 2026-04-06 | Brain architecture installed | CLAUDE.md, primer.md, hindsight.md |

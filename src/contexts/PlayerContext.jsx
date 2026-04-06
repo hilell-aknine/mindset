@@ -238,7 +238,6 @@ export function PlayerProvider({ children }) {
     setPlayer(prev => {
       const today = new Date().toDateString()
       if (prev.lastLoginDate === today) return prev
-      if (prev.isPremium) return prev
       return {
         ...prev,
         tokens: Math.max(prev.tokens, FREE_DAILY_TOKENS)
@@ -325,14 +324,6 @@ export function PlayerProvider({ children }) {
 
   const onWrongAnswer = useCallback(() => {
     updatePlayer(prev => {
-      // Premium users don't lose hearts
-      if (prev.isPremium) {
-        return {
-          ...prev,
-          totalWrong: prev.totalWrong + 1,
-          comboStreak: 0,
-        }
-      }
       return {
         ...prev,
         hearts: Math.max(0, prev.hearts - 1),

@@ -1,6 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { usePlayer } from '../contexts/PlayerContext'
-import { ArrowRight, Printer, Lock } from 'lucide-react'
+import { ArrowRight, Printer } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
@@ -23,35 +22,12 @@ const TYPE_LABELS = {
 export default function WorkbookPage() {
   const { slug } = useParams()
   const navigate = useNavigate()
-  const { player } = usePlayer()
   const book = BOOKS[slug]
-
-  const hasPremium = player.isPremium || player.premiumBooks?.includes(slug)
 
   if (!book) {
     return (
       <main className="flex-1 flex items-center justify-center">
         <p className="text-frost-white/50">הספר לא נמצא</p>
-      </main>
-    )
-  }
-
-  if (!hasPremium) {
-    return (
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
-        <div className="flex items-center gap-3 mb-6 animate-fade-in">
-          <button onClick={() => navigate(`/book/${slug}`)} className="p-2.5 -m-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors">
-            <ArrowRight className="w-5 h-5 text-frost-white/60" />
-          </button>
-          <h2 className="font-display text-xl font-bold text-frost-white">חוברת עבודה</h2>
-        </div>
-        <div className="text-center py-20 animate-fade-in">
-          <div className="w-20 h-20 rounded-3xl bg-gold/10 mx-auto mb-4 flex items-center justify-center">
-            <Lock className="w-10 h-10 text-gold/40" />
-          </div>
-          <h3 className="font-display text-xl font-bold text-frost-white mb-2">חוברת עבודה — פרימיום</h3>
-          <p className="text-sm text-frost-white/40">רכשו את הספר או חבילת המאסטר כדי להדפיס חוברת עבודה</p>
-        </div>
       </main>
     )
   }

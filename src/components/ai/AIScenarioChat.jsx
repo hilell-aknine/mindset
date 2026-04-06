@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { usePlayer } from '../../contexts/PlayerContext'
 import { useToast } from '../../contexts/ToastContext'
-import { X, Send, Loader2, Bot, User, Crown, Theater, Sparkles } from 'lucide-react'
+import { X, Send, Loader2, Bot, User, Theater, Sparkles } from 'lucide-react'
 
 const SCENARIO_PROMPTS = {
   'atomic-habits': 'אתה מנחה סימולציה. צור תרחיש מהחיים האמיתיים שדורש יישום של עקרונות "הרגלים אטומים" (שינוי סביבה, זהות, מערכות vs מטרות, חוק 1% וכו\'). הצג מצב ושאל "מה היית עושה?" עם 3 אפשרויות. רק אחת מיישמת נכון את העיקרון. אחרי שהמשתמש בוחר, הסבר למה. ענה בעברית.',
@@ -37,13 +37,7 @@ export default function AIScenarioChat({ bookSlug, onClose }) {
     }
   }, [onClose])
 
-  const isPremium = player.isPremium
-
   const startScenario = async () => {
-    if (!isPremium) {
-      toast.error('סימולציות זמינות למנויי פרימיום בלבד')
-      return
-    }
     setStarted(true)
     setLoading(true)
 
@@ -160,23 +154,13 @@ export default function AIScenarioChat({ bookSlug, onClose }) {
       {/* Start button or input */}
       {!started ? (
         <div className="p-4 border-t border-white/5">
-          {isPremium ? (
-            <button
-              onClick={startScenario}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-l from-gold to-warning text-bg-base font-bold text-sm hover:brightness-110 transition-all active:scale-[0.98]"
-            >
-              <Sparkles className="w-4 h-4" />
-              התחל סימולציה
-            </button>
-          ) : (
-            <div className="text-center">
-              <p className="text-xs text-frost-white/40 mb-2">סימולציות זמינות למנויי פרימיום</p>
-              <button className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base text-xs font-bold hover:brightness-110 transition-all">
-                <Crown className="w-3.5 h-3.5" />
-                שדרג לפרימיום
-              </button>
-            </div>
-          )}
+          <button
+            onClick={startScenario}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-l from-gold to-warning text-bg-base font-bold text-sm hover:brightness-110 transition-all active:scale-[0.98]"
+          >
+            <Sparkles className="w-4 h-4" />
+            התחל סימולציה
+          </button>
         </div>
       ) : (
         <div className="p-3 border-t border-white/5">

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { Zap, Crown, Clock } from 'lucide-react'
+import { Zap, Clock } from 'lucide-react'
 
 function getTimeUntilMidnight() {
   const now = new Date()
@@ -12,7 +12,7 @@ function getTimeUntilMidnight() {
   return { hours, mins }
 }
 
-export default function OutOfTokensModal({ onClose, onPurchase }) {
+export default function OutOfTokensModal({ onClose }) {
   const [countdown, setCountdown] = useState(getTimeUntilMidnight)
 
   // Live countdown
@@ -46,7 +46,7 @@ export default function OutOfTokensModal({ onClose, onPurchase }) {
         />
         <h3 className="font-display text-xl font-bold text-frost-white mb-2">נגמרה האנרגיה!</h3>
         <p className="text-sm text-frost-white/50 mb-3">
-          הטוקנים נגמרו. מחר תקבל 3 טוקנים חדשים, או שדרג לפרימיום לגישה בלתי מוגבלת למאמן AI.
+          הטוקנים נגמרו. מחר תקבל 3 טוקנים חדשים.
         </p>
 
         {/* Token reset countdown */}
@@ -56,14 +56,6 @@ export default function OutOfTokensModal({ onClose, onPurchase }) {
             טוקנים חדשים בעוד {countdown.hours} שעות ו-{countdown.mins} דקות
           </span>
         </div>
-
-        <button
-          onClick={onPurchase}
-          className="w-full py-3 rounded-xl bg-gradient-to-l from-gold to-warning text-bg-base font-bold text-sm mb-3 hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-        >
-          <Crown className="w-4 h-4" />
-          שדרג — 50 טוקנים + כל הספרים
-        </button>
 
         <button
           onClick={onClose}

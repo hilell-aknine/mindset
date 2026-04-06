@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { usePlayer } from '../../contexts/PlayerContext'
 import { useToast } from '../../contexts/ToastContext'
-import { X, Send, Loader2, Bot, User, Zap, Crown } from 'lucide-react'
+import { X, Send, Loader2, Bot, User, Zap } from 'lucide-react'
 
 export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
   const { player, spendToken } = usePlayer()
@@ -40,7 +40,7 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
     if (!input.trim() || loading) return
 
     if (isOutOfTokens) {
-      toast.error('נגמרו הטוקנים! חזור מחר או שדרג לפרימיום')
+      toast.error('נגמרו הטוקנים! חזור מחר')
       return
     }
 
@@ -139,13 +139,9 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
             <Zap className="w-4 h-4 text-gold" />
             <span className="text-xs font-bold text-gold">נגמרו הטוקנים</span>
           </div>
-          <p className="text-[11px] text-frost-white/40 mb-2">
-            3 טוקנים חינמיים מתחדשים כל יום. שדרג לפרימיום לטוקנים ללא הגבלה.
+          <p className="text-[11px] text-frost-white/40">
+            3 טוקנים חינמיים מתחדשים כל יום. חזור מחר!
           </p>
-          <button className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base text-xs font-bold hover:brightness-110 transition-all">
-            <Crown className="w-3.5 h-3.5" />
-            שדרג לפרימיום
-          </button>
         </div>
       )}
 

@@ -14,7 +14,6 @@ import LessonComplete from '../components/feedback/LessonComplete'
 import LevelUpOverlay from '../components/feedback/LevelUpOverlay'
 import AchievementPopup from '../components/feedback/AchievementPopup'
 import OutOfHeartsModal from '../components/modals/OutOfHeartsModal'
-import PurchaseModal from '../components/modals/PurchaseModal'
 import { X, Heart, Zap, Timer, Flame } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
@@ -150,7 +149,6 @@ export default function LessonPage() {
   const [levelUp, setLevelUp] = useState(null)
   const [newAchievement, setNewAchievement] = useState(null)
   const [showOutOfHearts, setShowOutOfHearts] = useState(false)
-  const [showPurchase, setShowPurchase] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
   const [comboTier, setComboTier] = useState(0)
@@ -427,9 +425,9 @@ export default function LessonPage() {
     if (chapter?.lessons[li + 1]) {
       return { title: chapter.lessons[li + 1].title, ci, li: li + 1 }
     }
-    // Try first lesson in next chapter (if unlocked)
+    // Try first lesson in next chapter
     const nextChapter = book?.chapters[ci + 1]
-    if (nextChapter?.lessons?.[0] && (player.isPremium || player.premiumBooks?.includes(bookSlug) || ci + 1 === 0)) {
+    if (nextChapter?.lessons?.[0]) {
       return { title: nextChapter.lessons[0].title, ci: ci + 1, li: 0 }
     }
     return null
@@ -596,19 +594,7 @@ export default function LessonPage() {
             setShowOutOfHearts(false)
             navigate(`/book/${bookSlug}`)
           }}
-          onPurchase={() => {
-            setShowOutOfHearts(false)
-            setShowPurchase(true)
-          }}
           reviewCount={player.reviewQueue?.length || 0}
-        />
-      )}
-
-      {/* Purchase modal */}
-      {showPurchase && (
-        <PurchaseModal
-          bookSlug={bookSlug}
-          onClose={() => setShowPurchase(false)}
         />
       )}
     </div>

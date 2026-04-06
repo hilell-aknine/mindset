@@ -1,11 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { MessageCircle, Theater } from 'lucide-react'
-import { usePlayer } from '../../contexts/PlayerContext'
 import AICoachChat from './AICoachChat'
 import AIScenarioChat from './AIScenarioChat'
 
 export default function AICoachButton({ bookSlug, systemPrompt }) {
-  const { player } = usePlayer()
   const [open, setOpen] = useState(false)
   const [mode, setMode] = useState('chat') // 'chat' or 'scenario'
   const [hasNewMessage, setHasNewMessage] = useState(false)
@@ -60,17 +58,15 @@ export default function AICoachButton({ bookSlug, systemPrompt }) {
         )}
       </button>
 
-      {/* Scenario button (premium) */}
-      {player.isPremium && (
-        <button
-          onClick={openScenario}
-          className="fixed bottom-6 left-[5.5rem] z-30 w-11 h-11 rounded-xl bg-gradient-to-br from-gold to-warning text-bg-base shadow-lg shadow-gold/20 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
-          aria-label="סימולציה AI"
-          title="סימולציה — תרגול תרחישים"
-        >
-          <Theater className="w-5 h-5" />
-        </button>
-      )}
+      {/* Scenario button */}
+      <button
+        onClick={openScenario}
+        className="fixed bottom-6 left-[5.5rem] z-30 w-11 h-11 rounded-xl bg-gradient-to-br from-gold to-warning text-bg-base shadow-lg shadow-gold/20 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+        aria-label="סימולציה AI"
+        title="סימולציה — תרגול תרחישים"
+      >
+        <Theater className="w-5 h-5" />
+      </button>
 
       {open && mode === 'chat' && (
         <AICoachChat

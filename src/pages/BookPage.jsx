@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
 import { ArrowRight, Lock, Check, Play, Clock, Star, Zap, Trophy, RotateCcw, FileText } from 'lucide-react'
-import PurchaseModal from '../components/modals/PurchaseModal'
 import AICoachButton from '../components/ai/AICoachButton'
 import ChapterAudioSummary from '../components/ChapterAudioSummary'
 import strengthsFinder from '../data/books/strengths-finder.json'
@@ -42,8 +41,6 @@ export default function BookPage() {
   const navigate = useNavigate()
   const { player } = usePlayer()
   const book = BOOKS[slug]
-  const [showPurchase, setShowPurchase] = useState(false)
-
   if (!book) {
     return (
       <main className="flex-1 flex items-center justify-center">
@@ -52,11 +49,7 @@ export default function BookPage() {
     )
   }
 
-  const isChapterUnlocked = (chapterIndex) => {
-    if (chapterIndex === 0) return true
-    if (player.isPremium || player.premiumBooks?.includes(slug)) return true
-    return false
-  }
+  const isChapterUnlocked = () => true
 
   const isLessonCompleted = (chapterIndex, lessonIndex) => {
     return !!player.completedLessons?.[`${slug}:${chapterIndex}:${lessonIndex}`]
@@ -360,26 +353,14 @@ export default function BookPage() {
                   </div>
                 )}
 
-                {/* Locked chapter CTA */}
-                {!unlocked && (
-                  <button
-                    onClick={() => setShowPurchase(true)}
-                    className="mr-14 w-[calc(100%-3.5rem)] glass-card p-4 flex items-center gap-3 border-gold/10 hover:border-gold/30 transition-colors"
-                  >
-                    <Lock className="w-4 h-4 text-gold/60" />
-                    <p className="text-xs text-frost-white/30">
-                      פרק נעול — לחצו לרכישת הספר המלא
-                    </p>
-                  </button>
-                )}
               </div>
             )
           })}
         </div>
       </div>
 
-      {/* Workbook link for premium users */}
-      {(player.isPremium || player.premiumBooks?.includes(slug)) && (
+      {/* Workbook link */}
+      {(
         <button
           onClick={() => navigate(`/workbook/${slug}`)}
           className="w-full glass-card p-3 mt-4 flex items-center gap-3 border-dusty-aqua/10 hover:border-dusty-aqua/25 transition-all animate-fade-in"
@@ -398,10 +379,6 @@ export default function BookPage() {
       {/* AI Coach floating button */}
       <AICoachButton bookSlug={slug} systemPrompt={book.systemPrompt} />
 
-      {/* Purchase modal */}
-      {showPurchase && (
-        <PurchaseModal bookSlug={slug} onClose={() => setShowPurchase(false)} />
-      )}
     </main>
   )
 }

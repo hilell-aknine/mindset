@@ -7,13 +7,10 @@ import {
   MAX_HEARTS,
   HEART_RECOVERY_MINUTES,
   FREE_DAILY_TOKENS,
-  PAID_BOOK_TOKENS,
   XP_CORRECT_ANSWER,
   XP_LESSON_COMPLETE,
   XP_DAILY_CHALLENGE,
   XP_PERFECT_LESSON,
-  PRICE_SINGLE_BOOK,
-  PRICE_MASTERY_BUNDLE,
 } from '../../../config/constants'
 
 export default function SettingsTab() {
@@ -61,11 +58,6 @@ export default function SettingsTab() {
     ]},
     { section: 'טוקנים', items: [
       { label: 'חינם יומי', value: FREE_DAILY_TOKENS },
-      { label: 'רכישת ספר', value: PAID_BOOK_TOKENS },
-    ]},
-    { section: 'מחירים', items: [
-      { label: 'ספר בודד', value: `${PRICE_SINGLE_BOOK} ₪` },
-      { label: 'חבילה מלאה', value: `${PRICE_MASTERY_BUNDLE} ₪` },
     ]},
   ]
 

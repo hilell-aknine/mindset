@@ -546,7 +546,7 @@ export default function LandingPage() {
             <div className="text-center lg:text-right animate-fade-in">
               <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gold/10 border border-gold/20 text-gold text-[11px] sm:text-xs font-medium mb-4 sm:mb-6">
                 <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                פרק ראשון חינם — בלי כרטיס אשראי
+                100% חינם — כל התכנים פתוחים
               </div>
               <h1 className="font-display text-[28px] sm:text-5xl lg:text-6xl font-black leading-[1.2] sm:leading-tight mb-3 sm:mb-5">
                 מה אם יכולת{' '}
@@ -1005,107 +1005,6 @@ export default function LandingPage() {
                 </div>
               </RevealSection>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Pricing ─── */}
-      <section id="pricing" className="py-12 sm:py-24 px-0 sm:px-4 bg-white/[0.01] border-y border-white/5">
-        <div className="max-w-4xl mx-auto">
-          <RevealSection className="text-center mb-8 sm:mb-12 px-4">
-            <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">תוכניות ומחירים</h2>
-            <p className="text-frost-white/50 text-xs sm:text-base">התחל בחינם — שדרג כשתרצה</p>
-          </RevealSection>
-
-          {/* Horizontal scroll on mobile, grid on desktop */}
-          <div className="flex sm:grid sm:grid-cols-3 gap-3 sm:gap-5 overflow-x-auto mobile-scroll-x snap-x-mandatory px-4 pb-2 sm:pb-0">
-            {/* Free */}
-            <RevealSection delay={0} className="min-w-[280px] sm:min-w-0 snap-center">
-              <div className="glass-card p-5 sm:p-6 text-center h-full flex flex-col">
-                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-frost-white/5 flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                  <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-frost-white/60" />
-                </div>
-                <h3 className="font-display text-lg sm:text-xl font-bold mb-1">חינם</h3>
-                <p className="text-2xl sm:text-3xl font-bold text-frost-white mb-1">₪0</p>
-                <p className="text-[11px] sm:text-xs text-frost-white/40 mb-4 sm:mb-5">לתמיד</p>
-                <ul className="space-y-2 sm:space-y-2.5 text-xs sm:text-sm text-frost-white/60 text-right mb-5 sm:mb-6 flex-1">
-                  {['פרק ראשון מכל ספר', '3 שאילתות AI ביום', 'מערכת חזרה מרווחת', 'הישגים ורמות'].map(item => (
-                    <li key={item} className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-success shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  onClick={openAuth}
-                  className="w-full py-3 rounded-xl border border-white/10 text-frost-white/70 text-sm font-medium hover:border-white/20 hover:text-frost-white transition-all no-touch-delay tap-bounce"
-                >
-                  התחל בחינם
-                </button>
-              </div>
-            </RevealSection>
-
-            {/* Single book */}
-            <RevealSection delay={120} className="min-w-[280px] sm:min-w-0 snap-center">
-              <div className="glass-card p-5 sm:p-6 text-center h-full flex flex-col">
-                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-dusty-aqua/10 flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                  <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-dusty-aqua" />
-                </div>
-                <h3 className="font-display text-lg sm:text-xl font-bold mb-1">ספר בודד</h3>
-                <p className="text-2xl sm:text-3xl font-bold text-frost-white mb-1">₪37</p>
-                <p className="text-[11px] sm:text-xs text-frost-white/40 mb-4 sm:mb-5">חד פעמי</p>
-                <ul className="space-y-2 sm:space-y-2.5 text-xs sm:text-sm text-frost-white/60 text-right mb-5 sm:mb-6 flex-1">
-                  {['כל הפרקים של ספר אחד', '50 שאילתות AI', 'חזרה מרווחת מלאה', 'חוברת עבודה'].map(item => (
-                    <li key={item} className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-success shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  onClick={openAuth}
-                  className="w-full py-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white text-sm font-medium hover:opacity-90 transition-opacity no-touch-delay tap-bounce"
-                >
-                  בחר ספר
-                </button>
-              </div>
-            </RevealSection>
-
-            {/* Bundle */}
-            <RevealSection delay={240} className="min-w-[280px] sm:min-w-0 snap-center">
-              <div className="glass-card p-5 sm:p-6 text-center relative border-gold/30 h-full flex flex-col">
-                <div className="absolute -top-3 right-1/2 translate-x-1/2 px-3 sm:px-4 py-1 rounded-full bg-gradient-to-l from-gold to-[#e8c84a] text-bg-base text-[10px] sm:text-[11px] font-bold whitespace-nowrap">
-                  הכי משתלם
-                </div>
-                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gold/10 flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                  <Star className="w-5 h-5 sm:w-6 sm:h-6 text-gold" />
-                </div>
-                <h3 className="font-display text-lg sm:text-xl font-bold mb-1">באנדל מאסטר</h3>
-                <p className="text-2xl sm:text-3xl font-bold text-gold mb-1">₪97</p>
-                <p className="text-[11px] sm:text-xs text-frost-white/40 mb-4 sm:mb-5">חד פעמי — כל הספרים</p>
-                <ul className="space-y-2 sm:space-y-2.5 text-xs sm:text-sm text-frost-white/60 text-right mb-5 sm:mb-6 flex-1">
-                  {[`כל הספרים (${BOOKS.length}+)`, 'AI ללא הגבלה', 'חוברות עבודה', 'עדכונים וספרים חדשים'].map(item => (
-                    <li key={item} className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gold shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  onClick={openAuth}
-                  className="w-full py-3 rounded-xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base font-bold text-sm hover:brightness-110 transition-all no-touch-delay tap-bounce"
-                >
-                  קנה באנדל
-                </button>
-              </div>
-            </RevealSection>
-          </div>
-          {/* Scroll dots on mobile */}
-          <div className="flex items-center justify-center gap-1.5 mt-3 sm:hidden px-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-frost-white/20" />
-            <span className="w-1.5 h-1.5 rounded-full bg-frost-white/20" />
-            <span className="w-1.5 h-1.5 rounded-full bg-gold/50" />
-            <span className="text-[10px] text-frost-white/20 mr-2">החלק לצדדים</span>
           </div>
         </div>
       </section>
