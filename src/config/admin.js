@@ -9,6 +9,7 @@ export const ADMIN_TABS = [
   { id: 'content', label: 'תוכן וספרים', icon: '📚' },
   { id: 'analytics', label: 'אנליטיקות', icon: '📈' },
   { id: 'settings', label: 'הגדרות', icon: '⚙️' },
+  { id: 'popups', label: 'פופאפים', icon: '📢' },
 ]
 
 export const isAdmin = (email) => {

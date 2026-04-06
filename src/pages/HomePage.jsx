@@ -8,6 +8,7 @@ import SpacedReview from '../components/SpacedReview'
 import SmartNotification from '../components/SmartNotification'
 import StreakFreeze from '../components/StreakFreeze'
 import FeatureSpotlight from '../components/FeatureSpotlight'
+import PopupModal from '../components/PopupModal'
 import { getActiveEvent, WEEKLY_GOALS, STREAK_MILESTONES } from '../lib/events'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
@@ -94,6 +95,7 @@ export default function HomePage() {
 
   return (
     <main className="flex-1 max-w-2xl mx-auto w-full px-4 pt-6 pb-24">
+      <PopupModal />
       {/* Welcome */}
       <div className="mb-6 animate-fade-in">
         <h2 className="font-display text-2xl font-bold text-frost-white mb-1 truncate">

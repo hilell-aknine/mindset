@@ -6,6 +6,7 @@ const UsersTab = lazy(() => import('../components/admin/tabs/UsersTab'))
 const ContentTab = lazy(() => import('../components/admin/tabs/ContentTab'))
 const AnalyticsTab = lazy(() => import('../components/admin/tabs/AnalyticsTab'))
 const SettingsTab = lazy(() => import('../components/admin/tabs/SettingsTab'))
+const PopupsTab = lazy(() => import('../components/admin/tabs/PopupsTab'))
 
 const TAB_COMPONENTS = {
   dashboard: DashboardTab,
@@ -13,6 +14,7 @@ const TAB_COMPONENTS = {
   content: ContentTab,
   analytics: AnalyticsTab,
   settings: SettingsTab,
+  popups: PopupsTab,
 }
 
 function TabFallback() {
