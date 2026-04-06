@@ -17,8 +17,13 @@ import grit from '../data/books/grit.json'
 import powerOfNow from '../data/books/power-of-now.json'
 import sevenHabits from '../data/books/seven-habits.json'
 import thinkingFastSlow from '../data/books/thinking-fast-slow.json'
+import psychologyOfMoney from '../data/books/psychology-of-money.json'
+import millionaireNextDoor from '../data/books/millionaire-next-door.json'
+import thinkAndGrowRich from '../data/books/think-and-grow-rich.json'
+import blueOceanStrategy from '../data/books/blue-ocean-strategy.json'
+import threeSecondRule from '../data/books/three-second-rule.json'
 
-const ALL_BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook, 'indistractable': indistractable, 'grit': grit, 'power-of-now': powerOfNow, 'seven-habits': sevenHabits, 'thinking-fast-slow': thinkingFastSlow }
+const ALL_BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook, 'indistractable': indistractable, 'grit': grit, 'power-of-now': powerOfNow, 'seven-habits': sevenHabits, 'thinking-fast-slow': thinkingFastSlow, 'psychology-of-money': psychologyOfMoney, 'millionaire-next-door': millionaireNextDoor, 'think-and-grow-rich': thinkAndGrowRich, 'blue-ocean-strategy': blueOceanStrategy, 'three-second-rule': threeSecondRule }
 import { getXPMultiplier, checkStreakMilestone } from '../lib/events'
 
 const PlayerContext = createContext(null)

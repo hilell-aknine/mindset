@@ -8,8 +8,13 @@ import grit from '../data/books/grit.json'
 import powerOfNow from '../data/books/power-of-now.json'
 import sevenHabits from '../data/books/seven-habits.json'
 import thinkingFastSlow from '../data/books/thinking-fast-slow.json'
+import psychologyOfMoney from '../data/books/psychology-of-money.json'
+import millionaireNextDoor from '../data/books/millionaire-next-door.json'
+import thinkAndGrowRich from '../data/books/think-and-grow-rich.json'
+import blueOceanStrategy from '../data/books/blue-ocean-strategy.json'
+import threeSecondRule from '../data/books/three-second-rule.json'
 
-const ALL_BOOKS = [atomicHabits, happyChemicals, mindsetBook, nextFiveMoves, strengthsFinder, indistractable, grit, powerOfNow, sevenHabits, thinkingFastSlow]
+const ALL_BOOKS = [atomicHabits, happyChemicals, mindsetBook, nextFiveMoves, strengthsFinder, indistractable, grit, powerOfNow, sevenHabits, thinkingFastSlow, psychologyOfMoney, millionaireNextDoor, thinkAndGrowRich, blueOceanStrategy, threeSecondRule]
 const TOTAL_LESSONS = ALL_BOOKS.reduce((sum, book) => sum + book.chapters.reduce((s, ch) => s + ch.lessons.length, 0), 0)
 
 // Rarity tiers with colors
