@@ -98,6 +98,19 @@ Each chapter's first lesson starts with a `type: "reading"` exercise — an orig
 - Use scenario-based questions only
 - Legal footer: "מדריך לא רשמי. אינו קשור למחברים המקוריים."
 
+## Startup Protocol
+> At the start of every session, run these steps BEFORE any work:
+1. Read `primer.md` for current state
+2. Run `git log --oneline -10` for recent history
+3. Run `git diff --stat` for uncommitted changes
+4. Read `hindsight.md` for known pitfalls
+5. Check for any local `.env` or config requirements
+
+## Rules
+- Always update `primer.md` after completing a task
+- Log mistakes and lessons in `hindsight.md`
+- Never repeat a mistake already documented in hindsight
+
 ## Known Issues (from QA audit 2026-03-22)
 - Missing images: `/books/indistractable.png`, `/backgrounds/focus-shield.png` — need generation
 

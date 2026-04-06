@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../../contexts/PlayerContext'
 import { HEART_RECOVERY_MINUTES } from '../../config/constants'
-import { Heart, Clock, Crown } from 'lucide-react'
+import { Heart, Clock, Crown, RotateCcw } from 'lucide-react'
 import { useFocusTrap } from '../../hooks/useFocusTrap'
 
-export default function OutOfHeartsModal({ onClose, onPurchase }) {
+export default function OutOfHeartsModal({ onClose, onPurchase, reviewCount = 0 }) {
+  const navigate = useNavigate()
   const { player } = usePlayer()
   const [timeStr, setTimeStr] = useState('')
   const modalRef = useRef(null)
@@ -100,6 +102,16 @@ export default function OutOfHeartsModal({ onClose, onPurchase }) {
           <Crown className="w-4 h-4" />
           שדרג לפרימיום — לבבות ללא הגבלה
         </button>
+
+        {reviewCount > 0 && (
+          <button
+            onClick={() => { onClose(); navigate('/review') }}
+            className="w-full py-4 rounded-2xl border border-dusty-aqua/30 text-dusty-aqua text-base hover:bg-dusty-aqua/10 active:scale-[0.98] transition-all flex items-center justify-center gap-2 min-h-[52px] mb-3"
+          >
+            <RotateCcw className="w-4 h-4" />
+            תרגל חזרות בינתיים
+          </button>
+        )}
 
         <button
           onClick={onClose}

@@ -26,16 +26,20 @@ const ROLE_ICONS = {
 
 export default function Scenario({ exercise, onAnswer, disabled }) {
   const [selected, setSelected] = useState(null)
+  const [confirmed, setConfirmed] = useState(false)
 
   const handleSelect = (index) => {
-    if (disabled || selected !== null) return
+    if (disabled || confirmed) return
     setSelected(index)
+  }
 
-    const isCorrect = index === exercise.correct
+  const handleConfirm = () => {
+    if (selected === null || confirmed) return
+    setConfirmed(true)
+    const isCorrect = selected === exercise.correct
     const explanation = isCorrect
       ? exercise.explanation
-      : (exercise.wrongExplanations?.[index] || exercise.explanation)
-
+      : (exercise.wrongExplanations?.[selected] || exercise.explanation)
     onAnswer(isCorrect, explanation)
   }
 
@@ -77,7 +81,7 @@ export default function Scenario({ exercise, onAnswer, disabled }) {
         {(exercise.options || []).map((option, i) => {
           const isCorrectOption = i === exercise.correct
           const isSelected = selected === i
-          const showResult = selected !== null
+          const showResult = confirmed
 
           let borderClass = 'border-white/10 hover:border-gold/30'
           let bgClass = 'hover:bg-white/5'
@@ -90,13 +94,16 @@ export default function Scenario({ exercise, onAnswer, disabled }) {
           } else if (showResult && isCorrectOption) {
             borderClass = 'border-success/20'
             bgClass = 'bg-success/5'
+          } else if (!confirmed && isSelected) {
+            borderClass = 'border-gold/40'
+            bgClass = 'bg-gold/5'
           }
 
           return (
             <button
               key={i}
               onClick={() => handleSelect(i)}
-              disabled={disabled || selected !== null}
+              disabled={disabled || confirmed}
               className={`w-full text-right p-4 rounded-xl border transition-all active:scale-[0.98] disabled:cursor-default ${borderClass} ${bgClass}`}
               aria-label={`אפשרות ${i + 1}: ${option}`}
             >
@@ -116,6 +123,15 @@ export default function Scenario({ exercise, onAnswer, disabled }) {
           )
         })}
       </div>
+
+      {selected !== null && !confirmed && (
+        <button
+          onClick={handleConfirm}
+          className="w-full py-4 rounded-2xl bg-gradient-to-l from-gold to-warning text-bg-base font-bold text-base hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px] mt-4 animate-fade-in"
+        >
+          בדוק
+        </button>
+      )}
     </div>
   )
 }

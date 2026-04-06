@@ -1,13 +1,32 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../../contexts/PlayerContext'
-import { getXPProgress, LEVEL_NAMES } from '../../config/constants'
+import { getXPProgress, LEVEL_NAMES, HEART_RECOVERY_MINUTES, MAX_HEARTS } from '../../config/constants'
 import { Brain, Flame, Heart, Zap, TrendingUp } from 'lucide-react'
 
 export default function Header() {
   const navigate = useNavigate()
   const { player } = usePlayer()
   const [showXPDetails, setShowXPDetails] = useState(false)
+  const [heartTimerStr, setHeartTimerStr] = useState('')
+
+  // Live countdown to next heart recovery
+  useEffect(() => {
+    if (player.hearts >= MAX_HEARTS || !player.lastHeartLost) {
+      setHeartTimerStr('')
+      return
+    }
+    const update = () => {
+      const elapsed = (Date.now() - new Date(player.lastHeartLost).getTime()) / 60000
+      const remaining = HEART_RECOVERY_MINUTES - (elapsed % HEART_RECOVERY_MINUTES)
+      const min = Math.floor(remaining)
+      const sec = Math.floor((remaining - min) * 60)
+      setHeartTimerStr(`${min}:${sec.toString().padStart(2, '0')}`)
+    }
+    update()
+    const interval = setInterval(update, 1000)
+    return () => clearInterval(interval)
+  }, [player.hearts, player.lastHeartLost])
 
   const xpProgress = getXPProgress(player.xp)
   const levelName = LEVEL_NAMES[player.level - 1] || LEVEL_NAMES[0]
@@ -57,6 +76,9 @@ export default function Header() {
           >
             <Heart className="w-[18px] h-[18px] fill-current" aria-hidden="true" />
             <span className="text-xs font-bold">{player.hearts}</span>
+            {heartTimerStr && (
+              <span className="text-[10px] text-frost-white/30 font-mono">{heartTimerStr}</span>
+            )}
           </div>
 
           {/* Tokens */}

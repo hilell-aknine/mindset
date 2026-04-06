@@ -1,0 +1,212 @@
+topology mindset-ux : [fan-out] {
+  meta {
+    version: "1.0.0"
+    description: "UX improvement implementation for MindSet — engagement, feedback, mobile, polish"
+    domain: education
+    timeout: 30m
+  }
+
+  settings {
+    allow: ["Read", "Glob", "Grep", "Edit", "Bash(npm run build)", "Bash(npm run lint)"]
+    deny: ["Bash(rm *)", "Bash(git push *)", "Bash(git reset *)"]
+  }
+
+  agent engagement-ux {
+    model: sonnet
+    phase: 1
+    description: "Improves heart recovery UX, combo celebrations, streak visibility, failure escalation"
+    prompt {
+      You are a UX implementation specialist for MindSet, a Duolingo-style gamified book learning app (React 19 + Tailwind 4, Hebrew RTL-first).
+      Project root: C:/Users/saraa/OneDrive/שולחן העבודה/mindset/
+
+      Implement these 5 UX improvements:
+
+      ## 1. Heart Recovery CTA (OutOfHeartsModal.jsx)
+      The out-of-hearts modal is a dead end with only "premium" and "wait" buttons.
+      - Add a "תרגל חזרות בינתיים" button between the two existing buttons
+      - Import useNavigate, add RotateCcw icon from lucide-react
+      - On click: onClose() then navigate('/review')
+      - Only show when review queue has items (accept reviewCount prop)
+      - Style: secondary button with RotateCcw icon, dusty-aqua color accent
+
+      ## 2. Heart Timer in Header (Header.jsx)
+      When hearts < MAX_HEARTS (5), show countdown to next heart.
+      - Reuse timer logic from OutOfHeartsModal (useEffect + setInterval)
+      - Import HEART_RECOVERY_MINUTES, MAX_HEARTS from config/constants
+      - Display as small "2:45" text next to heart count
+      - Style: text-[10px] text-frost-white/30 font-mono
+
+      ## 3. Combo Celebration Tiers (LessonPage.jsx lines 261-263)
+      Current: setTimeout 700ms or 1000ms for combo >= 5.
+      Change to 3 tiers:
+      - Combo 3-4: 700ms (current behavior)
+      - Combo 5-9: 1200ms + add comboTier state = 2
+      - Combo 10+: 2000ms + add comboTier state = 3
+      Add a CSS class 'combo-flash' (gold border-2 border-gold/40 animate-pulse for 500ms) on the exercise container when tier >= 2.
+
+      ## 4. Streak in Lesson Header (LessonPage.jsx)
+      The lesson page has its own header bar (not global Header). Add streak:
+      - Import Flame icon from lucide-react (already has other icons)
+      - Next to hearts display, add: Flame icon + player.currentStreak
+      - Only show when currentStreak > 0
+      - Style: text-warning, Flame w-[14px], text-xs font-bold
+
+      ## 5. Failure Escalation (ExerciseRouter.jsx + LessonPage.jsx)
+      Track consecutive wrong answers per exercise:
+      - In LessonPage: add wrongCountForExercise state, reset on exercise change, increment on wrong
+      - Pass wrongCount prop to ExerciseRouter
+      - In ExerciseRouter: when wrongCount >= 2, force ContextPassage expanded + show hint banner "קרא שוב את ההקשר — התשובה מסתתרת שם"
+
+      Read each file first, then implement. Preserve all existing functionality.
+    }
+    tools: ["Read", "Glob", "Grep", "Edit"]
+    timeout: 10m
+  }
+
+  agent feedback-ux {
+    model: sonnet
+    phase: 1
+    description: "Improves XP breakdown, spaced repetition visibility, scenario pacing"
+    prompt {
+      You are a UX implementation specialist for MindSet, a Duolingo-style gamified book learning app (React 19 + Tailwind 4, Hebrew RTL-first).
+      Project root: C:/Users/saraa/OneDrive/שולחן העבודה/mindset/
+
+      Implement these 4 UX improvements:
+
+      ## 1. XP Breakdown Popup (FeedbackPanel.jsx)
+      Make the XP badge (lines 91-96) clickable to show breakdown.
+      - Add useState for showXPBreakdown
+      - On click, toggle dropdown showing: Base XP, Combo bonus, Speed bonus, Event multiplier
+      - Accept new prop: eventMultiplier (default 1)
+      - Style: small glass-card dropdown above the badge, absolute positioned
+      - Only show non-zero/non-1 items
+      - Close on second click or on continue
+
+      ## 2. SR Visibility After Wrong Answer (FeedbackPanel.jsx)
+      After wrong answer, below explanation, add:
+      "📅 נתראה שוב מחר — חזרה מרווחת מחזקת את הזיכרון"
+      - Only show when !correct
+      - Style: text-[11px] text-frost-white/30 mt-2 flex items-center gap-1.5
+
+      ## 3. SR Banner on HomePage (HomePage.jsx)
+      When srDueCount > 0, show prominent card above books grid:
+      "🧠 יש לך X תרגילים לחזרה מרווחת"
+      - Clickable, triggers existing SpacedReview modal
+      - Style: glass-card with Brain icon, dusty-aqua accent
+      - Read HomePage.jsx to find where srDueCount is computed and where to insert
+
+      ## 4. Scenario Confirmation Step (Scenario.jsx)
+      Currently auto-submits on click (handleSelect calls onAnswer immediately).
+      Change to two-step:
+      - First click: setSelected(index) only, highlight the option
+      - Show a "בדוק" (Check) button after selection
+      - Check button calls onAnswer with selected index
+      - Match the button pattern from other exercises (gold bg, rounded-2xl, min-h-[48px])
+
+      Read each file first. In LessonPage.jsx, pass eventMultiplier to FeedbackPanel (line 246 has the multiplier already computed).
+    }
+    tools: ["Read", "Glob", "Grep", "Edit"]
+    timeout: 10m
+  }
+
+  agent mobile-ux {
+    model: sonnet
+    phase: 1
+    description: "Fixes Match exercise layout on mobile and audits touch targets"
+    prompt {
+      You are a mobile UX specialist for MindSet, a Duolingo-style gamified book learning app (React 19 + Tailwind 4, Hebrew RTL-first).
+      Project root: C:/Users/saraa/OneDrive/שולחן העבודה/mindset/
+
+      Implement these mobile UX improvements:
+
+      ## 1. Match Exercise Scrollable Grid (Match.jsx)
+      When pairs > 5, the 2-column grid is cramped on mobile.
+      - Wrap the match grid in a scrollable container: max-h-[55vh] overflow-y-auto
+      - Only apply scroll constraint when exercise.pairs.length > 5
+      - Keep the "בדוק" button OUTSIDE the scroll container
+      - Add rounded-lg to the scroll container for clean edges
+
+      ## 2. Touch Target Audit
+      Read ALL exercise components and verify touch targets >= 44px:
+      - src/components/exercises/MultipleChoice.jsx
+      - src/components/exercises/FillBlank.jsx
+      - src/components/exercises/Compare.jsx
+      - src/components/exercises/Improve.jsx
+      - src/components/exercises/Match.jsx
+      - src/components/exercises/SortOrder.jsx
+      - src/components/exercises/Identify.jsx
+      - src/components/exercises/Scenario.jsx
+      Fix any violations by adding min-h-[44px] to interactive elements.
+
+      Read each file first, then implement changes.
+    }
+    tools: ["Read", "Glob", "Grep", "Edit"]
+    timeout: 10m
+  }
+
+  agent polish-ux {
+    model: sonnet
+    phase: 1
+    description: "Combo milestone popups, accessibility announcements, error state polish"
+    prompt {
+      You are a UX polish specialist for MindSet, a Duolingo-style gamified book learning app (React 19 + Tailwind 4, Hebrew RTL-first).
+      Project root: C:/Users/saraa/OneDrive/שולחן העבודה/mindset/
+
+      Implement these polish improvements:
+
+      ## 1. Combo Milestone Toasts (LessonPage.jsx)
+      In handleAnswer, after incrementing combo, check milestones:
+      - combo 5: toast.success('רצף x5! אלוף!')
+      - combo 10: toast.success('רצף x10! בלתי ניתן לעצירה!')
+      - combo 15: toast.success('רצף x15! אגדי!')
+      - combo 20: toast.success('רצף x20! מאסטר!')
+      useToast is already imported. Place toast calls after combo calculation (around line 243).
+
+      ## 2. Screen Reader Announcements (LessonPage.jsx)
+      useAnnounce is already imported. Add announce() calls:
+      - On combo milestone: announce(`רצף ${newCombo} תשובות נכונות!`)
+      - On heart loss (wrong answer flow): announce(`נשארו ${player.hearts - 1} לבבות`)
+      - On XP earned: announce(`הרווחת ${totalXP} נקודות ניסיון`)
+
+      ## 3. Error State Polish (ExerciseRouter.jsx)
+      The exercise-not-found fallback is basic text. Improve:
+      - Add AlertTriangle icon from lucide-react
+      - Wrap in glass-card container
+      - Add "חזור לספר" button that navigates back
+      - Import useNavigate from react-router-dom
+
+      Read each file first, then implement. Be careful with LessonPage.jsx — other agents also modify it, so make minimal, targeted edits.
+    }
+    tools: ["Read", "Glob", "Grep", "Edit"]
+    timeout: 10m
+  }
+
+  agent ux-fixer {
+    model: opus
+    phase: 2
+    description: "Merges and verifies all UX improvements, resolves conflicts"
+    join: all
+    prompt {
+      You receive reports from 4 UX specialist agents. Your job:
+      1. Verify all changes were applied correctly
+      2. Resolve any merge conflicts in shared files (LessonPage.jsx, FeedbackPanel.jsx, ExerciseRouter.jsx)
+      3. Run npm run build to verify no errors
+      4. Run npm run lint to check code quality
+      5. Fix any issues found
+
+      Key shared files to check:
+      - LessonPage.jsx: engagement (combo tiers, streak, failure tracking) + feedback (eventMultiplier prop) + polish (milestone toasts, announces)
+      - FeedbackPanel.jsx: feedback (XP breakdown, SR message)
+      - ExerciseRouter.jsx: engagement (failure escalation) + polish (error state)
+    }
+    tools: ["Read", "Glob", "Grep", "Edit", "Bash(npm run build)", "Bash(npm run lint)"]
+    timeout: 15m
+  }
+
+  flow {
+    engagement-ux -> ux-fixer
+    feedback-ux -> ux-fixer
+    mobile-ux -> ux-fixer
+    polish-ux -> ux-fixer
+  }
+}

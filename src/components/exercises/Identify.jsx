@@ -164,7 +164,7 @@ export default function Identify({ exercise, onAnswer, disabled }) {
           <button
             onClick={clearSelection}
             aria-label="נקה בחירה (Escape)"
-            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-frost-white/30 hover:text-frost-white/60 hover:bg-white/5 transition-all"
+            className="flex items-center gap-1 px-3 py-2 rounded-lg text-xs text-frost-white/30 hover:text-frost-white/60 hover:bg-white/5 transition-all min-h-[44px]"
           >
             <X className="w-3 h-3" />
             נקה

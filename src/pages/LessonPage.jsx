@@ -15,7 +15,7 @@ import LevelUpOverlay from '../components/feedback/LevelUpOverlay'
 import AchievementPopup from '../components/feedback/AchievementPopup'
 import OutOfHeartsModal from '../components/modals/OutOfHeartsModal'
 import PurchaseModal from '../components/modals/PurchaseModal'
-import { X, Heart, Zap, Timer } from 'lucide-react'
+import { X, Heart, Zap, Timer, Flame } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
@@ -149,6 +149,8 @@ export default function LessonPage() {
   const [showPurchase, setShowPurchase] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
+  const [comboTier, setComboTier] = useState(0)
+  const [wrongCountForExercise, setWrongCountForExercise] = useState(0)
   const [floatingXP, setFloatingXP] = useState(null)
   const [timerEnabled, setTimerEnabled] = useState(false)
   const timerTimeLeft = useRef(TIMER_DURATION)
@@ -209,6 +211,11 @@ export default function LessonPage() {
       announce(`תרגיל ${currentIndex + 1} מתוך ${exercises.length}: ${typeName}`)
     }
   }, [currentIndex, currentExercise, exercises.length, announce])
+
+  // Reset wrong count when exercise advances
+  useEffect(() => {
+    setWrongCountForExercise(0)
+  }, [currentIndex])
   useEffect(() => {
     if (!hasReset.current) {
       updatePlayer(prev => ({ ...prev, comboStreak: 0 }))
@@ -246,6 +253,8 @@ export default function LessonPage() {
       const multiplier = getXPMultiplier()
       const totalXP = Math.round((XP_CORRECT_ANSWER + bonus) * multiplier) + speedBonus
 
+      announce(`תשובה נכונה! הרווחת ${totalXP} נקודות ניסיון`)
+
       if (speedBonus > 0) {
         setTotalSpeedBonus(prev => prev + speedBonus)
         // Track cumulative speed bonus
@@ -259,8 +268,20 @@ export default function LessonPage() {
       setFeedback({ correct: true, explanation })
 
       // Show mini confetti — bigger burst on high combos
+      const tier = newCombo >= 10 ? 3 : newCombo >= 5 ? 2 : 0
+      setComboTier(tier)
       setShowConfetti(true)
-      setTimeout(() => setShowConfetti(false), newCombo >= 5 ? 1000 : 700)
+      const confettiDuration = newCombo >= 10 ? 2000 : newCombo >= 5 ? 1200 : 700
+      setTimeout(() => { setShowConfetti(false); setComboTier(0) }, confettiDuration)
+
+      // Combo milestone celebrations
+      if (newCombo === 5) toast.success('🔥 רצף x5! אלוף!')
+      if (newCombo === 10) toast.success('⚡ רצף x10! בלתי ניתן לעצירה!')
+      if (newCombo === 15) toast.success('💎 רצף x15! אגדי!')
+      if (newCombo === 20) toast.success('👑 רצף x20! מאסטר!')
+      if ([5, 10, 15, 20].includes(newCombo)) {
+        announce(`רצף ${newCombo} תשובות נכונות!`)
+      }
 
       // Show floating XP
       setFloatingXP({ xp: totalXP, combo: newCombo, speedBonus, eventMultiplier: multiplier })
@@ -282,7 +303,9 @@ export default function LessonPage() {
       // Haptic feedback — stronger for wrong
       if (navigator.vibrate) navigator.vibrate([50, 30, 80])
       onWrongAnswer()
+      announce(`תשובה שגויה. נשארו ${Math.max(0, (player.hearts || 0) - 1)} לבבות`)
       setMistakes(m => m + 1)
+      setWrongCountForExercise(prev => prev + 1)
       setFeedback({ correct: false, explanation })
 
       // Add to review queue
@@ -484,6 +507,14 @@ export default function LessonPage() {
               <Timer className="w-4.5 h-4.5" />
             </button>
 
+            {/* Streak */}
+            {player.currentStreak > 0 && (
+              <div className="flex items-center gap-0.5">
+                <Flame className="w-[14px] h-[14px] text-warning fill-warning" />
+                <span className="text-xs font-bold text-warning">{player.currentStreak}</span>
+              </div>
+            )}
+
             {/* Hearts */}
             <div className="flex items-center gap-1 text-danger">
               <Heart className="w-4 h-4 fill-current" />
@@ -515,7 +546,7 @@ export default function LessonPage() {
         {currentExercise && (
           <div
             key={currentIndex}
-            className={transitioning ? 'animate-exercise-exit' : 'animate-exercise-enter'}
+            className={`${transitioning ? 'animate-exercise-exit' : 'animate-exercise-enter'} ${comboTier >= 2 ? 'ring-2 ring-gold/40 transition-all duration-300' : ''}`}
           >
             <ExerciseRouter
               exercise={currentExercise}
@@ -523,6 +554,7 @@ export default function LessonPage() {
               disabled={!!feedback}
               tokens={player.tokens}
               onUseToken={handleUseToken}
+              wrongCount={wrongCountForExercise}
             />
           </div>
         )}
@@ -536,6 +568,7 @@ export default function LessonPage() {
           onContinue={handleContinue}
           comboStreak={comboStreak}
           speedBonus={feedback.correct && timerEnabled ? getSpeedBonus(timerTimeLeft.current) : 0}
+          eventMultiplier={floatingXP?.eventMultiplier || 1}
         />
       )}
 
@@ -563,6 +596,7 @@ export default function LessonPage() {
             setShowOutOfHearts(false)
             setShowPurchase(true)
           }}
+          reviewCount={player.reviewQueue?.length || 0}
         />
       )}
 

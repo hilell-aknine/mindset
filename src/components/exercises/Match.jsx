@@ -89,7 +89,7 @@ export default function Match({ exercise, onAnswer, disabled }) {
         {matchedPairs.length > 0 && !disabled && (
           <button
             onClick={undoLastPair}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-frost-white/40 hover:text-frost-white/70 hover:bg-white/5 transition-all"
+            className="flex items-center gap-1 px-3 py-2 rounded-lg text-xs text-frost-white/40 hover:text-frost-white/70 hover:bg-white/5 transition-all min-h-[44px]"
           >
             <Undo2 className="w-3 h-3" />
             בטל
@@ -109,7 +109,8 @@ export default function Match({ exercise, onAnswer, disabled }) {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-6">
+      <div className={exercise.pairs.length > 5 ? 'max-h-[55vh] overflow-y-auto sm:max-h-none sm:overflow-visible rounded-lg mb-6' : 'mb-6'}>
+      <div className="grid grid-cols-2 gap-2 sm:gap-3">
         {/* Left column */}
         <div className="space-y-2" role="group" aria-label="צד ימין — בחר ראשון">
           {exercise.pairs.map((pair, i) => {
@@ -175,6 +176,7 @@ export default function Match({ exercise, onAnswer, disabled }) {
             )
           })}
         </div>
+      </div>
       </div>
 
       {/* Manual check button (fallback if auto-check timing issue) */}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { CheckCircle, XCircle, Zap, Lightbulb, Star } from 'lucide-react'
 import { getComboLabel, getComboBonus, XP_CORRECT_ANSWER } from '../../config/constants'
 
@@ -15,9 +15,10 @@ const WRONG_ENCOURAGEMENTS = [
   'כמעט! נסה שוב.',
 ]
 
-export default function FeedbackPanel({ correct, explanation, onContinue, comboStreak = 0, speedBonus = 0 }) {
+export default function FeedbackPanel({ correct, explanation, onContinue, comboStreak = 0, speedBonus = 0, eventMultiplier = 1 }) {
   const showCombo = correct && comboStreak >= 3
   const btnRef = useRef(null)
+  const [showXPBreakdown, setShowXPBreakdown] = useState(false)
 
   const randomMessage = useMemo(() => {
     const arr = correct ? CORRECT_MESSAGES : WRONG_ENCOURAGEMENTS
@@ -36,6 +37,7 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
     const handleKey = (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault()
+        setShowXPBreakdown(false)
         onContinue()
       }
     }
@@ -89,9 +91,39 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
               )}
               {/* XP earned badge */}
               {correct && earnedXP > 0 && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gold/10 border border-gold/20 animate-bounce-in">
+                <span
+                  className="relative inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gold/10 border border-gold/20 animate-bounce-in cursor-pointer"
+                  onClick={() => setShowXPBreakdown(!showXPBreakdown)}
+                >
                   <Star className="w-3.5 h-3.5 text-gold fill-current" />
                   <span className="text-[11px] font-bold text-gold-text">+{earnedXP} XP</span>
+                  {showXPBreakdown && (
+                    <div className="absolute bottom-full mb-2 right-0 glass-card p-3 rounded-xl min-w-[160px] text-right space-y-1.5 animate-fade-in z-50">
+                      <p className="text-[10px] font-bold text-frost-white/50 mb-1">פירוט XP</p>
+                      <div className="flex justify-between text-[11px]">
+                        <span className="text-gold-text font-bold">+{XP_CORRECT_ANSWER}</span>
+                        <span className="text-frost-white/40">בסיס</span>
+                      </div>
+                      {getComboBonus(comboStreak) > 0 && (
+                        <div className="flex justify-between text-[11px]">
+                          <span className="text-warning font-bold">+{getComboBonus(comboStreak)}</span>
+                          <span className="text-frost-white/40">בונוס רצף</span>
+                        </div>
+                      )}
+                      {speedBonus > 0 && (
+                        <div className="flex justify-between text-[11px]">
+                          <span className="text-dusty-aqua font-bold">+{speedBonus}</span>
+                          <span className="text-frost-white/40">בונוס מהירות</span>
+                        </div>
+                      )}
+                      {eventMultiplier > 1 && (
+                        <div className="flex justify-between text-[11px]">
+                          <span className="text-success font-bold">x{eventMultiplier}</span>
+                          <span className="text-frost-white/40">אירוע מיוחד</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </span>
               )}
             </div>
@@ -103,13 +135,18 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
                 </p>
               </div>
             )}
+            {!correct && (
+              <p className="text-[11px] text-frost-white/30 mt-2 flex items-center gap-1.5">
+                <span>📅</span> נתראה שוב מחר — חזרה מרווחת מחזקת את הזיכרון
+              </p>
+            )}
           </div>
         </div>
 
         {/* Continue button — 48px minimum height for mobile */}
         <button
           ref={btnRef}
-          onClick={onContinue}
+          onClick={() => { setShowXPBreakdown(false); onContinue() }}
           className={`w-full py-4 rounded-2xl font-bold text-base transition-all hover:opacity-90 active:scale-[0.98] relative overflow-hidden ${
             correct
               ? 'bg-success text-white'

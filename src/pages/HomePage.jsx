@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
-import { BookOpen, Trophy, Flame, RotateCcw, BarChart2, Settings, Zap, Target, Crown, X, Sparkles } from 'lucide-react'
+import { BookOpen, Trophy, Flame, RotateCcw, BarChart2, Settings, Zap, Target, Crown, X, Sparkles, Brain } from 'lucide-react'
 import { getNextAchievements, CATEGORIES } from '../lib/achievements'
 import DailyChallenge from '../components/DailyChallenge'
 import SpacedReview from '../components/SpacedReview'
@@ -259,6 +259,23 @@ export default function HomePage() {
       <div className="mb-4">
         <StreakFreeze />
       </div>
+
+      {/* SR prominent banner above books grid */}
+      {srDueCount > 0 && (
+        <button
+          onClick={() => setShowSpacedReview(true)}
+          className="w-full glass-card p-4 flex items-center gap-3 border-dusty-aqua/20 hover:border-dusty-aqua/40 transition-all active:scale-[0.99] mb-4"
+        >
+          <div className="w-10 h-10 rounded-xl bg-dusty-aqua/15 flex items-center justify-center shrink-0">
+            <Brain className="w-5 h-5 text-dusty-aqua" />
+          </div>
+          <div className="text-right flex-1">
+            <p className="text-sm font-bold text-frost-white">יש לך {srDueCount} תרגילים לחזרה</p>
+            <p className="text-[11px] text-frost-white/40">חזרות מרווחות מחזקות זיכרון ב-200%</p>
+          </div>
+          <RotateCcw className="w-4 h-4 text-dusty-aqua/50" />
+        </button>
+      )}
 
       {/* Books grid */}
       <div className="grid gap-4" data-spotlight="books">
