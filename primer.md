@@ -3,13 +3,14 @@
 
 ## Current State
 - **Status:** Active
-- **Last task completed:** UX improvements via AgenTopology (10 changes across 9 files)
-- **Next planned task:** Manual QA of all UX changes, then git push to deploy
+- **Last task completed:** Registered 4 missing books (grit, power-of-now, seven-habits, thinking-fast-slow) across all 7 app files
+- **Next planned task:** Generate cover images for 4 new books, then git push to deploy
 - **Blocking issues:** None
 
 ## Recent Changes
 | Date | What Changed | Files Affected |
 |------|-------------|----------------|
+| 2026-04-06 | Registered 4 missing books in all 7 app files | HomePage, BookPage, LessonPage, PlayerContext, ReviewPage, LandingPage, achievements.js |
 | 2026-04-06 | UX improvements via mindset-ux.at topology | OutOfHeartsModal, Header, LessonPage, FeedbackPanel, ExerciseRouter, Scenario, Match, Identify, HomePage |
 | 2026-04-06 | Brain architecture installed | CLAUDE.md, primer.md, hindsight.md |
 | 2026-04-06 | Supabase schema deployed (8 tables + RLS) | sql/mindset-schema.sql (run on remote DB) |
@@ -28,5 +29,6 @@
 - `ANTHROPIC_API_KEY` is server-side only (Vercel env)
 
 ## Open Questions
-- 10 books exist in JSON but only 6 registered in Supabase seed — need to seed remaining 4
+- Missing cover images for 4 new books: `/books/grit.png`, `/books/power-of-now.png`, `/books/seven-habits.png`, `/books/thinking-fast-slow.png` (fallback to emoji icons works)
+- Missing background images for 4 new books (BOOK_COVERS + bookImages maps not populated — emoji fallback active)
 - Missing images: `/books/indistractable.png`, `/backgrounds/focus-shield.png`

@@ -4,8 +4,12 @@ import mindsetBook from '../data/books/mindset-book.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import indistractable from '../data/books/indistractable.json'
+import grit from '../data/books/grit.json'
+import powerOfNow from '../data/books/power-of-now.json'
+import sevenHabits from '../data/books/seven-habits.json'
+import thinkingFastSlow from '../data/books/thinking-fast-slow.json'
 
-const ALL_BOOKS = [atomicHabits, happyChemicals, mindsetBook, nextFiveMoves, strengthsFinder, indistractable]
+const ALL_BOOKS = [atomicHabits, happyChemicals, mindsetBook, nextFiveMoves, strengthsFinder, indistractable, grit, powerOfNow, sevenHabits, thinkingFastSlow]
 const TOTAL_LESSONS = ALL_BOOKS.reduce((sum, book) => sum + book.chapters.reduce((s, ch) => s + ch.lessons.length, 0), 0)
 
 // Rarity tiers with colors

@@ -12,9 +12,13 @@ import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
 import mindsetBook from '../data/books/mindset-book.json'
 import indistractable from '../data/books/indistractable.json'
+import grit from '../data/books/grit.json'
+import powerOfNow from '../data/books/power-of-now.json'
+import sevenHabits from '../data/books/seven-habits.json'
+import thinkingFastSlow from '../data/books/thinking-fast-slow.json'
 
-const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook, 'indistractable': indistractable }
-const BOOKS_LIST = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable]
+const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook, 'indistractable': indistractable, 'grit': grit, 'power-of-now': powerOfNow, 'seven-habits': sevenHabits, 'thinking-fast-slow': thinkingFastSlow }
+const BOOKS_LIST = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable, grit, powerOfNow, sevenHabits, thinkingFastSlow]
 
 export default function ReviewPage() {
   const navigate = useNavigate()
