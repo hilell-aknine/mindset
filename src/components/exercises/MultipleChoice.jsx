@@ -1,11 +1,15 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { checkAnswer } from '../../lib/gameEngine'
+import { useToast } from '../../contexts/ToastContext'
 
 const LETTERS = ['א', 'ב', 'ג', 'ד']
 
 export default function MultipleChoice({ exercise, onAnswer, disabled }) {
   const [selected, setSelected] = useState(null)
   const [eliminated, setEliminated] = useState([]) // Wrong attempts that are crossed out
+  const [shaking, setShaking] = useState(false)
+  const toast = useToast()
+  const btnRef = useRef(null)
 
   const handleSelect = useCallback((index) => {
     if (disabled || eliminated.includes(index)) return
@@ -20,16 +24,29 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
       if (num >= 1 && num <= exercise.options.length) {
         handleSelect(num - 1)
       }
-      if (e.key === 'Enter' && selected !== null) {
-        handleCheck()
+      if (e.key === 'Enter') {
+        if (selected !== null) {
+          handleCheck()
+        } else {
+          triggerShake()
+        }
       }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [disabled, exercise.options.length, handleSelect, selected])
 
+  const triggerShake = () => {
+    setShaking(true)
+    toast.info('בחר תשובה תחילה')
+    setTimeout(() => setShaking(false), 400)
+  }
+
   const handleCheck = () => {
-    if (selected === null) return
+    if (selected === null) {
+      triggerShake()
+      return
+    }
     const correct = checkAnswer(exercise, selected)
 
     if (!correct && eliminated.length === 0 && exercise.options.length > 2) {
@@ -96,13 +113,13 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
 
       {!disabled && (
         <button
+          ref={btnRef}
           onClick={handleCheck}
-          disabled={selected === null}
           aria-label="בדוק תשובה (Enter)"
-          className={`w-full py-4 rounded-2xl font-bold text-base transition-all active:scale-[0.98] min-h-[52px] ${
+          className={`w-full py-4 rounded-2xl font-bold text-base transition-all min-h-[52px] ${
             selected !== null
-              ? 'bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 animate-pulse-ready'
-              : 'bg-white/10 text-frost-white/30 cursor-not-allowed opacity-50 border border-white/10'
+              ? 'bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 active:scale-[0.98] animate-pulse-ready'
+              : `bg-white/10 text-frost-white/30 cursor-not-allowed opacity-40 border border-white/10 ${shaking ? 'animate-shake' : ''}`
           }`}
         >
           בדוק תשובה

@@ -41,7 +41,7 @@ export default function OutOfTokensModal({ onClose }) {
       <div className="glass-card max-w-sm w-full p-6 text-center animate-fade-in" role="dialog" aria-label="נגמרו הטוקנים">
         <img
           src="/backgrounds/locked-books.png"
-          alt=""
+          alt="נגמרו הטוקנים"
           className="w-24 h-24 rounded-2xl object-cover mx-auto mb-4 shadow-lg shadow-gold/10"
         />
         <h3 className="font-display text-xl font-bold text-frost-white mb-2">נגמרה האנרגיה!</h3>

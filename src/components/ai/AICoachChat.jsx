@@ -83,7 +83,7 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
         <div className="flex items-center gap-2">
-          <img src="/backgrounds/ai-coach.png" alt="" className="w-8 h-8 rounded-lg object-cover" />
+          <img src="/backgrounds/ai-coach.png" alt="מאמן AI" className="w-8 h-8 rounded-lg object-cover" />
           <div>
             <p className="text-sm font-bold text-frost-white">מאמן AI</p>
             <div className="flex items-center gap-1">

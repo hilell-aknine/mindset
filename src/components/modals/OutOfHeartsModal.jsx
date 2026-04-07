@@ -39,7 +39,7 @@ export default function OutOfHeartsModal({ onClose, reviewCount = 0 }) {
         {/* Broken hourglass image */}
         <img
           src="/backgrounds/broken-hourglass.png"
-          alt=""
+          alt="נגמרו הלבבות"
           className="w-24 h-24 rounded-2xl object-cover mx-auto mb-4 shadow-lg shadow-danger/10 animate-fade-in"
         />
 

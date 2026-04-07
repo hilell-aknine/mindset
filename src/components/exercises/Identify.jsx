@@ -181,7 +181,7 @@ export default function Identify({ exercise, onAnswer, disabled }) {
             className={`w-full py-4 rounded-2xl font-bold text-base min-h-[52px] transition-all active:scale-[0.98] ${
               selection
                 ? 'bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90 animate-pulse-ready'
-                : 'bg-white/10 text-frost-white/30 cursor-not-allowed opacity-50 border border-white/10'
+                : 'bg-white/10 text-frost-white/30 cursor-not-allowed opacity-40 border border-white/10'
             }`}
           >
             בדוק
