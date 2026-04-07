@@ -128,7 +128,7 @@ export default function LeaderboardPage() {
   const isDemotion = myRank >= demotionCutoff && prevLeague
 
   return (
-    <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
+    <main className="flex-1 max-w-2xl mx-auto w-full px-4 pt-6 pb-24">
       {/* Header */}
       <div className="flex items-center gap-3 mb-5 animate-fade-in">
         <button

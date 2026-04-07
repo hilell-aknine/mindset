@@ -164,6 +164,7 @@ export default function LessonPage() {
   const [totalSpeedBonus, setTotalSpeedBonus] = useState(() => savedProgress?.totalSpeedBonus || 0)
   const [halfwayShown, setHalfwayShown] = useState(false)
   const autoAdvanceRef = useRef(null)
+  const scrollAreaRef = useRef(null)
 
   const currentExercise = exercises[currentIndex]
   const progress = exercises.length > 0 ? ((currentIndex + 0.5) / exercises.length) * 100 : 0
@@ -185,7 +186,6 @@ export default function LessonPage() {
       setLevelUp(null)
       setNewAchievement(null)
       setShowOutOfHearts(false)
-      setShowPurchase(false)
       setTransitioning(false)
       setShowConfetti(false)
       setFloatingXP(null)
@@ -219,9 +219,10 @@ export default function LessonPage() {
     }
   }, [currentIndex, currentExercise, exercises.length, announce])
 
-  // Reset wrong count when exercise advances
+  // Reset wrong count and scroll to top when exercise advances
   useEffect(() => {
     setWrongCountForExercise(0)
+    scrollAreaRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
   }, [currentIndex])
   useEffect(() => {
     if (!hasReset.current) {
@@ -464,13 +465,8 @@ export default function LessonPage() {
       {floatingXP && <XPFloat xp={floatingXP.xp} combo={floatingXP.combo} speedBonus={floatingXP.speedBonus} eventMultiplier={floatingXP.eventMultiplier} />}
 
       {/* Top bar */}
-      <div className="sticky top-0 z-40 bg-bg-base/90 backdrop-blur-lg px-4 py-3 border-b border-white/5">
-        <div className="max-w-2xl mx-auto space-y-2">
-          {/* Lesson title */}
-          <div className="flex items-center gap-2 px-1">
-            <span className="text-sm">{book.icon}</span>
-            <p className="text-[10px] text-frost-white/30 truncate min-w-0">{chapter?.title} — {lesson.title}</p>
-          </div>
+      <div className="sticky top-0 z-40 bg-bg-base/90 backdrop-blur-lg px-4 py-2 border-b border-white/5">
+        <div className="max-w-2xl mx-auto space-y-1.5">
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate(`/book/${bookSlug}`)}
@@ -549,7 +545,7 @@ export default function LessonPage() {
       </div>
 
       {/* Exercise with slide animation */}
-      <div className="flex-1 min-h-0 max-w-2xl mx-auto w-full px-4 py-6 overflow-y-auto overscroll-contain scroll-momentum" style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}>
+      <div ref={scrollAreaRef} className={`flex-1 min-h-0 max-w-2xl mx-auto w-full px-4 pt-4 overflow-y-auto overscroll-contain scroll-momentum ${feedback ? 'pb-48' : 'pb-6'}`} style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}>
         {currentExercise && (
           <div
             key={currentIndex}

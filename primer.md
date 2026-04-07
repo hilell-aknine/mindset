@@ -1,15 +1,16 @@
 # Primer — MindSet
-> Last updated: 2026-04-06 by Claude Code
+> Last updated: 2026-04-07 by Claude Code
 
 ## Current State
 - **Status:** Active
-- **Last task completed:** Fixed 9 UX audit issues (light mode contrast, disabled buttons, alt text, footer, nav, scroll)
+- **Last task completed:** Fixed scroll/navigation issues — ScrollToTop, bottom padding, lesson page scroll, BottomNav onboarding hide, removed dead setShowPurchase call
 - **Next planned task:** Generate cover images for 4 new books, verify light mode fixes live
 - **Blocking issues:** None
 
 ## Recent Changes
 | Date | What Changed | Files Affected |
 |------|-------------|----------------|
+| 2026-04-07 | Scroll & navigation fixes: ScrollToTop, bottom padding, lesson scroll, BottomNav hides during onboarding, compact top bar | App.jsx, ScrollToTop.jsx, BottomNav.jsx, LessonPage.jsx, ReviewPage.jsx, LeaderboardPage, StatsPage, SettingsPage, WorkbookPage |
 | 2026-04-07 | UX audit: 4 critical, 5 high, 4 medium issues | Report at C:\Users\saraa\ux-audit\UX-AUDIT-REPORT.md |
 | 2026-04-06 | Removed all pricing/premium/locked UI (14 files) | BookPage, LessonPage, OutOfHeartsModal, OutOfTokensModal, AICoachButton, AIScenarioChat, AICoachChat, StreakFreeze, WorkbookPage, SettingsPage, LandingPage, Footer, SettingsTab, PlayerContext |
 | 2026-04-06 | Registered 4 missing books in all 7 app files | HomePage, BookPage, LessonPage, PlayerContext, ReviewPage, LandingPage, achievements.js |

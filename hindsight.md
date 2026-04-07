@@ -28,6 +28,27 @@ Each entry follows:
 - **Fix:** Added policy `auth.jwt() ->> 'email' = 'hillelaknine@gmail.com'` for SELECT on mindset_users
 - **Rule:** When adding admin features that query all rows, always add an admin RLS policy. MindSet uses email whitelist (not profiles table).
 
+### React Router doesn't scroll to top on navigation
+- **Date:** 2026-04-07
+- **Problem:** Navigating between pages keeps scroll position from previous page — user lands mid-page
+- **Root Cause:** React Router v7 doesn't auto-reset scroll position on route change
+- **Fix:** Added `ScrollToTop` component that calls `window.scrollTo(0, 0)` on pathname change
+- **Rule:** Always add ScrollToTop to React Router apps. It's not built-in.
+
+### BottomNav visible during onboarding
+- **Date:** 2026-04-07
+- **Problem:** BottomNav overlapped the onboarding "המשך" button and allowed navigating away mid-onboarding
+- **Root Cause:** BottomNav only hid for `/` and `/lesson` — didn't check `player.onboardingComplete`
+- **Fix:** Added `!player.onboardingComplete` to BottomNav's shouldHide condition
+- **Rule:** BottomNav should always check auth + onboarding state, not just pathname.
+
+### Dead state setter crashes on lesson navigation
+- **Date:** 2026-04-07
+- **Problem:** `setShowPurchase(false)` in LessonPage reset effect — function doesn't exist after pricing removal
+- **Root Cause:** Leftover from the pricing/premium removal sweep (2026-04-06) that missed this line
+- **Fix:** Removed the dead `setShowPurchase(false)` call
+- **Rule:** After bulk feature removal, grep for ALL state setters of removed state, not just the `useState` declarations.
+
 ### Vercel CLI broken with Hebrew team name
 - **Date:** 2026-03-22
 - **Problem:** Vercel CLI throws "not a legal HTTP header value" error

@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { usePlayer } from '../../contexts/PlayerContext'
 import { Home, RotateCcw, BarChart2, Settings, Trophy } from 'lucide-react'
+import { useAuth } from '../../contexts/AuthContext'
 
 const NAV_ITEMS = [
   { path: '/settings', icon: Settings, label: 'הגדרות' },
@@ -14,14 +15,15 @@ export default function BottomNav() {
   const navigate = useNavigate()
   const location = useLocation()
   const { player } = usePlayer()
+  const { isAuthenticated } = useAuth()
 
   const reviewCount = (player.reviewQueue || []).length
 
-  // Don't show on lesson page, landing, onboarding
+  // Don't show on lesson page, landing, onboarding, or when not authenticated
   const hiddenPaths = ['/', '/lesson']
   const shouldHide = hiddenPaths.some(p =>
     p === '/' ? location.pathname === '/' : location.pathname.startsWith(p)
-  )
+  ) || !isAuthenticated || !player.onboardingComplete
   if (shouldHide) return null
 
   return (
