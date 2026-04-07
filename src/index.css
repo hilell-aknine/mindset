@@ -438,18 +438,17 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
   scroll-snap-align: center;
 }
 
-/* Touch action for better mobile scrolling */
+/* Touch delay removal for specific elements */
 .no-touch-delay {
-  touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
 /* ─── MOBILE UX FOUNDATIONS ─── */
 
-/* Global touch optimization — eliminate 300ms tap delay & highlight */
+/* Global touch optimization */
 @layer base {
+  /* Remove tap highlight on touch devices */
   button, a, [role="button"], [role="radio"], input, select, textarea {
-    touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
 
@@ -459,13 +458,8 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
     text-size-adjust: 100%;
   }
 
-  /* Prevent overscroll bounce on iOS (applied to body, not root for modals) */
+  /* Prevent overscroll bounce */
   body {
-    overscroll-behavior-y: contain;
-  }
-
-  /* Prevent pull-to-refresh on Chrome Android */
-  #root {
     overscroll-behavior-y: contain;
   }
 
@@ -479,7 +473,7 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
     scroll-behavior: smooth;
   }
 
-  /* Prevent text selection on interactive game elements (not glass-card — blocks touch scroll) */
+  /* Prevent text selection on interactive game elements */
   button, [role="radio"], [role="radiogroup"] {
     -webkit-user-select: none;
     user-select: none;
@@ -509,12 +503,12 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
   animation: pageEnter 0.25s ease-out forwards;
 }
 
-/* Active press state for all interactive cards */
-.press-scale {
-  transition: transform 0.1s ease-out;
-}
-.press-scale:active {
-  transform: scale(0.97);
+/* Active press state — only visual, doesn't block scroll */
+@media (hover: hover) {
+  .press-scale:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease-out;
+  }
 }
 
 /* iOS momentum scrolling for overflow containers */
@@ -531,8 +525,8 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
 }
 
 /* Ensure main content areas are scrollable on touch */
-main, [class*="has-bottom-nav"] {
-  touch-action: pan-y pan-x;
+main {
+  touch-action: auto;
 }
 
 /* Bottom nav active indicator */

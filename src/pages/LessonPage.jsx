@@ -545,7 +545,7 @@ export default function LessonPage() {
       </div>
 
       {/* Exercise with slide animation */}
-      <div ref={scrollAreaRef} className={`flex-1 min-h-0 max-w-2xl mx-auto w-full px-4 pt-4 overflow-y-auto overscroll-contain scroll-momentum ${feedback ? 'pb-48' : 'pb-6'}`} style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}>
+      <div ref={scrollAreaRef} className={`flex-1 min-h-0 max-w-2xl mx-auto w-full px-4 pt-4 overflow-y-auto overscroll-contain scroll-momentum ${feedback ? 'pb-48' : 'pb-6'}`}>
         {currentExercise && (
           <div
             key={currentIndex}
