@@ -37,7 +37,7 @@ export default function WorkbookPage() {
   }
 
   return (
-    <main className="flex-1 max-w-2xl mx-auto w-full px-4 pt-6 pb-24">
+    <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
       {/* Header (hidden in print) */}
       <div className="flex items-center justify-between mb-6 animate-fade-in print:hidden">
         <div className="flex items-center gap-3">

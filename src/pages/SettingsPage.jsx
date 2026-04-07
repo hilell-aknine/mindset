@@ -111,7 +111,7 @@ export default function SettingsPage() {
     : 0
 
   return (
-    <main className="flex-1 max-w-2xl mx-auto w-full px-4 pt-6 pb-24">
+    <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6 animate-fade-in">
         <button

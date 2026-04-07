@@ -33,6 +33,7 @@ html.light .glass-card {
   background: var(--color-bg-card);
   border-color: rgba(0, 0, 0, 0.08);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(12px);
 }
 html.light .glass-card:hover {
   background: var(--color-bg-card-hover);
@@ -141,16 +142,16 @@ html.light .progress-shimmer {
 :focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(100%); }
-  to { opacity: 1; transform: none; }
+  to { opacity: 1; transform: translateY(0); }
 }
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: none; }
+  to { opacity: 1; transform: translateY(0); }
 }
 @keyframes pulse-glow {
   0%, 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0.4); }
@@ -235,7 +236,7 @@ html.light .progress-shimmer {
   50% { box-shadow: 0 0 12px 4px rgba(47, 133, 146, 0.15); }
 }
 
-.animate-fade-in { animation: fadeIn 0.4s ease-out; }
+.animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
 .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
 .animate-slide-down { animation: slideDown 0.3s ease-out forwards; }
 .animate-shake { animation: shake 0.5s ease-in-out; }
@@ -329,6 +330,7 @@ html.light .progress-shimmer {
 
 .glass-card {
   background: var(--color-bg-card);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 16px;
 }
@@ -436,17 +438,18 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
   scroll-snap-align: center;
 }
 
-/* Touch delay removal for specific elements */
+/* Touch action for better mobile scrolling */
 .no-touch-delay {
+  touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
 /* ─── MOBILE UX FOUNDATIONS ─── */
 
-/* Global touch optimization */
+/* Global touch optimization — eliminate 300ms tap delay & highlight */
 @layer base {
-  /* Remove tap highlight on touch devices */
   button, a, [role="button"], [role="radio"], input, select, textarea {
+    touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
 
@@ -456,8 +459,13 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
     text-size-adjust: 100%;
   }
 
-  /* Prevent overscroll bounce */
+  /* Prevent overscroll bounce on iOS (applied to body, not root for modals) */
   body {
+    overscroll-behavior-y: contain;
+  }
+
+  /* Prevent pull-to-refresh on Chrome Android */
+  #root {
     overscroll-behavior-y: contain;
   }
 
@@ -471,7 +479,7 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
     scroll-behavior: smooth;
   }
 
-  /* Prevent text selection on interactive game elements */
+  /* Prevent text selection on interactive game elements (not glass-card — blocks touch scroll) */
   button, [role="radio"], [role="radiogroup"] {
     -webkit-user-select: none;
     user-select: none;
@@ -494,19 +502,19 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
 
 /* Page transition */
 @keyframes pageEnter {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .animate-page-enter {
-  animation: pageEnter 0.2s ease-out;
+  animation: pageEnter 0.25s ease-out forwards;
 }
 
-/* Active press state — only visual, doesn't block scroll */
-@media (hover: hover) {
-  .press-scale:active {
-    transform: scale(0.97);
-    transition: transform 0.1s ease-out;
-  }
+/* Active press state for all interactive cards */
+.press-scale {
+  transition: transform 0.1s ease-out;
+}
+.press-scale:active {
+  transform: scale(0.97);
 }
 
 /* iOS momentum scrolling for overflow containers */
@@ -523,8 +531,8 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
 }
 
 /* Ensure main content areas are scrollable on touch */
-main {
-  touch-action: auto;
+main, [class*="has-bottom-nav"] {
+  touch-action: pan-y pan-x;
 }
 
 /* Bottom nav active indicator */

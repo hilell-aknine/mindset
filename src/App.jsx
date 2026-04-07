@@ -14,7 +14,6 @@ import ErrorBoundary from './components/ErrorBoundary'
 import AdminGuard from './components/admin/AdminGuard'
 import { AnnouncerProvider } from './components/Announcer'
 import InstallPrompt from './components/InstallPrompt'
-import ScrollToTop from './components/ScrollToTop'
 
 // Lazy-loaded pages for code splitting
 const HomePage = lazy(() => import('./pages/HomePage'))
@@ -106,7 +105,7 @@ function PageLayout({ children, hideFooter = false }) {
   return (
     <>
       <Header />
-      <div className="animate-page-enter">
+      <div className="animate-page-enter has-bottom-nav">
         {children}
       </div>
       {!hideFooter && <Footer />}
@@ -162,7 +161,6 @@ export default function App() {
   return (
     <ErrorBoundary>
       <AnnouncerProvider>
-      <ScrollToTop />
       <Toast />
       <OfflineDetector />
       <BottomNav />

@@ -109,7 +109,7 @@ export default function ReviewPage() {
   // Empty state
   if (reviewExercises.length === 0) {
     return (
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 pt-6 pb-24">
+      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
         <div className="flex items-center gap-3 mb-6 animate-fade-in">
           <button onClick={() => navigate('/home')} className="p-2.5 -m-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors">
             <ArrowRight className="w-5 h-5 text-frost-white/60" />
@@ -156,7 +156,7 @@ export default function ReviewPage() {
   // All reviewed
   if (currentIndex >= reviewExercises.length) {
     return (
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 pt-6 pb-24">
+      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
         <div className="text-center py-16">
           <div className="w-20 h-20 rounded-3xl bg-success/10 mx-auto mb-4 flex items-center justify-center animate-bounce-in">
             <Trophy className="w-10 h-10 text-success" />
@@ -226,7 +226,7 @@ export default function ReviewPage() {
       </div>
 
       {/* Exercise */}
-      <div className={`flex-1 max-w-2xl mx-auto w-full px-4 pt-4 ${feedback ? 'pb-48' : 'pb-6'}`}>
+      <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
         {current && (
           <>
             {/* Source info */}
