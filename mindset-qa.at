@@ -1,0 +1,150 @@
+topology mindset-qa : [fan-out] {
+  meta {
+    version: "1.0.0"
+    description: "QA audit for MindSet gamified learning app — validates exercises, UX, and game engine"
+    domain: education
+    timeout: 30m
+  }
+
+  settings {
+    allow: ["Read", "Glob", "Grep", "Agent", "Bash(npm run build)", "Bash(npm run lint)", "Edit"]
+    deny: ["Bash(rm *)", "Bash(git push *)"]
+  }
+
+  agent exercise-validator {
+    model: sonnet
+    phase: 1
+    description: "Validates all 468 exercises across 6 books for correctness"
+    prompt {
+      You are a QA specialist for a gamified learning app (Duolingo-style for books).
+
+      Your job: Read every JSON file in src/data/books/*.json and validate EVERY exercise.
+
+      For each exercise check:
+      1. multiple-choice: "correct" index is within bounds of "options" array. The correct answer actually matches the explanation. wrongExplanations has exactly 4 items with null at the correct index.
+      2. fill-blank: "correct" index is within bounds of "options". The blank (_) in "template" makes sense with the correct option.
+      3. order: "correctOrder" has same length as "items". All indices are valid.
+      4. compare: "correct" is exactly "A" or "B". optionA and optionB exist.
+      5. match: "pairs" array has objects with "left" and "right" keys.
+      6. improve: "correct" index is within bounds of "options". "text" or "original" field exists.
+      7. identify: "correctStart" and "correctEnd" are valid character positions in "text". "correctText" matches the substring.
+
+      Also check:
+      - Every exercise has a "context" field (non-empty string)
+      - Every exercise has a "question" field
+      - Every exercise has an "explanation" field
+      - No Hebrew typos in questions/explanations (obvious broken words)
+      - Chapter 0 of each book has isFree: true
+
+      Output a structured report:
+      - Total exercises checked
+      - Errors found (with book slug, chapter, lesson, exercise index, and what's wrong)
+      - Warnings (suspicious but not broken)
+
+      Focus especially on the NEW book "indistractable.json" — it was just added and needs thorough review.
+    }
+    tools: ["Read", "Glob", "Grep"]
+    timeout: 10m
+  }
+
+  agent ux-auditor {
+    model: sonnet
+    phase: 1
+    description: "Audits React components for UX issues, accessibility, and mobile responsiveness"
+    prompt {
+      You are a UX auditor for a React 19 + Tailwind CSS gamified learning app.
+
+      Audit these key files for UX quality:
+      - src/pages/BookPage.jsx — book detail page with chapters grid
+      - src/pages/HomePage.jsx — library dashboard
+      - src/pages/LessonPage.jsx — exercise player (most critical UX)
+      - src/pages/LandingPage.jsx — marketing page
+      - src/components/feedback/LessonComplete.jsx — completion screen
+      - src/components/modals/PurchaseModal.jsx — payment flow
+      - src/components/layout/Header.jsx — navigation
+
+      Check for:
+      1. RTL issues — Hebrew text must flow right-to-left correctly
+      2. Mobile responsiveness — touch targets >= 44px, no horizontal overflow
+      3. Accessibility — ARIA labels, focus management, keyboard navigation
+      4. New book integration — "indistractable" appears correctly in all lists/maps
+      5. Missing fallbacks — images that don't exist (focus-shield.png, indistractable.png)
+      6. Broken references — imports that point to missing files
+      7. Console errors potential — null checks on data, optional chaining where needed
+
+      Output a prioritized list: CRITICAL > HIGH > MEDIUM > LOW.
+    }
+    tools: ["Read", "Glob", "Grep"]
+    timeout: 10m
+  }
+
+  agent game-engine-qa {
+    model: sonnet
+    phase: 1
+    description: "Verifies game engine logic — XP, hearts, streaks, levels, spaced repetition"
+    prompt {
+      You are a game mechanics QA engineer. Audit the MindSet game engine.
+
+      Key files:
+      - src/lib/gameEngine.js — exercise validation logic for all 7 types
+      - src/config/constants.js — XP values, levels, hearts, tokens, pricing
+      - src/contexts/PlayerContext.jsx — all game state management
+      - src/lib/events.js — XP multipliers, streak milestones
+      - src/lib/achievements.js — achievement system
+
+      Verify:
+      1. gameEngine.js handles ALL 7 exercise types correctly (multiple-choice, fill-blank, order, compare, match, improve, identify)
+      2. XP calculations are consistent between constants.js and PlayerContext
+      3. Heart recovery timer logic (20min per heart, max 5)
+      4. Level thresholds make sense (0→100→250→500→1000→2000→4000→8000)
+      5. Streak calculation doesn't break on timezone edge cases
+      6. Token limits enforce correctly (3 free daily, 50 per book purchase)
+      7. The new indistractable book works with the existing unlock/purchase system
+      8. Spaced repetition intervals are correctly applied
+      9. Combo system awards bonus XP correctly
+
+      Output: list of bugs, logic errors, or edge cases that could break gameplay.
+    }
+    tools: ["Read", "Glob", "Grep"]
+    timeout: 10m
+  }
+
+  agent fixer {
+    model: opus
+    phase: 2
+    description: "Fixes all issues found by the three QA agents"
+    join: all
+    prompt {
+      You are a senior developer fixing bugs found by QA auditors in a React 19 + Vite + Tailwind gamified learning app.
+
+      You will receive reports from three QA agents:
+      1. Exercise Validator — broken exercises in JSON files
+      2. UX Auditor — UI/accessibility issues in React components
+      3. Game Engine QA — logic bugs in game mechanics
+
+      Your job:
+      - Fix ALL CRITICAL and HIGH issues
+      - Fix MEDIUM issues if they are quick fixes
+      - Skip LOW/cosmetic issues
+      - For exercise JSON fixes: be precise with indices and Hebrew text
+      - For React fixes: maintain existing code style (Tailwind classes, RTL patterns)
+      - After fixing, run: npm run build to verify no build errors
+
+      IMPORTANT:
+      - Do NOT refactor or restructure code — only fix bugs
+      - Do NOT add new features
+      - Do NOT change design or styling unless it's broken
+      - Preserve all existing functionality
+
+      Output: list of files changed and what was fixed in each.
+    }
+    tools: ["Read", "Glob", "Grep", "Edit", "Bash(npm run build)", "Bash(npm run lint)"]
+    timeout: 15m
+  }
+
+  flow {
+    exercise-validator -> fixer
+    ux-auditor -> fixer
+    game-engine-qa -> fixer
+  }
+}

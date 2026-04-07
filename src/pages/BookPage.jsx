@@ -126,6 +126,16 @@ export default function BookPage() {
         )}
       </div>
 
+      {/* About this book */}
+      {book.description && (
+        <div className="glass-card p-4 mb-4 animate-fade-in text-right" style={{ animationDelay: '0.03s' }}>
+          <p className="text-sm text-frost-white/70 leading-relaxed">{book.description}</p>
+          {book.audience && (
+            <p className="text-xs text-dusty-aqua mt-2 font-medium">{book.audience}</p>
+          )}
+        </div>
+      )}
+
       {/* Book progress card with stats */}
       <div className="glass-card p-4 mb-4 animate-fade-in" style={{ animationDelay: '0.05s' }}>
         <div className="flex items-center justify-between mb-3">

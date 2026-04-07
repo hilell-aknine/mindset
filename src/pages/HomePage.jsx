@@ -317,6 +317,7 @@ export default function HomePage() {
               <div className="flex-1 min-w-0 overflow-hidden">
                 <h3 className="font-display text-base sm:text-lg font-bold text-frost-white truncate">{book.title}</h3>
                 <p className="text-xs text-frost-white/40 mt-0.5">{book.author}</p>
+                {book.audience && <p className="text-[11px] text-frost-white/30 mt-0.5 truncate">{book.audience}</p>}
                 <div className="mt-2 flex items-center gap-2">
                   <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
                     <div
