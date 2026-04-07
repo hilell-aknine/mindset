@@ -33,7 +33,6 @@ html.light .glass-card {
   background: var(--color-bg-card);
   border-color: rgba(0, 0, 0, 0.08);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  backdrop-filter: blur(12px);
 }
 html.light .glass-card:hover {
   background: var(--color-bg-card-hover);
@@ -236,7 +235,7 @@ html.light .progress-shimmer {
   50% { box-shadow: 0 0 12px 4px rgba(47, 133, 146, 0.15); }
 }
 
-.animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+.animate-fade-in { animation: fadeIn 0.4s ease-out; }
 .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
 .animate-slide-down { animation: slideDown 0.3s ease-out forwards; }
 .animate-shake { animation: shake 0.5s ease-in-out; }
@@ -499,7 +498,7 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
   to { opacity: 1; }
 }
 .animate-page-enter {
-  animation: pageEnter 0.2s ease-out forwards;
+  animation: pageEnter 0.2s ease-out;
 }
 
 /* Active press state — only visual, doesn't block scroll */
