@@ -142,8 +142,8 @@ html.light .progress-shimmer {
 :focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: none; }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(100%); }
@@ -495,11 +495,11 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
 
 /* Page transition */
 @keyframes pageEnter {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: none; }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .animate-page-enter {
-  animation: pageEnter 0.25s ease-out forwards;
+  animation: pageEnter 0.2s ease-out forwards;
 }
 
 /* Active press state — only visual, doesn't block scroll */

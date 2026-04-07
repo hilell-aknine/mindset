@@ -141,7 +141,7 @@ export default function HomePage() {
       {srDueCount > 0 && (
         <button
           onClick={() => setShowSpacedReview(true)}
-          className="w-full glass-card p-4 mb-4 flex items-center gap-3 animate-fade-in transition-all border-dusty-aqua/20 hover:border-dusty-aqua/30 bg-dusty-aqua/5"
+          className="w-full glass-card p-4 mb-4 flex items-center gap-3 animate-fade-in transition-colors border-dusty-aqua/20 hover:border-dusty-aqua/30 bg-dusty-aqua/5"
           style={{ animationDelay: '0.03s' }}
         >
           <img
@@ -184,7 +184,7 @@ export default function HomePage() {
         </div>
         <div className="h-2 rounded-full bg-white/5 overflow-hidden">
           <div
-            className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-700"
+            className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-colors duration-700"
             style={{ width: `${weeklyProgress}%` }}
           />
         </div>
@@ -225,7 +225,7 @@ export default function HomePage() {
               return (
                 <div className="mt-2 h-1.5 rounded-full bg-white/5 overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-warning/60 transition-all"
+                    className="h-full rounded-full bg-warning/60 transition-colors"
                     style={{ width: `${Math.min(pct, 100)}%` }}
                   />
                 </div>
@@ -239,7 +239,7 @@ export default function HomePage() {
       <button
         data-spotlight="daily"
         onClick={() => setShowDailyChallenge(true)}
-        className={`w-full glass-card p-4 mb-6 flex items-center gap-3 animate-fade-in transition-all hover:border-gold/20 ${
+        className={`w-full glass-card p-4 mb-6 flex items-center gap-3 animate-fade-in transition-colors hover:border-gold/20 ${
           dailyCompleted ? 'border-success/20' : 'border-gold/10 animate-pulse-glow'
         }`}
         style={{ animationDelay: '0.15s' }}
@@ -273,7 +273,7 @@ export default function HomePage() {
       {srDueCount > 0 && (
         <button
           onClick={() => setShowSpacedReview(true)}
-          className="w-full glass-card p-4 flex items-center gap-3 border-dusty-aqua/20 hover:border-dusty-aqua/40 transition-all active:scale-[0.99] mb-4"
+          className="w-full glass-card p-4 flex items-center gap-3 border-dusty-aqua/20 hover:border-dusty-aqua/40 transition-colors active:scale-[0.99] mb-4"
         >
           <div className="w-10 h-10 rounded-xl bg-dusty-aqua/15 flex items-center justify-center shrink-0">
             <Brain className="w-5 h-5 text-dusty-aqua" />
@@ -320,7 +320,7 @@ export default function HomePage() {
                 <div className="mt-2 flex items-center gap-2">
                   <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-500"
+                      className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-colors duration-500"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -337,7 +337,7 @@ export default function HomePage() {
         {/* Review */}
         <button
           onClick={() => navigate('/review')}
-          className="glass-card p-4 flex items-center gap-3 hover:border-gold/20 active:bg-white/5 press-scale transition-all animate-fade-in"
+          className="glass-card p-4 flex items-center gap-3 hover:border-gold/20 active:bg-white/5 press-scale transition-colors animate-fade-in"
           style={{ animationDelay: '0.4s' }}
         >
           <div className="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center shrink-0">
@@ -354,7 +354,7 @@ export default function HomePage() {
         {/* Leaderboard */}
         <button
           onClick={() => navigate('/leaderboard')}
-          className="glass-card p-4 flex items-center gap-3 hover:border-gold/20 active:bg-white/5 press-scale transition-all animate-fade-in"
+          className="glass-card p-4 flex items-center gap-3 hover:border-gold/20 active:bg-white/5 press-scale transition-colors animate-fade-in"
           style={{ animationDelay: '0.43s' }}
         >
           <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center shrink-0">
