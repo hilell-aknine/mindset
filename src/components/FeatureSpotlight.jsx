@@ -42,6 +42,9 @@ const TIPS = [
 ]
 
 export default function FeatureSpotlight() {
+  // Disabled — backdrop was blocking touch scroll on Android mobile
+  return null
+
   const { player, updatePlayer } = usePlayer()
   const [currentTip, setCurrentTip] = useState(0)
   const [visible, setVisible] = useState(false)
