@@ -97,17 +97,9 @@ export default function FeatureSpotlight() {
 
   return (
     <>
-      {/* Backdrop — pointer-events-none so it doesn't block scroll */}
+      {/* Tooltip card — no backdrop overlay to avoid blocking scroll */}
       <div
-        className={`fixed inset-0 z-50 bg-bg-base/70 backdrop-blur-sm transition-opacity duration-300 pointer-events-none ${
-          exiting ? 'opacity-0' : 'opacity-100'
-        }`}
-        aria-hidden="true"
-      />
-
-      {/* Tooltip card */}
-      <div
-        className={`fixed bottom-6 left-4 right-4 z-50 max-w-sm mx-auto transition-all duration-300 pointer-events-auto ${
+        className={`fixed bottom-20 left-4 right-4 z-50 max-w-sm mx-auto transition-all duration-300 ${
           exiting ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'
         }`}
       >
