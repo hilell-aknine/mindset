@@ -511,6 +511,12 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
   overflow-y: auto;
   touch-action: pan-y;
 }
+/* Allow vertical scroll inside lesson exercise area even on touch elements */
+.scroll-momentum button,
+.scroll-momentum [role="radio"],
+.scroll-momentum [role="radiogroup"] {
+  touch-action: pan-y;
+}
 
 /* Ensure main content areas are scrollable on touch */
 main, [class*="has-bottom-nav"] {
