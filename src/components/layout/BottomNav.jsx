@@ -1,10 +1,11 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { usePlayer } from '../../contexts/PlayerContext'
-import { Home, BookOpen, RotateCcw, BarChart2, Settings } from 'lucide-react'
+import { Home, RotateCcw, BarChart2, Settings, Trophy } from 'lucide-react'
 
 const NAV_ITEMS = [
   { path: '/settings', icon: Settings, label: 'הגדרות' },
   { path: '/stats', icon: BarChart2, label: 'סטטיסטיקות' },
+  { path: '/leaderboard', icon: Trophy, label: 'מובילים' },
   { path: '/review', icon: RotateCcw, label: 'חזרה', badgeKey: 'review' },
   { path: '/home', icon: Home, label: 'בית' },
 ]
