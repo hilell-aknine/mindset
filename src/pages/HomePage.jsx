@@ -300,8 +300,7 @@ export default function HomePage() {
             <button
               key={book.slug}
               onClick={() => navigate(`/book/${book.slug}`)}
-              className="glass-card p-4 flex items-center gap-3 text-right hover:border-gold/20 active:bg-white/5 press-scale transition-all group overflow-hidden w-full animate-fade-in min-h-[72px]"
-              style={{ animationDelay: `${0.2 + idx * 0.05}s` }}
+              className="glass-card p-4 flex items-center gap-3 text-right hover:border-gold/20 active:bg-white/5 group overflow-hidden w-full min-h-[72px]"
             >
               {BOOK_COVERS[book.slug] ? (
                 <img
