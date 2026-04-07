@@ -50,10 +50,10 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-40 border-t animate-bottom-sheet ${
+      className={`fixed bottom-0 left-0 right-0 z-40 border-t animate-bottom-sheet backdrop-blur-xl ${
         correct
-          ? 'bg-[#0a0a12]/95 border-success/20'
-          : 'bg-[#0a0a12]/95 border-danger/20 animate-shake'
+          ? 'bg-bg-base/95 border-success/20'
+          : 'bg-bg-base/95 border-danger/20 animate-shake'
       }`}
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       role="status"
@@ -130,7 +130,7 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
             {explanation && (
               <div className={`flex items-start gap-2 mt-2 ${!correct ? 'bg-white/3 rounded-xl p-3 -mx-1' : ''}`}>
                 {!correct && <Lightbulb className="w-4 h-4 text-warning shrink-0 mt-0.5" />}
-                <p className="text-sm text-frost-white/60 leading-relaxed">
+                <p className="text-sm text-frost-white/70 leading-relaxed">
                   {explanation}
                 </p>
               </div>
