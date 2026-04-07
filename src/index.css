@@ -515,7 +515,7 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
 .scroll-momentum button,
 .scroll-momentum [role="radio"],
 .scroll-momentum [role="radiogroup"] {
-  touch-action: pan-y;
+  touch-action: pan-y !important;
 }
 
 /* Ensure main content areas are scrollable on touch */
