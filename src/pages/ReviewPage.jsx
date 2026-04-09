@@ -106,15 +106,20 @@ export default function ReviewPage() {
     return null
   }, [player.completedLessons])
 
-  // Empty state
+  // Empty state — differentiate new users from users who cleared their queue
+  const hasEverCompleted = Object.keys(player.completedLessons || {}).length > 0
   if (reviewExercises.length === 0) {
     return (
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
         <div className="flex items-center gap-3 mb-6 animate-fade-in">
-          <button onClick={() => navigate('/home')} className="p-2.5 -m-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors">
+          <button
+            onClick={() => navigate('/home')}
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors"
+            aria-label="חזרה לדף הבית"
+          >
             <ArrowRight className="w-5 h-5 text-frost-white/60" />
           </button>
-          <h2 className="font-display text-xl font-bold text-frost-white">חזרה</h2>
+          <h1 className="font-display text-xl font-bold text-frost-white">חזרה</h1>
         </div>
         <div className="text-center py-16 animate-fade-in">
           <img
@@ -122,8 +127,14 @@ export default function ReviewPage() {
             alt=""
             className="w-28 h-28 rounded-3xl object-cover mx-auto mb-4 shadow-lg shadow-gold/10"
           />
-          <h3 className="font-display text-xl font-bold text-frost-white mb-2">אין תרגילים לחזרה!</h3>
-          <p className="text-sm text-frost-white/40 mb-6">כל התשובות שלך נכונות. כל הכבוד!</p>
+          <h3 className="font-display text-xl font-bold text-frost-white mb-2">
+            {hasEverCompleted ? 'אין תרגילים לחזרה!' : 'תור החזרה ריק'}
+          </h3>
+          <p className="text-sm text-frost-white/40 mb-6">
+            {hasEverCompleted
+              ? 'כל התשובות שלך נכונות. כל הכבוד!'
+              : 'השלם שיעורים כדי לבנות תור חזרה. כל תשובה שגויה תתווסף לכאן.'}
+          </p>
 
           {nextLesson && (
             <button
@@ -218,7 +229,7 @@ export default function ReviewPage() {
               />
             </div>
           </div>
-          <span className="text-xs text-frost-white/30">{currentIndex + 1}/{reviewExercises.length}</span>
+          <span className="text-xs text-frost-white/30">{Math.min(currentIndex + 1, reviewExercises.length)}/{reviewExercises.length}</span>
           {completed > 0 && (
             <span className="text-[10px] text-success font-bold">{completed} ✓</span>
           )}

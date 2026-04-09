@@ -1,7 +1,9 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { GripVertical, ChevronUp, ChevronDown, Check } from 'lucide-react'
+import { useAnnounce } from '../Announcer'
 
 export default function SortOrder({ exercise, onAnswer, disabled }) {
+  const announce = useAnnounce()
   const [items, setItems] = useState(() =>
     exercise.items.map((text, i) => ({ text, originalIndex: i, id: `item-${i}` }))
   )
@@ -58,12 +60,15 @@ export default function SortOrder({ exercise, onAnswer, disabled }) {
     setItems(newItems)
     setLastMoved(movedItem.id)
     setTimeout(() => setLastMoved(null), 400)
+    // Announce move to screen readers
+    announce(`${movedItem.text} הועבר למיקום ${newIndex + 1} מתוך ${items.length}`)
     // Haptic feedback on mobile if available
     if (navigator.vibrate) navigator.vibrate(30)
-  }, [items, disabled])
+  }, [items, disabled, announce])
 
   // Touch support
   const touchStart = useRef(null)
+  const listRef = useRef(null)
 
   const handleTouchStart = (index, e) => {
     if (disabled) return
@@ -72,20 +77,27 @@ export default function SortOrder({ exercise, onAnswer, disabled }) {
     if (navigator.vibrate) navigator.vibrate(20)
   }
 
-  const handleTouchMove = (e) => {
-    if (!touchStart.current) return
-    e.preventDefault()
-    const touch = e.touches[0]
-    const elements = document.querySelectorAll('[data-sort-item]')
-    for (let i = 0; i < elements.length; i++) {
-      const rect = elements[i].getBoundingClientRect()
-      if (touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
-        dragOverItem.current = i
-        setDropTarget(i)
-        break
+  // Attach touchmove with passive:false so preventDefault() actually blocks page scroll
+  useEffect(() => {
+    const el = listRef.current
+    if (!el) return
+    const handleTouchMove = (e) => {
+      if (!touchStart.current) return
+      e.preventDefault()
+      const touch = e.touches[0]
+      const elements = document.querySelectorAll('[data-sort-item]')
+      for (let i = 0; i < elements.length; i++) {
+        const rect = elements[i].getBoundingClientRect()
+        if (touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+          dragOverItem.current = i
+          setDropTarget(i)
+          break
+        }
       }
     }
-  }
+    el.addEventListener('touchmove', handleTouchMove, { passive: false })
+    return () => el.removeEventListener('touchmove', handleTouchMove)
+  }, [])
 
   const handleTouchEnd = () => {
     if (touchStart.current !== null && dragOverItem.current !== null) {
@@ -112,8 +124,8 @@ export default function SortOrder({ exercise, onAnswer, disabled }) {
       <p className="text-xs text-frost-white/40 mb-4">גרור או השתמש בחצים כדי לסדר</p>
 
       <div
+        ref={listRef}
         className="space-y-2 mb-6"
-        onTouchMove={handleTouchMove}
         role="list"
         aria-label="פריטים לסידור"
       >
@@ -180,7 +192,7 @@ export default function SortOrder({ exercise, onAnswer, disabled }) {
                   <button
                     onClick={(e) => { e.stopPropagation(); moveItem(index, -1) }}
                     disabled={index === 0}
-                    className="p-1 rounded-lg hover:bg-white/10 disabled:opacity-20 transition-colors active:scale-90"
+                    className="min-w-[44px] min-h-[36px] p-2 rounded-lg hover:bg-white/10 disabled:opacity-20 transition-colors active:scale-90 flex items-center justify-center"
                     aria-label={`הזז "${item.text}" למעלה`}
                   >
                     <ChevronUp className="w-3.5 h-3.5 text-frost-white/40" />
@@ -188,7 +200,7 @@ export default function SortOrder({ exercise, onAnswer, disabled }) {
                   <button
                     onClick={(e) => { e.stopPropagation(); moveItem(index, 1) }}
                     disabled={index === items.length - 1}
-                    className="p-1 rounded-lg hover:bg-white/10 disabled:opacity-20 transition-colors active:scale-90"
+                    className="min-w-[44px] min-h-[36px] p-2 rounded-lg hover:bg-white/10 disabled:opacity-20 transition-colors active:scale-90 flex items-center justify-center"
                     aria-label={`הזז "${item.text}" למטה`}
                   >
                     <ChevronDown className="w-3.5 h-3.5 text-frost-white/40" />

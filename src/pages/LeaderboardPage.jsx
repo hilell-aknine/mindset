@@ -5,7 +5,7 @@ import { ArrowRight, Trophy, Medal, Crown, TrendingUp, ChevronUp, ChevronDown, S
 
 // 10-tier league system (Duolingo-style)
 const LEAGUES = [
-  { name: 'ברונזה', emoji: '🥉', color: 'text-[#cd7f32]', bg: 'bg-[#cd7f32]/10', border: 'border-[#cd7f32]/20', minXP: 0 },
+  { name: 'ברונזה', emoji: '🥉', color: 'text-[#e59866]', bg: 'bg-[#e59866]/10', border: 'border-[#e59866]/20', minXP: 0 },
   { name: 'כסף', emoji: '🥈', color: 'text-gray-300', bg: 'bg-gray-300/10', border: 'border-gray-300/20', minXP: 200 },
   { name: 'זהב', emoji: '🥇', color: 'text-gold', bg: 'bg-gold/10', border: 'border-gold/20', minXP: 500 },
   { name: 'ספיר', emoji: '💎', color: 'text-blue-400', bg: 'bg-blue-400/10', border: 'border-blue-400/20', minXP: 1000 },
@@ -56,14 +56,14 @@ function generatePlayers(userXP) {
 function getRankIcon(rank) {
   if (rank === 1) return <Crown className="w-5 h-5 text-gold fill-gold" />
   if (rank === 2) return <Medal className="w-5 h-5 text-frost-white/60" />
-  if (rank === 3) return <Medal className="w-5 h-5 text-[#cd7f32]" />
+  if (rank === 3) return <Medal className="w-5 h-5 text-[#e59866]" />
   return <span className="text-xs font-bold text-frost-white/30 w-5 text-center">{rank}</span>
 }
 
 function getRankBg(rank) {
   if (rank === 1) return 'border-gold/30 bg-gold/5'
   if (rank === 2) return 'border-frost-white/15 bg-frost-white/[0.02]'
-  if (rank === 3) return 'border-[#cd7f32]/20 bg-[#cd7f32]/5'
+  if (rank === 3) return 'border-[#e59866]/20 bg-[#e59866]/5'
   return ''
 }
 
@@ -124,8 +124,10 @@ export default function LeaderboardPage() {
   // Promotion zone: top 7, demotion zone: bottom 5
   const promotionCutoff = 7
   const demotionCutoff = totalPlayers - 4
-  const isPromotion = myRank <= promotionCutoff && nextLeague
-  const isDemotion = myRank >= demotionCutoff && prevLeague
+  // New users (0 XP, never played) shouldn't be flagged for demotion on their first visit
+  const isNewUser = player.xp === 0 && (player.weeklyXP || 0) === 0
+  const isPromotion = !isNewUser && myRank <= promotionCutoff && nextLeague
+  const isDemotion = !isNewUser && myRank >= demotionCutoff && prevLeague
 
   return (
     <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
@@ -138,7 +140,7 @@ export default function LeaderboardPage() {
         >
           <ArrowRight className="w-5 h-5 text-frost-white/60" />
         </button>
-        <h2 className="font-display text-xl font-bold text-frost-white">טבלת מובילים</h2>
+        <h1 className="font-display text-xl font-bold text-frost-white">טבלת מובילים</h1>
       </div>
 
       {/* Season timer */}
@@ -265,7 +267,7 @@ export default function LeaderboardPage() {
           const p = leaderboard[podiumIdx]
           if (!p) return null
           const heights = ['h-24', 'h-16', 'h-12']
-          const colors = ['from-gold/20 to-gold/5 border-gold/30', 'from-frost-white/10 to-frost-white/5 border-frost-white/15', 'from-[#cd7f32]/15 to-[#cd7f32]/5 border-[#cd7f32]/20']
+          const colors = ['from-gold/20 to-gold/5 border-gold/30', 'from-frost-white/10 to-frost-white/5 border-frost-white/15', 'from-[#e59866]/15 to-[#e59866]/5 border-[#e59866]/20']
           const podiumDelays = ['0.1s', '0.2s', '0.3s']
           const actualRank = podiumIdx + 1
           return (
@@ -276,7 +278,7 @@ export default function LeaderboardPage() {
               <div className={`w-full ${heights[podiumIdx]} rounded-t-xl bg-gradient-to-t ${colors[podiumIdx]} border border-b-0 flex items-start justify-center pt-1`}>
                 {actualRank === 1 && <Crown className="w-5 h-5 text-gold" />}
                 {actualRank === 2 && <Medal className="w-4 h-4 text-frost-white/60" />}
-                {actualRank === 3 && <Medal className="w-4 h-4 text-[#cd7f32]" />}
+                {actualRank === 3 && <Medal className="w-4 h-4 text-[#e59866]" />}
               </div>
             </div>
           )
@@ -284,13 +286,13 @@ export default function LeaderboardPage() {
       </div>
 
       {/* Leaderboard list */}
-      <div className="space-y-1.5">
+      <ol className="space-y-1.5 list-none p-0 m-0" aria-label="דירוג שחקנים">
         {leaderboard.map((p, i) => {
           const inPromotionZone = p.rank <= promotionCutoff && nextLeague
           const inDemotionZone = p.rank >= demotionCutoff && prevLeague
 
           return (
-            <div key={i}>
+            <li key={i}>
               {/* Promotion zone divider */}
               {p.rank === promotionCutoff + 1 && nextLeague && (
                 <div className="flex items-center gap-2 my-2 px-2">
@@ -350,10 +352,10 @@ export default function LeaderboardPage() {
                 {p.xp.toLocaleString()}
               </span>
             </div>
-            </div>
+            </li>
           )
         })}
-      </div>
+      </ol>
 
       {/* League info */}
       <div className="glass-card p-4 mt-6 animate-fade-in" style={{ animationDelay: '0.8s' }}>

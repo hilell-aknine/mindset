@@ -70,7 +70,7 @@ export default function ExerciseHelp({ exerciseType }) {
     <div className="relative inline-block" ref={popoverRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="w-8 h-8 rounded-full glass-card flex items-center justify-center text-frost-white/40 hover:text-frost-white/70 hover:border-white/20 transition-all"
+        className="w-11 h-11 rounded-full glass-card flex items-center justify-center text-frost-white/40 hover:text-frost-white/70 hover:border-white/20 transition-all"
         aria-label="עזרה לתרגיל"
         aria-expanded={open}
       >
@@ -79,17 +79,18 @@ export default function ExerciseHelp({ exerciseType }) {
 
       {open && (
         <div
-          className="absolute top-10 left-0 z-50 w-64 glass-card p-4 animate-fade-in border border-white/10"
-          role="tooltip"
+          className="absolute top-12 left-0 z-50 w-64 max-w-[calc(100vw-2rem)] max-h-[80vh] overflow-y-auto glass-card p-4 animate-fade-in border border-white/10"
+          role="region"
+          aria-label="עזרה לתרגיל"
         >
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-gold">{help.title}</span>
             <button
               onClick={() => setOpen(false)}
-              className="p-1 rounded hover:bg-white/10 transition-colors"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded hover:bg-white/10 transition-colors"
               aria-label="סגור עזרה"
             >
-              <X className="w-3 h-3 text-frost-white/40" />
+              <X className="w-4 h-4 text-frost-white/40" />
             </button>
           </div>
           <p className="text-xs text-frost-white/60 leading-relaxed mb-2">

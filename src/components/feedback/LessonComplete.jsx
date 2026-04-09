@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import ReactConfetti from 'react-confetti'
+import { useEffect, useState, lazy, Suspense } from 'react'
+const ReactConfetti = lazy(() => import('react-confetti'))
 import { Star, Trophy, ArrowLeft, Sparkles, Zap, Timer, Share2, Headphones } from 'lucide-react'
 import { XP_LESSON_COMPLETE, XP_PERFECT_LESSON } from '../../config/constants'
 import { getActiveEvent, getXPMultiplier } from '../../lib/events'
@@ -32,13 +32,17 @@ export default function LessonComplete({ mistakes, totalExercises, onContinue, s
   }, [stars])
 
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-dvh flex flex-col items-center justify-center px-4 py-6 relative overflow-y-auto">
       {showConfetti && (
-        <ReactConfetti
-          recycle={isPerfect}
-          numberOfPieces={isPerfect ? 300 : 150}
-          colors={['#D4AF37', '#22c55e', '#2F8592', '#E8F1F2', '#f59e0b', '#003B46']}
-        />
+        <div aria-hidden="true">
+          <Suspense fallback={null}>
+            <ReactConfetti
+              recycle={isPerfect}
+              numberOfPieces={isPerfect ? 300 : 150}
+              colors={['#D4AF37', '#22c55e', '#2F8592', '#E8F1F2', '#f59e0b', '#003B46']}
+            />
+          </Suspense>
+        </div>
       )}
 
       <div className="text-center animate-fade-in">

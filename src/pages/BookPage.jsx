@@ -48,8 +48,23 @@ export default function BookPage() {
   const book = BOOKS[slug]
   if (!book) {
     return (
-      <main className="flex-1 flex items-center justify-center">
-        <p className="text-frost-white/50">הספר לא נמצא</p>
+      <main className="flex-1 flex flex-col items-center justify-center gap-4 px-6 text-center">
+        <h1 className="text-2xl font-bold text-frost-white">הספר לא נמצא</h1>
+        <p className="text-frost-white/50 text-sm">ייתכן שהספר הוסר או שהקישור שגוי.</p>
+        <div className="flex gap-3 mt-2">
+          <button
+            onClick={() => navigate(-1)}
+            className="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/15 text-frost-white font-semibold min-h-[44px] transition-colors"
+          >
+            חזרה
+          </button>
+          <button
+            onClick={() => navigate('/home')}
+            className="px-5 py-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-semibold min-h-[44px] hover:opacity-90 transition-opacity"
+          >
+            לעמוד הבית
+          </button>
+        </div>
       </main>
     )
   }
@@ -116,7 +131,7 @@ export default function BookPage() {
           <ArrowRight className="w-5 h-5 text-frost-white/60" />
         </button>
         <div className="flex-1">
-          <h2 className="font-display text-xl font-bold text-frost-white">{book.title}</h2>
+          <h1 className="font-display text-xl font-bold text-frost-white">{book.title}</h1>
           <p className="text-xs text-frost-white/40">{book.author}</p>
         </div>
         {BOOK_COVERS[slug] ? (
@@ -392,7 +407,7 @@ export default function BookPage() {
       )}
 
       {/* AI Coach floating button */}
-      <AICoachButton bookSlug={slug} systemPrompt={book.systemPrompt} />
+      <AICoachButton bookSlug={slug} bookTitle={book.title} systemPrompt={book.systemPrompt} />
 
     </main>
   )

@@ -15,7 +15,10 @@ export default function BottomNav() {
   const location = useLocation()
   const { player } = usePlayer()
 
-  const reviewCount = (player.reviewQueue || []).length
+  // Include both manual review queue and due spaced-repetition items
+  const today = new Date().toISOString().split('T')[0]
+  const srDueCount = (player.spacedReviewQueue || []).filter(i => i.nextReviewDate <= today).length
+  const reviewCount = (player.reviewQueue || []).length + srDueCount
 
   // Don't show on lesson page, landing, onboarding
   const hiddenPaths = ['/', '/lesson']
@@ -30,7 +33,7 @@ export default function BottomNav() {
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       aria-label="ניווט ראשי"
     >
-      <div className="max-w-2xl mx-auto flex items-center justify-around px-2">
+      <ul className="max-w-2xl mx-auto flex items-center justify-around px-2 list-none m-0 p-0">
         {NAV_ITEMS.map(item => {
           const isActive = location.pathname === item.path ||
             (item.path === '/home' && location.pathname.startsWith('/book/'))
@@ -38,8 +41,8 @@ export default function BottomNav() {
           const badge = item.badgeKey === 'review' ? reviewCount : 0
 
           return (
+            <li key={item.path}>
             <button
-              key={item.path}
               onClick={() => navigate(item.path)}
               className={`relative flex flex-col items-center justify-center py-2 px-3 min-w-[56px] min-h-[52px] transition-colors ${
                 isActive ? 'text-gold' : 'text-frost-white/30'
@@ -62,9 +65,10 @@ export default function BottomNav() {
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-5 h-0.5 rounded-full bg-gold nav-dot-in" />
               )}
             </button>
+            </li>
           )
         })}
-      </div>
+      </ul>
     </nav>
   )
 }

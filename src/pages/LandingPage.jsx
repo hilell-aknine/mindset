@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../contexts/ToastContext'
+import { useFocusTrap } from '../hooks/useFocusTrap'
 import {
   Brain, BookOpen, Gamepad2, Sparkles, Flame, Heart, Zap,
   RotateCcw, Check, X, ChevronDown, Mail, User, Loader2,
@@ -160,18 +161,9 @@ function useRotatingWord(words, interval = 2800) {
 }
 
 // Simulated live users
+// Honest static label instead of a fake live counter.
 function useLiveUsers() {
-  const [count, setCount] = useState(() => 12 + Math.floor(Math.random() * 8))
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCount(c => {
-        const delta = Math.random() > 0.5 ? 1 : -1
-        return Math.max(8, Math.min(35, c + delta))
-      })
-    }, 5000 + Math.random() * 3000)
-    return () => clearInterval(timer)
-  }, [])
-  return count
+  return 'אלפי'
 }
 
 // Interactive exercise demo
@@ -392,12 +384,14 @@ function PhoneMockup() {
 
 function FAQItem({ question, answer }) {
   const [open, setOpen] = useState(false)
+  const panelId = `faq-panel-${question.replace(/\s+/g, '-').slice(0, 20)}`
   return (
     <div className="glass-card overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between p-4 sm:p-5 text-right"
         aria-expanded={open}
+        aria-controls={panelId}
       >
         <span className="text-sm font-bold text-frost-white flex items-center gap-2">
           <HelpCircle className="w-4 h-4 text-gold shrink-0" />
@@ -405,7 +399,11 @@ function FAQItem({ question, answer }) {
         </span>
         <ChevronDown className={`w-4 h-4 text-frost-white/30 transition-transform shrink-0 ${open ? 'rotate-180' : ''}`} />
       </button>
-      <div className={`transition-all duration-300 overflow-hidden ${open ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+      <div
+        id={panelId}
+        role="region"
+        className={`transition-all duration-300 overflow-hidden ${open ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}
+      >
         <p className="px-4 sm:px-5 pb-4 sm:pb-5 text-sm text-frost-white/50 leading-relaxed pr-10">
           {answer}
         </p>
@@ -450,6 +448,8 @@ export default function LandingPage() {
 
   const openAuth = () => setAuthMode('main')
   const closeAuth = () => { setAuthMode(null); setEmail(''); setPassword('') }
+  const authDialogRef = useRef(null)
+  useFocusTrap(authDialogRef, { onEscape: authMode ? closeAuth : undefined })
 
   const handleGoogle = async () => {
     try {
@@ -551,7 +551,7 @@ export default function LandingPage() {
             <div className="text-center lg:text-right animate-fade-in">
               <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gold/10 border border-gold/20 text-gold text-[11px] sm:text-xs font-medium mb-4 sm:mb-6">
                 <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                100% חינם — כל התכנים פתוחים
+                פרק ראשון חינם לכל ספר
               </div>
               <h1 className="font-display text-[28px] sm:text-5xl lg:text-6xl font-black leading-[1.2] sm:leading-tight mb-3 sm:mb-5">
                 מה אם יכולת{' '}
@@ -1151,10 +1151,16 @@ export default function LandingPage() {
           {/* Backdrop */}
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeAuth} />
 
-          <div className="relative z-10 w-full sm:max-w-sm animate-slide-up">
+          <div
+            ref={authDialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="auth-dialog-title"
+            className="relative z-10 w-full sm:max-w-sm animate-slide-up"
+          >
             <div className="glass-card p-6 border-white/10 bg-bg-base/95 backdrop-blur-xl rounded-b-none sm:rounded-b-2xl safe-bottom">
               {/* Close */}
-              <button onClick={closeAuth} className="absolute top-4 left-4 text-frost-white/40 hover:text-frost-white transition-colors">
+              <button onClick={closeAuth} aria-label="סגור" className="absolute top-4 left-4 min-w-[44px] min-h-[44px] flex items-center justify-center text-frost-white/40 hover:text-frost-white transition-colors">
                 <X className="w-5 h-5" />
               </button>
 
@@ -1162,7 +1168,7 @@ export default function LandingPage() {
                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua mb-3">
                   <Brain className="w-7 h-7 text-frost-white" />
                 </div>
-                <h3 className="font-display text-2xl font-bold">ברוך הבא</h3>
+                <h3 id="auth-dialog-title" className="font-display text-2xl font-bold">ברוך הבא</h3>
                 <p className="text-frost-white/50 text-sm mt-1">התחבר כדי להתחיל ללמוד</p>
               </div>
 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { CheckCircle, XCircle, Zap, Lightbulb, Star } from 'lucide-react'
 import { getComboLabel, getComboBonus, XP_CORRECT_ANSWER } from '../../config/constants'
+import { useAnnounce } from '../Announcer'
 
 const CORRECT_MESSAGES = [
   'מצוין!', 'נכון מאוד!', 'יופי!', 'בול!', 'כל הכבוד!',
@@ -19,6 +20,14 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
   const showCombo = correct && comboStreak >= 3
   const btnRef = useRef(null)
   const [showXPBreakdown, setShowXPBreakdown] = useState(false)
+  const announce = useAnnounce()
+
+  // Announce upcoming auto-advance to screen readers so users aren't surprised
+  useEffect(() => {
+    if (!correct) return
+    const t = setTimeout(() => announce('ממשיך אוטומטית'), 3000)
+    return () => clearTimeout(t)
+  }, [correct, announce])
 
   const randomMessage = useMemo(() => {
     const arr = correct ? CORRECT_MESSAGES : WRONG_ENCOURAGEMENTS
@@ -57,7 +66,7 @@ export default function FeedbackPanel({ correct, explanation, onContinue, comboS
       }`}
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       role="status"
-      aria-live="assertive"
+      aria-live="polite"
     >
       {/* Drag handle hint */}
       <div className="flex justify-center pt-2 pb-1">

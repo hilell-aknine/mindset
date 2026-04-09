@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
+import { useFocusTrap } from '../hooks/useFocusTrap'
 import { BookOpen, Trophy, Flame, RotateCcw, BarChart2, Settings, Zap, Target, Crown, X, Sparkles, Brain } from 'lucide-react'
 import { getNextAchievements, CATEGORIES } from '../lib/achievements'
 import DailyChallenge from '../components/DailyChallenge'
@@ -60,6 +61,9 @@ export default function HomePage() {
   const [showDailyChallenge, setShowDailyChallenge] = useState(false)
   const [showSpacedReview, setShowSpacedReview] = useState(false)
   const [showMilestone, setShowMilestone] = useState(false)
+  const milestoneDialogRef = useRef(null)
+  const closeMilestone = () => { setShowMilestone(false); clearStreakMilestone() }
+  useFocusTrap(milestoneDialogRef, { onEscape: showMilestone ? closeMilestone : undefined })
 
   const reviewCount = (player.reviewQueue || []).length
   const srDueCount = getDueSRItems().length
@@ -107,9 +111,9 @@ export default function HomePage() {
       <PopupModal />
       {/* Welcome */}
       <div className="mb-6 animate-fade-in">
-        <h2 className="font-display text-2xl font-bold text-frost-white mb-1 truncate">
+        <h1 className="font-display text-2xl font-bold text-frost-white mb-1 truncate">
           {timeGreeting}! 👋
-        </h2>
+        </h1>
         <p className="text-frost-white/50 text-sm">
           {streakMotivation}
         </p>
@@ -117,19 +121,32 @@ export default function HomePage() {
 
       {/* Streak Milestone Popup */}
       {showMilestone && streakMilestone && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={() => { setShowMilestone(false); clearStreakMilestone() }}>
-          <div className="glass-card p-8 text-center max-w-sm mx-4 border-gold/30 animate-bounce-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={closeMilestone}>
+          <div
+            ref={milestoneDialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="milestone-title"
+            className="glass-card p-8 text-center max-w-sm mx-4 border-gold/30 animate-bounce-in"
+            onClick={e => e.stopPropagation()}
+          >
             <img
               src={streakMilestone.days >= 100 ? '/backgrounds/lion-flame.png' : streakMilestone.days >= 30 ? '/backgrounds/streak-30.png' : '/backgrounds/golden-chain.png'}
               alt=""
               className="w-24 h-24 rounded-2xl object-cover mx-auto mb-4 shadow-lg shadow-gold/20"
             />
-            <h3 className="font-display text-2xl font-bold text-gold mb-2">{streakMilestone.title}</h3>
+            <h3 id="milestone-title" className="font-display text-2xl font-bold text-gold mb-2">{streakMilestone.title}</h3>
             <p className="text-frost-white/60 text-sm mb-3">{streakMilestone.reward}</p>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/15 border border-gold/30">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/15 border border-gold/30 mb-4">
               <Zap className="w-4 h-4 text-gold" />
               <span className="text-gold font-bold">+{streakMilestone.xpBonus} XP</span>
             </div>
+            <button
+              onClick={closeMilestone}
+              className="block mx-auto px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-frost-white text-sm font-semibold min-h-[44px]"
+            >
+              המשך
+            </button>
           </div>
         </div>
       )}
@@ -269,22 +286,6 @@ export default function HomePage() {
         <StreakFreeze />
       </div>
 
-      {/* SR prominent banner above books grid */}
-      {srDueCount > 0 && (
-        <button
-          onClick={() => setShowSpacedReview(true)}
-          className="w-full glass-card p-4 flex items-center gap-3 border-dusty-aqua/20 hover:border-dusty-aqua/40 transition-all active:scale-[0.99] mb-4"
-        >
-          <div className="w-10 h-10 rounded-xl bg-dusty-aqua/15 flex items-center justify-center shrink-0">
-            <Brain className="w-5 h-5 text-dusty-aqua" />
-          </div>
-          <div className="text-right flex-1">
-            <p className="text-sm font-bold text-frost-white">יש לך {srDueCount} תרגילים לחזרה</p>
-            <p className="text-[11px] text-frost-white/40">חזרות מרווחות מחזקות זיכרון ב-200%</p>
-          </div>
-          <RotateCcw className="w-4 h-4 text-dusty-aqua/50" />
-        </button>
-      )}
 
       {/* Books grid */}
       <div className="grid gap-4" data-spotlight="books">
@@ -301,7 +302,7 @@ export default function HomePage() {
               key={book.slug}
               onClick={() => navigate(`/book/${book.slug}`)}
               className="glass-card p-4 flex items-center gap-3 text-right hover:border-gold/20 active:bg-white/5 press-scale transition-all group overflow-hidden w-full animate-fade-in min-h-[72px]"
-              style={{ animationDelay: `${0.2 + idx * 0.05}s` }}
+              style={{ animationDelay: `${0.2 + Math.min(idx, 6) * 0.05}s` }}
             >
               {BOOK_COVERS[book.slug] ? (
                 <img
@@ -319,7 +320,14 @@ export default function HomePage() {
                 <p className="text-xs text-frost-white/40 mt-0.5">{book.author}</p>
                 {book.audience && <p className="text-[11px] text-frost-white/30 mt-0.5 truncate">{book.audience}</p>}
                 <div className="mt-2 flex items-center gap-2">
-                  <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                  <div
+                    className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden"
+                    role="progressbar"
+                    aria-valuenow={Math.round(progress)}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`${book.title}: ${Math.round(progress)}% הושלם`}
+                  >
                     <div
                       className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-500"
                       style={{ width: `${progress}%` }}

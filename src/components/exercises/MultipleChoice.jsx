@@ -16,33 +16,13 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
     setSelected(index)
   }, [disabled, eliminated])
 
-  // Keyboard shortcuts: 1-4 to select, Enter to check
-  useEffect(() => {
-    if (disabled) return
-    const handleKey = (e) => {
-      const num = parseInt(e.key)
-      if (num >= 1 && num <= exercise.options.length) {
-        handleSelect(num - 1)
-      }
-      if (e.key === 'Enter') {
-        if (selected !== null) {
-          handleCheck()
-        } else {
-          triggerShake()
-        }
-      }
-    }
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
-  }, [disabled, exercise.options.length, handleSelect, selected])
-
-  const triggerShake = () => {
+  const triggerShake = useCallback(() => {
     setShaking(true)
     toast.info('בחר תשובה תחילה')
     setTimeout(() => setShaking(false), 400)
-  }
+  }, [toast])
 
-  const handleCheck = () => {
+  const handleCheck = useCallback(() => {
     if (selected === null) {
       triggerShake()
       return
@@ -57,7 +37,23 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
     }
 
     onAnswer(correct, exercise.explanation)
-  }
+  }, [selected, eliminated, exercise, onAnswer, triggerShake])
+
+  // Keyboard shortcuts: 1-4 to select, Enter to check
+  useEffect(() => {
+    if (disabled) return
+    const handleKey = (e) => {
+      const num = parseInt(e.key)
+      if (num >= 1 && num <= exercise.options.length) {
+        handleSelect(num - 1)
+      }
+      if (e.key === 'Enter') {
+        handleCheck()
+      }
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [disabled, exercise.options.length, handleSelect, handleCheck])
 
   return (
     <div className="animate-fade-in">
@@ -83,10 +79,11 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
             <button
               key={i}
               onClick={() => handleSelect(i)}
-              disabled={disabled || isEliminated}
+              disabled={disabled}
+              aria-disabled={isEliminated || undefined}
               role="radio"
               aria-checked={isSelected}
-              aria-label={`${LETTERS[i]}: ${option}`}
+              aria-label={`${LETTERS[i]}: ${option}${isEliminated ? ' (הוצאה)' : ''}`}
               className={`w-full flex items-center gap-3 px-4 py-4 rounded-2xl border text-right transition-all min-h-[56px] ${
                 isCorrect ? 'border-success bg-success/10 text-success' :
                 isWrong ? 'border-danger bg-danger/10 text-danger animate-shake' :

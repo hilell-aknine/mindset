@@ -3,11 +3,14 @@ import { usePlayer } from '../../contexts/PlayerContext'
 import { useToast } from '../../contexts/ToastContext'
 import { X, Send, Loader2, Bot, User, Zap } from 'lucide-react'
 
-export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
+export default function AICoachChat({ bookSlug, bookTitle, systemPrompt, onClose }) {
   const { player, spendToken } = usePlayer()
   const toast = useToast()
+  const greeting = bookTitle
+    ? `שלום! אני מאמן ה-AI שלך לספר "${bookTitle}". שאל כל שאלה על החומר ואעזור לך להבין לעומק 🧠`
+    : 'שלום! אני מאמן ה-AI שלך. שאל אותי כל שאלה על החומר ואעזור לך להבין לעומק 🧠'
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'שלום! אני המאמן שלך. שאל אותי כל שאלה על החומר 🧠' }
+    { role: 'assistant', content: greeting }
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -71,7 +74,7 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
     } catch {
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: 'המאמן לא זמין כרגע. נסה שוב מאוחר יותר, או שאל שאלה אחרת. (חיבור ל-API נדרש)'
+        content: 'המאמן לא זמין כרגע. נסה שוב בעוד כמה רגעים, או שאל שאלה אחרת.'
       }])
     } finally {
       setLoading(false)
@@ -79,7 +82,7 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex flex-col bg-bg-base/95 backdrop-blur-lg animate-slide-up sm:inset-auto sm:bottom-6 sm:left-6 sm:w-96 sm:h-[500px] sm:rounded-2xl sm:border sm:border-white/10 sm:shadow-2xl" role="dialog" aria-label="מאמן AI">
+    <div className="fixed inset-0 z-40 flex flex-col bg-bg-base/95 backdrop-blur-lg animate-slide-up sm:inset-auto sm:bottom-6 sm:right-6 sm:w-96 sm:h-[500px] sm:rounded-2xl sm:border sm:border-white/10 sm:shadow-2xl" role="dialog" aria-label="מאמן AI">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
         <div className="flex items-center gap-2">
@@ -155,7 +158,7 @@ export default function AICoachChat({ bookSlug, systemPrompt, onClose }) {
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder={isOutOfTokens ? 'נגמרו הטוקנים...' : 'שאל שאלה...'}
             disabled={isOutOfTokens}
-            className="flex-1 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm text-frost-white placeholder:text-frost-white/20 focus:border-gold/30 focus:outline-none disabled:opacity-40"
+            className="flex-1 px-3 py-3 min-h-[44px] rounded-xl bg-white/5 border border-white/10 text-sm text-frost-white placeholder:text-frost-white/20 focus:border-gold/30 focus:outline-none disabled:opacity-40"
             aria-label="הקלד שאלה למאמן"
           />
           <button

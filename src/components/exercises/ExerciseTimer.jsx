@@ -3,7 +3,7 @@ import { Timer, Zap } from 'lucide-react'
 
 const TIMER_DURATION = 30 // seconds per exercise
 
-export default function ExerciseTimer({ active, onTimeUp, exerciseKey }) {
+export default function ExerciseTimer({ active, onTimeUp, onTick, exerciseKey }) {
   const [timeLeft, setTimeLeft] = useState(TIMER_DURATION)
   const [started, setStarted] = useState(false)
   const intervalRef = useRef(null)
@@ -12,8 +12,9 @@ export default function ExerciseTimer({ active, onTimeUp, exerciseKey }) {
   useEffect(() => {
     setTimeLeft(TIMER_DURATION)
     setStarted(false)
+    onTick?.(TIMER_DURATION)
     if (intervalRef.current) clearInterval(intervalRef.current)
-  }, [exerciseKey])
+  }, [exerciseKey, onTick])
 
   // Start timer when active
   useEffect(() => {
@@ -27,12 +28,15 @@ export default function ExerciseTimer({ active, onTimeUp, exerciseKey }) {
       setStarted(true)
       intervalRef.current = setInterval(() => {
         setTimeLeft(prev => {
+          const next = prev - 1
           if (prev <= 1) {
             clearInterval(intervalRef.current)
+            onTick?.(0)
             onTimeUp?.()
             return 0
           }
-          return prev - 1
+          onTick?.(next)
+          return next
         })
       }, 1000)
     }, 500)
@@ -41,7 +45,7 @@ export default function ExerciseTimer({ active, onTimeUp, exerciseKey }) {
       clearTimeout(startDelay)
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
-  }, [active, exerciseKey])
+  }, [active, exerciseKey, onTick, onTimeUp])
 
   if (!active) return null
 

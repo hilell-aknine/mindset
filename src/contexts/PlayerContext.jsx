@@ -50,7 +50,7 @@ export function PlayerProvider({ children }) {
       try { setPlayer(JSON.parse(stored)) } catch {}
     }
 
-    // Then Supabase (if not guest)
+    // Then Supabase (if not guest) — await it so recovery runs on fresh data
     if (!isGuest && user?.id) {
       const { data } = await supabase
         .from('mindset_users')
@@ -71,14 +71,13 @@ export function PlayerProvider({ children }) {
       }
     }
 
-    // Check streak
-    updateStreak()
-    // Check heart recovery
-    recoverHearts()
-    // Check daily token reset
+    // Run recovery/reset chain AFTER Supabase data is established.
+    // Order matters: resetDailyTokens + resetWeeklyXP must run BEFORE updateStreak,
+    // because updateStreak overwrites lastLoginDate which both reset functions check.
     resetDailyTokens()
-    // Reset weekly XP on Sunday
     resetWeeklyXP()
+    recoverHearts()
+    updateStreak()
 
     setLoaded(true)
   }

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { checkAnswer, shuffleArray } from '../../lib/gameEngine'
 
 export default function FillBlank({ exercise, onAnswer, disabled }) {
@@ -11,26 +11,26 @@ export default function FillBlank({ exercise, onAnswer, disabled }) {
     ? exercise.template.replace('___', exercise.options[selected])
     : exercise.template
 
-  const handleSelect = (originalIndex) => {
+  const handleSelect = useCallback((originalIndex) => {
     if (disabled) return
-    setSelected(selected === originalIndex ? null : originalIndex)
-  }
+    setSelected(prev => prev === originalIndex ? null : originalIndex)
+  }, [disabled])
 
-  const handleCheck = () => {
+  const handleCheck = useCallback(() => {
     if (selected === null) return
     const correct = checkAnswer(exercise, selected)
     onAnswer(correct, exercise.explanation)
-  }
+  }, [selected, exercise, onAnswer])
 
   // Keyboard: Enter to check
   useEffect(() => {
     if (disabled) return
     const handler = (e) => {
-      if (e.key === 'Enter' && selected !== null) handleCheck()
+      if (e.key === 'Enter') handleCheck()
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [disabled, selected])
+  }, [disabled, handleCheck])
 
   return (
     <div className="animate-fade-in">

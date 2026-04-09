@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 import { supabase } from '../config/supabase'
+import { useFocusTrap } from '../hooks/useFocusTrap'
 
 const STORAGE_KEY = 'mindset_dismissed_popups'
 
@@ -20,6 +21,7 @@ function addDismissedId(id) {
 export default function PopupModal() {
   const [popups, setPopups] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
+  const dialogRef = useRef(null)
 
   useEffect(() => {
     const fetchPopups = async () => {
@@ -58,7 +60,11 @@ export default function PopupModal() {
     }
   }
 
-  if (!popups.length || currentIndex >= popups.length) return null
+  // Focus trap + Escape (only when popup visible)
+  const isOpen = popups.length > 0 && currentIndex < popups.length
+  useFocusTrap(dialogRef, { onEscape: isOpen ? dismiss : undefined })
+
+  if (!isOpen) return null
 
   const popup = popups[currentIndex]
 
@@ -68,13 +74,17 @@ export default function PopupModal() {
       onClick={dismiss}
     >
       <div
+        ref={dialogRef}
         className="glass-card p-6 max-w-sm w-full mx-4 border-gold/20 animate-bounce-in relative text-center"
         onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="popup-title"
       >
         {/* Close button */}
         <button
           onClick={dismiss}
-          className="absolute top-3 left-3 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg hover:bg-white/5 transition-colors"
+          className="absolute top-3 left-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-white/5 transition-colors"
           aria-label="סגור"
         >
           <X className="w-5 h-5 text-frost-white/40" />
@@ -90,7 +100,7 @@ export default function PopupModal() {
         )}
 
         {/* Title */}
-        <h3 className="font-display text-xl font-bold text-gold mb-2">{popup.title}</h3>
+        <h3 id="popup-title" className="font-display text-xl font-bold text-gold mb-2">{popup.title}</h3>
 
         {/* Body */}
         <p className="text-sm text-frost-white/70 leading-relaxed mb-4 whitespace-pre-wrap">{popup.body}</p>

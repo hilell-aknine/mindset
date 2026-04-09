@@ -7,6 +7,7 @@ import { checkNewAchievements } from '../lib/achievements'
 import { getComboBonus, getComboLabel, XP_CORRECT_ANSWER } from '../config/constants'
 import { getActiveEvent, getXPMultiplier } from '../lib/events'
 import ExerciseRouter from '../components/exercises/ExerciseRouter'
+import ErrorBoundary from '../components/ErrorBoundary'
 import ExerciseTimer, { getSpeedBonus, TIMER_DURATION } from '../components/exercises/ExerciseTimer'
 import { useAnnounce } from '../components/Announcer'
 import FeedbackPanel from '../components/feedback/FeedbackPanel'
@@ -154,6 +155,7 @@ export default function LessonPage() {
   const [levelUp, setLevelUp] = useState(null)
   const [newAchievement, setNewAchievement] = useState(null)
   const [showOutOfHearts, setShowOutOfHearts] = useState(false)
+  const [showPurchase, setShowPurchase] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
   const [comboTier, setComboTier] = useState(0)
@@ -210,6 +212,14 @@ export default function LessonPage() {
       if (autoAdvanceRef.current) clearTimeout(autoAdvanceRef.current)
     }
   }, [])
+
+  // Watch hearts — show out-of-hearts modal when depleted (with cleanup for unmount safety)
+  useEffect(() => {
+    if (player.hearts <= 0 && !isComplete && !showOutOfHearts) {
+      const t = setTimeout(() => setShowOutOfHearts(true), 600)
+      return () => clearTimeout(t)
+    }
+  }, [player.hearts, isComplete, showOutOfHearts])
 
   // Announce exercise to screen readers
   useEffect(() => {
@@ -340,11 +350,6 @@ export default function LessonPage() {
           item.exerciseIndex
         )
 
-        // Check if hearts ran out
-        if (prev.hearts <= 1) {
-          setTimeout(() => setShowOutOfHearts(true), 600)
-        }
-
         return { ...prev, reviewQueue: [...queue, item] }
       })
     }
@@ -416,9 +421,24 @@ export default function LessonPage() {
 
   if (!book || !lesson) {
     return (
-      <div className="min-h-dvh flex items-center justify-center">
-        <p className="text-frost-white/50">השיעור לא נמצא</p>
-      </div>
+      <main id="main-content" className="min-h-dvh flex flex-col items-center justify-center gap-4 px-6 text-center">
+        <h1 className="text-2xl font-bold text-frost-white">השיעור לא נמצא</h1>
+        <p className="text-frost-white/50 text-sm">ייתכן שהשיעור נמחק או שהקישור שגוי.</p>
+        <div className="flex gap-3 mt-2">
+          <button
+            onClick={() => navigate(-1)}
+            className="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/15 text-frost-white font-semibold min-h-[44px] transition-colors"
+          >
+            חזרה
+          </button>
+          <button
+            onClick={() => navigate('/home')}
+            className="px-5 py-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-semibold min-h-[44px] hover:opacity-90 transition-opacity"
+          >
+            לעמוד הבית
+          </button>
+        </div>
+      </main>
     )
   }
 
@@ -456,7 +476,7 @@ export default function LessonPage() {
   }
 
   return (
-    <div className="h-dvh flex flex-col overflow-hidden">
+    <main id="main-content" className="h-dvh flex flex-col overflow-hidden">
       {/* Mini confetti on correct answer — scales with combo */}
       <MiniConfetti active={showConfetti} combo={comboStreak} />
 
@@ -542,6 +562,7 @@ export default function LessonPage() {
             <ExerciseTimer
               active={timerEnabled && !feedback}
               onTimeUp={handleTimerUpdate}
+              onTick={(t) => { timerTimeLeft.current = t }}
               exerciseKey={currentIndex}
             />
           )}
@@ -555,14 +576,28 @@ export default function LessonPage() {
             key={currentIndex}
             className={`${transitioning ? 'animate-exercise-exit' : 'animate-exercise-enter'} ${comboTier >= 2 ? 'ring-2 ring-gold/40 transition-all duration-300' : ''}`}
           >
-            <ExerciseRouter
-              exercise={currentExercise}
-              onAnswer={handleAnswer}
-              disabled={!!feedback}
-              tokens={player.tokens}
-              onUseToken={handleUseToken}
-              wrongCount={wrongCountForExercise}
-            />
+            <ErrorBoundary
+              fallback={
+                <div className="text-center py-12 px-4">
+                  <p className="text-frost-white/60 mb-4">שגיאה בטעינת התרגיל</p>
+                  <button
+                    onClick={() => navigate(`/book/${bookSlug}`)}
+                    className="px-5 py-3 rounded-xl bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white font-bold min-h-[44px]"
+                  >
+                    חזרה לספר
+                  </button>
+                </div>
+              }
+            >
+              <ExerciseRouter
+                exercise={currentExercise}
+                onAnswer={handleAnswer}
+                disabled={!!feedback}
+                tokens={player.tokens}
+                onUseToken={handleUseToken}
+                wrongCount={wrongCountForExercise}
+              />
+            </ErrorBoundary>
           </div>
         )}
       </div>
@@ -602,6 +637,6 @@ export default function LessonPage() {
           reviewCount={player.reviewQueue?.length || 0}
         />
       )}
-    </div>
+    </main>
   )
 }

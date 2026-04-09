@@ -23,6 +23,11 @@ export default class ErrorBoundary extends Component {
 
   render() {
     if (this.state.hasError) {
+      if (this.props.fallback) {
+        return typeof this.props.fallback === 'function'
+          ? this.props.fallback(this.state.error, () => this.setState({ hasError: false, error: null }))
+          : this.props.fallback
+      }
       return (
         <div className="min-h-dvh flex flex-col items-center justify-center px-4 text-center bg-bg-base">
           <div className="text-6xl mb-4">😵</div>

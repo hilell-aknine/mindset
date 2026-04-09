@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Theater, User, Briefcase, AlertTriangle } from 'lucide-react'
 
 /**
@@ -28,12 +28,12 @@ export default function Scenario({ exercise, onAnswer, disabled }) {
   const [selected, setSelected] = useState(null)
   const [confirmed, setConfirmed] = useState(false)
 
-  const handleSelect = (index) => {
+  const handleSelect = useCallback((index) => {
     if (disabled || confirmed) return
     setSelected(index)
-  }
+  }, [disabled, confirmed])
 
-  const handleConfirm = () => {
+  const handleConfirm = useCallback(() => {
     if (selected === null || confirmed) return
     setConfirmed(true)
     const isCorrect = selected === exercise.correct
@@ -41,7 +41,22 @@ export default function Scenario({ exercise, onAnswer, disabled }) {
       ? exercise.explanation
       : (exercise.wrongExplanations?.[selected] || exercise.explanation)
     onAnswer(isCorrect, explanation)
-  }
+  }, [selected, confirmed, exercise, onAnswer])
+
+  // Keyboard: 1-3 to select, Enter to confirm (consistent with other exercise types)
+  useEffect(() => {
+    if (disabled || confirmed) return
+    const handler = (e) => {
+      const num = parseInt(e.key)
+      const options = exercise.options || []
+      if (num >= 1 && num <= options.length) {
+        handleSelect(num - 1)
+      }
+      if (e.key === 'Enter') handleConfirm()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [disabled, confirmed, exercise.options, handleSelect, handleConfirm])
 
   return (
     <div className="space-y-4 animate-fade-in">

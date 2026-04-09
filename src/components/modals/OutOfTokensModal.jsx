@@ -1,5 +1,6 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Zap, Clock } from 'lucide-react'
+import { useFocusTrap } from '../../hooks/useFocusTrap'
 
 function getTimeUntilMidnight() {
   const now = new Date()
@@ -14,6 +15,8 @@ function getTimeUntilMidnight() {
 
 export default function OutOfTokensModal({ onClose }) {
   const [countdown, setCountdown] = useState(getTimeUntilMidnight)
+  const dialogRef = useRef(null)
+  useFocusTrap(dialogRef, { onEscape: onClose })
 
   // Live countdown
   useEffect(() => {
@@ -23,28 +26,18 @@ export default function OutOfTokensModal({ onClose }) {
     return () => clearInterval(interval)
   }, [])
 
-  // Keyboard: Escape to close
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Escape') onClose()
-  }, [onClose])
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [handleKeyDown])
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-bg-base/80 backdrop-blur-md p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="glass-card max-w-sm w-full p-6 text-center animate-fade-in" role="dialog" aria-label="נגמרו הטוקנים">
+      <div ref={dialogRef} className="glass-card max-w-sm w-full p-6 text-center animate-fade-in" role="dialog" aria-modal="true" aria-labelledby="tokens-dialog-title">
         <img
           src="/backgrounds/locked-books.png"
           alt="נגמרו הטוקנים"
           className="w-24 h-24 rounded-2xl object-cover mx-auto mb-4 shadow-lg shadow-gold/10"
         />
-        <h3 className="font-display text-xl font-bold text-frost-white mb-2">נגמרה האנרגיה!</h3>
+        <h3 id="tokens-dialog-title" className="font-display text-xl font-bold text-frost-white mb-2">נגמרה האנרגיה!</h3>
         <p className="text-sm text-frost-white/50 mb-3">
           הטוקנים נגמרו. מחר תקבל 3 טוקנים חדשים.
         </p>

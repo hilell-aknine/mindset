@@ -3,7 +3,6 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
 import { usePlayer } from './contexts/PlayerContext'
 import { useToast } from './contexts/ToastContext'
-import LandingPage from './pages/LandingPage'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import BottomNav from './components/layout/BottomNav'
@@ -16,6 +15,7 @@ import { AnnouncerProvider } from './components/Announcer'
 import InstallPrompt from './components/InstallPrompt'
 
 // Lazy-loaded pages for code splitting
+const LandingPage = lazy(() => import('./pages/LandingPage'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const BookPage = lazy(() => import('./pages/BookPage'))
 const LessonPage = lazy(() => import('./pages/LessonPage'))
@@ -105,9 +105,9 @@ function PageLayout({ children, hideFooter = false }) {
   return (
     <>
       <Header />
-      <div className="animate-page-enter has-bottom-nav">
+      <main id="main-content" className="animate-page-enter has-bottom-nav">
         {children}
-      </div>
+      </main>
       {!hideFooter && <Footer />}
     </>
   )
@@ -170,7 +170,7 @@ export default function App() {
           path="/"
           element={
             loading ? <Spinner size="lg" text="טוען..." /> :
-            isAuthenticated ? <Navigate to="/home" replace /> : <LandingPage />
+            isAuthenticated ? <Navigate to="/home" replace /> : <PageSuspense><LandingPage /></PageSuspense>
           }
         />
         <Route

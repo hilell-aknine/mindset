@@ -6,7 +6,7 @@ export default function NotFoundPage() {
 
   const links = [
     { label: 'דף הבית', path: '/home', icon: Home, color: 'text-gold' },
-    { label: 'הספרייה', path: '/book/atomic-habits', icon: BookOpen, color: 'text-dusty-aqua' },
+    { label: 'הספרייה', path: '/home', icon: BookOpen, color: 'text-dusty-aqua' },
     { label: 'סטטיסטיקות', path: '/stats', icon: BarChart3, color: 'text-muted-teal' },
   ]
 
@@ -50,7 +50,7 @@ export default function NotFoundPage() {
         className="mt-6 text-xs text-frost-white/30 hover:text-frost-white/50 transition-colors animate-fade-in"
         style={{ animationDelay: '0.5s' }}
       >
-        ← חזור לעמוד הקודם
+        → חזור לעמוד הקודם
       </button>
     </main>
   )

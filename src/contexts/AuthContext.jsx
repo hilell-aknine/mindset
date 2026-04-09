@@ -3,6 +3,25 @@ import { supabase } from '../config/supabase'
 
 const AuthContext = createContext(null)
 
+// Hebrew translations for common Supabase auth errors
+const AUTH_ERROR_MAP = {
+  'Invalid login credentials': 'שם משתמש או סיסמה שגויים',
+  'Email not confirmed': 'האימייל עדיין לא אושר. בדוק את תיבת הדואר שלך.',
+  'User already registered': 'כתובת האימייל כבר רשומה. נסה להתחבר.',
+  'Password should be at least 6 characters': 'הסיסמה חייבת להכיל לפחות 6 תווים',
+  'Signup requires a valid password': 'נא להזין סיסמה תקינה',
+  'Email rate limit exceeded': 'יותר מדי ניסיונות. נסה שוב בעוד כמה דקות.',
+  'Unable to validate email address: invalid format': 'כתובת האימייל אינה תקינה',
+  'User not found': 'המשתמש לא נמצא',
+  'Network request failed': 'אין חיבור לאינטרנט. בדוק את החיבור ונסה שוב.',
+}
+
+function translateAuthError(error) {
+  if (!error) return null
+  const msg = error.message || String(error)
+  return AUTH_ERROR_MAP[msg] || 'אירעה שגיאה. נסה שוב עוד רגע.'
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [isGuest, setIsGuest] = useState(false)
@@ -57,7 +76,7 @@ export function AuthProvider({ children }) {
       options: { redirectTo: window.location.origin + '/home' }
     })
     if (error) {
-      setAuthError(error.message)
+      setAuthError(translateAuthError(error))
       throw error
     }
   }
@@ -66,7 +85,7 @@ export function AuthProvider({ children }) {
     setAuthError(null)
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
-      setAuthError(error.message)
+      setAuthError(translateAuthError(error))
       throw error
     }
     return data
@@ -76,7 +95,7 @@ export function AuthProvider({ children }) {
     setAuthError(null)
     const { data, error } = await supabase.auth.signUp({ email, password })
     if (error) {
-      setAuthError(error.message)
+      setAuthError(translateAuthError(error))
       throw error
     }
     return data

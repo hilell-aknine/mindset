@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useRef } from 'react'
 import { shuffleArray } from '../../lib/gameEngine'
 import { Undo2, Link } from 'lucide-react'
 
@@ -7,17 +7,25 @@ const HEBREW_LETTERS = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח']
 export default function Match({ exercise, onAnswer, disabled }) {
   const [selectedLeft, setSelectedLeft] = useState(null)
   const [matchedPairs, setMatchedPairs] = useState([]) // [{left, right}]
+  const hasAnswered = useRef(false)
 
   const shuffledRight = useMemo(() => {
     return shuffleArray(exercise.pairs.map((p, i) => ({ text: p.right, originalIndex: i })))
   }, [exercise.pairs])
 
-  const handleLeftClick = (index) => {
-    if (disabled || matchedPairs.some(p => p.left === index)) return
-    setSelectedLeft(selectedLeft === index ? null : index) // Toggle selection
-  }
+  const submitAnswer = useCallback((pairs) => {
+    if (hasAnswered.current) return
+    hasAnswered.current = true
+    const correct = pairs.every(p => p.left === p.right)
+    onAnswer(correct, exercise.explanation)
+  }, [onAnswer, exercise.explanation])
 
-  const handleRightClick = (originalIndex) => {
+  const handleLeftClick = useCallback((index) => {
+    if (disabled || matchedPairs.some(p => p.left === index)) return
+    setSelectedLeft(prev => prev === index ? null : index) // Toggle selection
+  }, [disabled, matchedPairs])
+
+  const handleRightClick = useCallback((originalIndex) => {
     if (disabled || selectedLeft === null || matchedPairs.some(p => p.right === originalIndex)) return
     const newPairs = [...matchedPairs, { left: selectedLeft, right: originalIndex }]
     setMatchedPairs(newPairs)
@@ -25,12 +33,9 @@ export default function Match({ exercise, onAnswer, disabled }) {
 
     // Auto-check when all pairs connected
     if (newPairs.length === exercise.pairs.length) {
-      setTimeout(() => {
-        const correct = newPairs.every(p => p.left === p.right)
-        onAnswer(correct, exercise.explanation)
-      }, 400)
+      setTimeout(() => submitAnswer(newPairs), 400)
     }
-  }
+  }, [disabled, selectedLeft, matchedPairs, exercise.pairs.length, submitAnswer])
 
   const handleKeyDown = useCallback((e, side, index) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -133,10 +138,15 @@ export default function Match({ exercise, onAnswer, disabled }) {
               >
                 {/* Number label */}
                 <span className="absolute top-1.5 right-1.5 text-[9px] text-frost-white/20 font-mono">{i + 1}</span>
-                {/* Color dot for matched pairs */}
-                {style && !disabled && (
-                  <span className={`absolute top-1.5 left-1.5 w-2 h-2 rounded-full ${style.dot}`} />
-                )}
+                {/* Color+number dot for matched pairs (accessible to color-blind users) */}
+                {style && !disabled && (() => {
+                  const pairNumber = matchedPairs.findIndex(p => p.left === i) + 1
+                  return (
+                    <span className={`absolute top-1 left-1 w-5 h-5 rounded-full ${style.dot} flex items-center justify-center text-[9px] font-bold text-bg-base`} aria-hidden="true">
+                      {pairNumber || ''}
+                    </span>
+                  )
+                })()}
                 <span className={style ? style.text : ''}>{pair.left}</span>
               </button>
             )
@@ -167,10 +177,15 @@ export default function Match({ exercise, onAnswer, disabled }) {
                 <span className="absolute top-1.5 right-1.5 text-[9px] text-frost-white/20 font-mono">
                   {HEBREW_LETTERS[shuffledRight.findIndex(s => s.originalIndex === originalIndex)]}
                 </span>
-                {/* Color dot for matched pairs */}
-                {style && !disabled && (
-                  <span className={`absolute top-1.5 left-1.5 w-2 h-2 rounded-full ${style.dot}`} />
-                )}
+                {/* Color+number dot for matched pairs (accessible to color-blind users) */}
+                {style && !disabled && (() => {
+                  const pairNumber = matchedPairs.findIndex(p => p.right === originalIndex) + 1
+                  return (
+                    <span className={`absolute top-1 left-1 w-5 h-5 rounded-full ${style.dot} flex items-center justify-center text-[9px] font-bold text-bg-base`} aria-hidden="true">
+                      {pairNumber || ''}
+                    </span>
+                  )
+                })()}
                 <span className={style ? style.text : ''}>{text}</span>
               </button>
             )
@@ -182,10 +197,7 @@ export default function Match({ exercise, onAnswer, disabled }) {
       {/* Manual check button (fallback if auto-check timing issue) */}
       {!disabled && allMatched && (
         <button
-          onClick={() => {
-            const correct = matchedPairs.every(p => p.left === p.right)
-            onAnswer(correct, exercise.explanation)
-          }}
+          onClick={() => submitAnswer(matchedPairs)}
           className="w-full py-4 rounded-2xl font-bold text-base min-h-[52px] transition-all bg-gradient-to-l from-deep-petrol to-dusty-aqua text-frost-white hover:opacity-90"
         >
           בדוק

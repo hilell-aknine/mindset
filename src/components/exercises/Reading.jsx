@@ -39,8 +39,12 @@ export default function Reading({ exercise, onAnswer, disabled }) {
           </div>
         </div>
 
-        <div className="text-sm sm:text-base font-medium text-frost-white/90 leading-relaxed sm:leading-[1.9] whitespace-pre-wrap max-h-[45dvh] overflow-y-auto">
-          {exercise.passage}
+        <div className="relative">
+          <div className="text-sm sm:text-base font-medium text-frost-white/90 leading-relaxed sm:leading-[1.9] whitespace-pre-wrap max-h-[45dvh] overflow-y-auto pb-4">
+            {exercise.passage}
+          </div>
+          {/* Bottom fade indicating scrollable content */}
+          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-dusty-aqua/10 to-transparent" aria-hidden="true" />
         </div>
       </div>
 

@@ -12,8 +12,17 @@ import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
 import mindsetBook from '../data/books/mindset-book.json'
 import indistractable from '../data/books/indistractable.json'
+import grit from '../data/books/grit.json'
+import powerOfNow from '../data/books/power-of-now.json'
+import sevenHabits from '../data/books/seven-habits.json'
+import thinkingFastSlow from '../data/books/thinking-fast-slow.json'
+import psychologyOfMoney from '../data/books/psychology-of-money.json'
+import millionaireNextDoor from '../data/books/millionaire-next-door.json'
+import thinkAndGrowRich from '../data/books/think-and-grow-rich.json'
+import blueOceanStrategy from '../data/books/blue-ocean-strategy.json'
+import threeSecondRule from '../data/books/three-second-rule.json'
 
-const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable]
+const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable, grit, powerOfNow, sevenHabits, thinkingFastSlow, psychologyOfMoney, millionaireNextDoor, thinkAndGrowRich, blueOceanStrategy, threeSecondRule]
 
 // Simple bar chart component
 function ProgressChart({ books, completedLessons }) {
@@ -56,9 +65,20 @@ function ProgressRing({ value, max, size = 80, strokeWidth = 6, color = '#D4AF37
   const pct = max > 0 ? Math.min(value / max, 1) : 0
   const offset = circumference * (1 - pct)
 
+  const percentLabel = Math.round(pct * 100)
   return (
     <div className="relative" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
+      <svg
+        width={size}
+        height={size}
+        className="-rotate-90"
+        role="progressbar"
+        aria-valuenow={percentLabel}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`${percentLabel}% התקדמות`}
+      >
+        <title>{`${percentLabel}% התקדמות`}</title>
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -211,7 +231,7 @@ export default function StatsPage() {
         >
           <ArrowRight className="w-5 h-5 text-frost-white/60" />
         </button>
-        <h2 className="font-display text-xl font-bold text-frost-white flex-1">הסטטיסטיקות שלי</h2>
+        <h1 className="font-display text-xl font-bold text-frost-white flex-1">הסטטיסטיקות שלי</h1>
         {typeof navigator.share === 'function' && (
           <button
             onClick={() => {

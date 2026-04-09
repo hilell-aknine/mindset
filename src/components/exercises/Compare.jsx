@@ -1,22 +1,22 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 export default function Compare({ exercise, onAnswer, disabled }) {
   const [selected, setSelected] = useState(null)
 
-  const handleSelect = (index) => {
+  const handleSelect = useCallback((index) => {
     if (disabled) return
     setSelected(index)
-  }
+  }, [disabled])
 
   const correctIndex = typeof exercise.correct === 'string'
     ? (exercise.correct === 'A' ? 0 : 1)
     : exercise.correct
 
-  const handleCheck = () => {
+  const handleCheck = useCallback(() => {
     if (selected === null) return
     const correct = selected === correctIndex
     onAnswer(correct, exercise.explanation)
-  }
+  }, [selected, correctIndex, exercise.explanation, onAnswer])
 
   // Handle both formats: string ("text") or object ({label, text})
   const rawOptions = [exercise.optionA, exercise.optionB]
@@ -32,11 +32,11 @@ export default function Compare({ exercise, onAnswer, disabled }) {
     const handler = (e) => {
       if (e.key === '1') setSelected(0)
       if (e.key === '2') setSelected(1)
-      if (e.key === 'Enter' && selected !== null) handleCheck()
+      if (e.key === 'Enter') handleCheck()
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [disabled, selected])
+  }, [disabled, handleCheck])
 
   return (
     <div className="animate-fade-in">
@@ -92,7 +92,7 @@ export default function Compare({ exercise, onAnswer, disabled }) {
       </div>
 
       {/* VS divider on mobile */}
-      <div className="sm:hidden text-center -mt-5 mb-3">
+      <div className="sm:hidden text-center mt-1 mb-3">
         <span className="inline-block px-3 py-1 rounded-full bg-bg-base text-xs font-bold text-frost-white/30 border border-white/5">
           VS
         </span>

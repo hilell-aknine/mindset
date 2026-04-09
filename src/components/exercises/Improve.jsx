@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 const LETTERS = ['א', 'ב', 'ג', 'ד']
 const KEYS = ['1', '2', '3', '4']
@@ -12,16 +12,16 @@ export default function Improve({ exercise, onAnswer, disabled }) {
     ? (exercise.correct === 'A' ? 0 : exercise.correct === 'B' ? 1 : parseInt(exercise.correct))
     : exercise.correct
 
-  const handleSelect = (index) => {
+  const handleSelect = useCallback((index) => {
     if (disabled) return
     setSelected(index)
-  }
+  }, [disabled])
 
-  const handleCheck = () => {
+  const handleCheck = useCallback(() => {
     if (selected === null) return
     const correct = selected === correctIndex
     onAnswer(correct, exercise.explanation)
-  }
+  }, [selected, correctIndex, exercise.explanation, onAnswer])
 
   // Keyboard shortcuts: 1-4 to select, Enter to check
   useEffect(() => {
@@ -31,13 +31,13 @@ export default function Improve({ exercise, onAnswer, disabled }) {
       if (keyIndex >= 0 && keyIndex < options.length) {
         setSelected(keyIndex)
       }
-      if (e.key === 'Enter' && selected !== null) {
+      if (e.key === 'Enter') {
         handleCheck()
       }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [disabled, options.length, selected])
+  }, [disabled, options.length, handleCheck])
 
   return (
     <div className="animate-fade-in">

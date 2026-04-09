@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { usePlayer } from '../contexts/PlayerContext'
@@ -81,6 +81,13 @@ export default function SettingsPage() {
     URL.revokeObjectURL(url)
   }
 
+  // Auto-cancel the reset confirmation after 5 seconds
+  useEffect(() => {
+    if (!confirmReset) return
+    const t = setTimeout(() => setConfirmReset(false), 5000)
+    return () => clearTimeout(t)
+  }, [confirmReset])
+
   const handleResetProgress = () => {
     if (!confirmReset) {
       setConfirmReset(true)
@@ -121,7 +128,7 @@ export default function SettingsPage() {
         >
           <ArrowRight className="w-5 h-5 text-frost-white/60" />
         </button>
-        <h2 className="font-display text-xl font-bold text-frost-white">הגדרות</h2>
+        <h1 className="font-display text-xl font-bold text-frost-white">הגדרות</h1>
       </div>
 
       {/* Profile card with stats */}
@@ -198,6 +205,9 @@ export default function SettingsPage() {
           <button
             onClick={handleToggleSound}
             className="w-full flex items-center justify-between"
+            role="switch"
+            aria-checked={soundOn}
+            aria-label="צלילים"
           >
             <div className="flex items-center gap-3">
               {soundOn ? (
@@ -267,6 +277,9 @@ export default function SettingsPage() {
           <button
             onClick={handleReducedMotion}
             className="w-full flex items-center justify-between"
+            role="switch"
+            aria-checked={reducedMotion}
+            aria-label="הפחת אנימציות"
           >
             <div className="flex items-center gap-3">
               <MonitorOff className={`w-5 h-5 ${reducedMotion ? 'text-dusty-aqua' : 'text-frost-white/30'}`} />
@@ -285,6 +298,9 @@ export default function SettingsPage() {
           <button
             onClick={handleThemeToggle}
             className="w-full flex items-center justify-between"
+            role="switch"
+            aria-checked={theme === 'light'}
+            aria-label="מצב בהיר"
           >
             <div className="flex items-center gap-3">
               {theme === 'light' ? (

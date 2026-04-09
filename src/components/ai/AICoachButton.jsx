@@ -3,7 +3,7 @@ import { MessageCircle, Theater } from 'lucide-react'
 import AICoachChat from './AICoachChat'
 import AIScenarioChat from './AIScenarioChat'
 
-export default function AICoachButton({ bookSlug, systemPrompt }) {
+export default function AICoachButton({ bookSlug, bookTitle, systemPrompt }) {
   const [open, setOpen] = useState(false)
   const [mode, setMode] = useState('chat') // 'chat' or 'scenario'
   const [hasNewMessage, setHasNewMessage] = useState(false)
@@ -46,7 +46,7 @@ export default function AICoachButton({ bookSlug, systemPrompt }) {
       {/* Main AI button */}
       <button
         onClick={() => { setMode('chat'); toggleOpen() }}
-        className={`fixed bottom-6 left-6 z-30 w-14 h-14 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua text-frost-white shadow-lg shadow-deep-petrol/30 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform ${
+        className={`fixed bottom-6 right-6 z-30 w-14 h-14 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua text-frost-white shadow-lg shadow-deep-petrol/30 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform ${
           hasNewMessage ? 'animate-heartbeat' : ''
         }`}
         aria-label="מאמן AI — Ctrl+M"
@@ -61,7 +61,7 @@ export default function AICoachButton({ bookSlug, systemPrompt }) {
       {/* Scenario button */}
       <button
         onClick={openScenario}
-        className="fixed bottom-6 left-[5.5rem] z-30 w-11 h-11 rounded-xl bg-gradient-to-br from-gold to-warning text-bg-base shadow-lg shadow-gold/20 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+        className="fixed bottom-6 right-[5.5rem] z-30 w-11 h-11 rounded-xl bg-gradient-to-br from-gold to-warning text-bg-base shadow-lg shadow-gold/20 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
         aria-label="סימולציה AI"
         title="סימולציה — תרגול תרחישים"
       >
@@ -71,6 +71,7 @@ export default function AICoachButton({ bookSlug, systemPrompt }) {
       {open && mode === 'chat' && (
         <AICoachChat
           bookSlug={bookSlug}
+          bookTitle={bookTitle}
           systemPrompt={systemPrompt}
           onClose={() => setOpen(false)}
         />
