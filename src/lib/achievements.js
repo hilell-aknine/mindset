@@ -13,8 +13,11 @@ import millionaireNextDoor from '../data/books/millionaire-next-door.json'
 import thinkAndGrowRich from '../data/books/think-and-grow-rich.json'
 import blueOceanStrategy from '../data/books/blue-ocean-strategy.json'
 import threeSecondRule from '../data/books/three-second-rule.json'
+import awakenTheGiant from '../data/books/awaken-the-giant.json'
+import resultantIntelligence from '../data/books/resultant-intelligence.json'
+import positiveIntelligence from '../data/books/positive-intelligence.json'
 
-const ALL_BOOKS = [atomicHabits, happyChemicals, mindsetBook, nextFiveMoves, strengthsFinder, indistractable, grit, powerOfNow, sevenHabits, thinkingFastSlow, psychologyOfMoney, millionaireNextDoor, thinkAndGrowRich, blueOceanStrategy, threeSecondRule]
+const ALL_BOOKS = [atomicHabits, happyChemicals, mindsetBook, nextFiveMoves, strengthsFinder, indistractable, grit, powerOfNow, sevenHabits, thinkingFastSlow, psychologyOfMoney, millionaireNextDoor, thinkAndGrowRich, blueOceanStrategy, threeSecondRule, awakenTheGiant, resultantIntelligence, positiveIntelligence]
 const TOTAL_LESSONS = ALL_BOOKS.reduce((sum, book) => sum + book.chapters.reduce((s, ch) => s + ch.lessons.length, 0), 0)
 
 // Rarity tiers with colors

@@ -33,8 +33,11 @@ import millionaireNextDoor from '../data/books/millionaire-next-door.json'
 import thinkAndGrowRich from '../data/books/think-and-grow-rich.json'
 import blueOceanStrategy from '../data/books/blue-ocean-strategy.json'
 import threeSecondRule from '../data/books/three-second-rule.json'
+import awakenTheGiant from '../data/books/awaken-the-giant.json'
+import resultantIntelligence from '../data/books/resultant-intelligence.json'
+import positiveIntelligence from '../data/books/positive-intelligence.json'
 
-const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook, 'indistractable': indistractable, 'grit': grit, 'power-of-now': powerOfNow, 'seven-habits': sevenHabits, 'thinking-fast-slow': thinkingFastSlow, 'psychology-of-money': psychologyOfMoney, 'millionaire-next-door': millionaireNextDoor, 'think-and-grow-rich': thinkAndGrowRich, 'blue-ocean-strategy': blueOceanStrategy, 'three-second-rule': threeSecondRule }
+const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook, 'indistractable': indistractable, 'grit': grit, 'power-of-now': powerOfNow, 'seven-habits': sevenHabits, 'thinking-fast-slow': thinkingFastSlow, 'psychology-of-money': psychologyOfMoney, 'millionaire-next-door': millionaireNextDoor, 'think-and-grow-rich': thinkAndGrowRich, 'blue-ocean-strategy': blueOceanStrategy, 'three-second-rule': threeSecondRule, 'awaken-the-giant': awakenTheGiant, 'resultant-intelligence': resultantIntelligence, 'positive-intelligence': positiveIntelligence }
 
 const EXERCISE_TYPE_NAMES = {
   'multiple-choice': 'בחירה מרובה',

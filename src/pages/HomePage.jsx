@@ -26,8 +26,11 @@ import millionaireNextDoor from '../data/books/millionaire-next-door.json'
 import thinkAndGrowRich from '../data/books/think-and-grow-rich.json'
 import blueOceanStrategy from '../data/books/blue-ocean-strategy.json'
 import threeSecondRule from '../data/books/three-second-rule.json'
+import awakenTheGiant from '../data/books/awaken-the-giant.json'
+import resultantIntelligence from '../data/books/resultant-intelligence.json'
+import positiveIntelligence from '../data/books/positive-intelligence.json'
 
-const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable, grit, powerOfNow, sevenHabits, thinkingFastSlow, psychologyOfMoney, millionaireNextDoor, thinkAndGrowRich, blueOceanStrategy, threeSecondRule]
+const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable, grit, powerOfNow, sevenHabits, thinkingFastSlow, psychologyOfMoney, millionaireNextDoor, thinkAndGrowRich, blueOceanStrategy, threeSecondRule, awakenTheGiant, resultantIntelligence, positiveIntelligence]
 
 const BOOK_COVERS = {
   'strengths-finder': '/backgrounds/raw-diamond.png',
@@ -40,12 +43,13 @@ const BOOK_COVERS = {
 
 const BOOK_CATEGORIES = {
   'הכל': null,
-  'פרודוקטיביות': ['atomic-habits', 'indistractable', 'three-second-rule'],
-  'חשיבה': ['thinking-fast-slow', 'mindset-book', 'think-and-grow-rich'],
+  'פרודוקטיביות': ['atomic-habits', 'indistractable', 'three-second-rule', 'resultant-intelligence'],
+  'חשיבה': ['thinking-fast-slow', 'mindset-book', 'think-and-grow-rich', 'positive-intelligence'],
   'כסף': ['psychology-of-money', 'millionaire-next-door'],
   'רגש וחוסן': ['happy-chemicals', 'power-of-now', 'grit'],
   'עסקים': ['blue-ocean-strategy', 'next-five-moves'],
   'חוזקות': ['strengths-finder', 'seven-habits'],
+  'שינוי אישי': ['awaken-the-giant'],
 }
 
 function BookCategories({ books, player, navigate, BOOK_COVERS }) {
