@@ -140,7 +140,7 @@ function OfflineDetector() {
 }
 
 export default function App() {
-  const { isAuthenticated, loading } = useAuth()
+  const { isAuthenticated, isGuest, loading } = useAuth()
 
   // Apply saved accessibility settings on mount
   useEffect(() => {
@@ -170,7 +170,7 @@ export default function App() {
           path="/"
           element={
             loading ? <Spinner size="lg" text="טוען..." /> :
-            isAuthenticated ? <Navigate to="/home" replace /> : <PageSuspense><LandingPage /></PageSuspense>
+            (isAuthenticated && !isGuest) ? <Navigate to="/home" replace /> : <PageSuspense><LandingPage /></PageSuspense>
           }
         />
         <Route
