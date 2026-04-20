@@ -36,7 +36,11 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
       return
     }
 
-    onAnswer(correct, exercise.explanation)
+    // If wrong, show specific wrong explanation if available
+    const explanation = (!correct && exercise.wrongExplanations?.[selected])
+      ? exercise.wrongExplanations[selected]
+      : exercise.explanation
+    onAnswer(correct, explanation)
   }, [selected, eliminated, exercise, onAnswer, triggerShake])
 
   // Keyboard shortcuts: 1-4 to select, Enter to check

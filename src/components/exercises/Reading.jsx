@@ -48,26 +48,6 @@ export default function Reading({ exercise, onAnswer, disabled }) {
         </div>
       </div>
 
-      {/* Key points */}
-      {exercise.keyPoints?.length > 0 && (
-        <div className="glass-card p-3 sm:p-4 border-gold/15 bg-gold/5">
-          <div className="flex items-center gap-1.5 mb-2">
-            <Lightbulb className="w-3.5 h-3.5 text-gold" />
-            <p className="text-[10px] sm:text-xs font-bold text-gold/80">נקודות מפתח</p>
-          </div>
-          <ul className="space-y-1.5">
-            {exercise.keyPoints.map((point, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gold/15 flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-[9px] sm:text-[10px] font-bold text-gold">{i + 1}</span>
-                </span>
-                <p className="text-xs sm:text-sm text-frost-white/85 leading-relaxed flex-1">{point}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
       {/* Confirm button */}
       <button
         onClick={handleConfirm}
@@ -91,6 +71,26 @@ export default function Reading({ exercise, onAnswer, disabled }) {
           </>
         )}
       </button>
+
+      {/* Key points — shown as summary AFTER reading, not before exercises */}
+      {confirmed && exercise.keyPoints?.length > 0 && (
+        <div className="glass-card p-3 sm:p-4 border-gold/15 bg-gold/5 animate-fade-in">
+          <div className="flex items-center gap-1.5 mb-2">
+            <Lightbulb className="w-3.5 h-3.5 text-gold" />
+            <p className="text-[10px] sm:text-xs font-bold text-gold/80">נקודות מפתח לסיכום</p>
+          </div>
+          <ul className="space-y-1.5">
+            {exercise.keyPoints.map((point, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gold/15 flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="text-[9px] sm:text-[10px] font-bold text-gold">{i + 1}</span>
+                </span>
+                <p className="text-xs sm:text-sm text-frost-white/85 leading-relaxed flex-1">{point}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }
