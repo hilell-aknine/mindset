@@ -7,9 +7,10 @@ export default function FillBlank({ exercise, onAnswer, disabled }) {
     return shuffleArray(exercise.options.map((opt, i) => ({ text: opt, originalIndex: i })))
   }, [exercise.options])
 
+  const template = exercise.template || exercise.question || ''
   const filledTemplate = selected !== null
-    ? exercise.template.replace('___', exercise.options[selected])
-    : exercise.template
+    ? template.replace('___', exercise.options[selected])
+    : template
 
   const handleSelect = useCallback((originalIndex) => {
     if (disabled) return

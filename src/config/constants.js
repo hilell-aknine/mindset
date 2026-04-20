@@ -129,6 +129,7 @@ export const getLevelForXP = (xp) => {
 export const getXPProgress = (xp) => {
   const level = getLevelForXP(xp)
   const currentThreshold = LEVEL_THRESHOLDS[level - 1] || 0
-  const nextThreshold = LEVEL_THRESHOLDS[level] || LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1]
+  const nextThreshold = LEVEL_THRESHOLDS[level]
+  if (!nextThreshold || nextThreshold === currentThreshold) return 100
   return Math.min(((xp - currentThreshold) / (nextThreshold - currentThreshold)) * 100, 100)
 }

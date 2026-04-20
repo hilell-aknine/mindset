@@ -25,9 +25,9 @@ import threeSecondRule from '../data/books/three-second-rule.json'
 
 const ALL_BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook, 'indistractable': indistractable, 'grit': grit, 'power-of-now': powerOfNow, 'seven-habits': sevenHabits, 'thinking-fast-slow': thinkingFastSlow, 'psychology-of-money': psychologyOfMoney, 'millionaire-next-door': millionaireNextDoor, 'think-and-grow-rich': thinkAndGrowRich, 'blue-ocean-strategy': blueOceanStrategy, 'three-second-rule': threeSecondRule }
 import { getXPMultiplier, checkStreakMilestone } from '../lib/events'
+import { playerKey } from '../lib/storageKeys'
 
 const PlayerContext = createContext(null)
-const STORAGE_KEY = 'mindset_player'
 const SAVE_DEBOUNCE = 1000
 
 export function PlayerProvider({ children }) {
@@ -37,15 +37,27 @@ export function PlayerProvider({ children }) {
   const [streakMilestone, setStreakMilestone] = useState(null)
   const saveTimeout = useRef(null)
 
-  // Load player data
+  // Load player data. Resets state aggressively on every auth change so the
+  // previous user's XP/progress cannot leak into the next user's render.
   useEffect(() => {
-    if (!isAuthenticated) return
+    if (!isAuthenticated) {
+      // Logged out — wipe in-memory state. Storage purge happens in AuthContext.logout().
+      setPlayer(DEFAULT_PLAYER)
+      setLoaded(false)
+      return
+    }
+    // Always reset to defaults BEFORE loading, so a stale setPlayer from a
+    // previous user never appears mid-transition.
+    setPlayer(DEFAULT_PLAYER)
+    setLoaded(false)
     loadPlayerData()
-  }, [isAuthenticated, user?.id])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, user?.id, isGuest])
 
   const loadPlayerData = async () => {
-    // Try localStorage first
-    const stored = localStorage.getItem(STORAGE_KEY)
+    // Try localStorage first — using the CURRENT user's scoped key only.
+    const key = playerKey(user?.id)
+    const stored = localStorage.getItem(key)
     if (stored) {
       try { setPlayer(JSON.parse(stored)) } catch {}
     }
@@ -61,7 +73,7 @@ export function PlayerProvider({ children }) {
       if (data) {
         const mapped = mapFromDB(data)
         setPlayer(mapped)
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(mapped))
+        localStorage.setItem(key, JSON.stringify(mapped))
       } else {
         // Create new player row
         await supabase.from('mindset_users').insert({
@@ -251,7 +263,8 @@ export function PlayerProvider({ children }) {
 
   // Debounced save
   const savePlayer = useCallback((data) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    if (!user?.id) return // don't save if there's no user context
+    localStorage.setItem(playerKey(user.id), JSON.stringify(data))
 
     if (saveTimeout.current) clearTimeout(saveTimeout.current)
     saveTimeout.current = setTimeout(async () => {
@@ -271,7 +284,7 @@ export function PlayerProvider({ children }) {
         clearTimeout(saveTimeout.current)
         // Sync save via sendBeacon or localStorage is already saved
         if (!isGuest && user?.id) {
-          const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
+          const data = JSON.parse(localStorage.getItem(playerKey(user.id)) || '{}')
           const body = JSON.stringify(mapToDB(data))
           // Use fetch with keepalive for reliable PATCH on close
           try {
@@ -333,7 +346,7 @@ export function PlayerProvider({ children }) {
         hearts: Math.max(0, prev.hearts - 1),
         totalWrong: prev.totalWrong + 1,
         comboStreak: 0,
-        lastHeartLost: prev.hearts <= 1 ? new Date().toISOString() : (prev.lastHeartLost || new Date().toISOString()),
+        lastHeartLost: new Date().toISOString(),
       }
     })
   }, [updatePlayer])

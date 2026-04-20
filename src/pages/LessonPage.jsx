@@ -1,7 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { usePlayer } from '../contexts/PlayerContext'
+import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../contexts/ToastContext'
+import { lessonProgressPrefix } from '../lib/storageKeys'
 import { useSound } from '../hooks/useSound'
 import { checkNewAchievements } from '../lib/achievements'
 import { getComboBonus, getComboLabel, XP_CORRECT_ANSWER } from '../config/constants'
@@ -46,24 +48,22 @@ const EXERCISE_TYPE_NAMES = {
   'reading': 'קטע קריאה',
 }
 
-// --- Lesson progress persistence (survives refresh) ---
-const PROGRESS_PREFIX = 'mindset_lesson_progress_'
-
-function saveProgress(lessonKey, data) {
+// --- Lesson progress persistence (survives refresh, per-user) ---
+function saveProgress(userId, lessonKey, data) {
   try {
-    localStorage.setItem(PROGRESS_PREFIX + lessonKey, JSON.stringify({ ...data, savedAt: Date.now() }))
+    localStorage.setItem(lessonProgressPrefix(userId) + lessonKey, JSON.stringify({ ...data, savedAt: Date.now() }))
   } catch {}
 }
 
-function loadProgress(lessonKey) {
+function loadProgress(userId, lessonKey) {
   try {
-    const raw = localStorage.getItem(PROGRESS_PREFIX + lessonKey)
+    const raw = localStorage.getItem(lessonProgressPrefix(userId) + lessonKey)
     return raw ? JSON.parse(raw) : null
   } catch { return null }
 }
 
-function clearProgress(lessonKey) {
-  try { localStorage.removeItem(PROGRESS_PREFIX + lessonKey) } catch {}
+function clearProgress(userId, lessonKey) {
+  try { localStorage.removeItem(lessonProgressPrefix(userId) + lessonKey) } catch {}
 }
 
 // Mini confetti particles for correct answers — scales up with combo
@@ -134,6 +134,8 @@ export default function LessonPage() {
   const { bookSlug, chapterIndex, lessonIndex } = useParams()
   const navigate = useNavigate()
   const { player, updatePlayer, onCorrectAnswer, onWrongAnswer, completeLesson, addToSpacedReview } = usePlayer()
+  const { user } = useAuth()
+  const userId = user?.id
   const toast = useToast()
   const { play } = useSound()
   const announce = useAnnounce()
@@ -144,7 +146,7 @@ export default function LessonPage() {
   const exercises = lesson?.exercises || []
 
   const lessonKey = `${bookSlug}:${chapterIndex}:${lessonIndex}`
-  const savedProgress = loadProgress(lessonKey)
+  const savedProgress = loadProgress(userId, lessonKey)
 
   const [currentIndex, setCurrentIndex] = useState(() => {
     return (savedProgress && savedProgress.currentIndex < exercises.length) ? savedProgress.currentIndex : 0
@@ -179,7 +181,7 @@ export default function LessonPage() {
   useEffect(() => {
     if (prevLessonKey.current !== lessonKey) {
       prevLessonKey.current = lessonKey
-      const saved = loadProgress(lessonKey)
+      const saved = loadProgress(userId, lessonKey)
       setCurrentIndex((saved && saved.currentIndex < exercises.length) ? saved.currentIndex : 0)
       setFeedback(null)
       setMistakes(saved?.mistakes || 0)
@@ -202,7 +204,7 @@ export default function LessonPage() {
   // Persist exercise progress for refresh recovery
   useEffect(() => {
     if (!isComplete && exercises.length > 0) {
-      saveProgress(lessonKey, { currentIndex, mistakes, totalSpeedBonus })
+      saveProgress(userId, lessonKey, { currentIndex, mistakes, totalSpeedBonus })
     }
   }, [currentIndex, mistakes, totalSpeedBonus, isComplete, lessonKey, exercises.length])
 
@@ -248,7 +250,27 @@ export default function LessonPage() {
     onWrongAnswer()
     setMistakes(m => m + 1)
     setFeedback({ correct: false, explanation: 'נגמר הזמן! נסה לענות מהר יותר בפעם הבאה.' })
-  }, [play, onWrongAnswer])
+
+    // Add to spaced review (same as wrong answer path)
+    const reviewItem = {
+      bookSlug,
+      chapterIndex: parseInt(chapterIndex),
+      lessonIndex: parseInt(lessonIndex),
+      exerciseIndex: currentIndex,
+    }
+    updatePlayer(prev => {
+      const queue = prev.reviewQueue || []
+      const exists = queue.some(q =>
+        q.bookSlug === reviewItem.bookSlug &&
+        q.chapterIndex === reviewItem.chapterIndex &&
+        q.lessonIndex === reviewItem.lessonIndex &&
+        q.exerciseIndex === reviewItem.exerciseIndex
+      )
+      if (exists) return prev
+      return { ...prev, reviewQueue: [...queue, reviewItem] }
+    })
+    addToSpacedReview(reviewItem.bookSlug, reviewItem.chapterIndex, reviewItem.lessonIndex, reviewItem.exerciseIndex)
+  }, [play, onWrongAnswer, bookSlug, chapterIndex, lessonIndex, currentIndex, updatePlayer, addToSpacedReview])
 
   const handleUseToken = useCallback(() => {
     updatePlayer(prev => ({
@@ -326,32 +348,29 @@ export default function LessonPage() {
       setFeedback({ correct: false, explanation })
 
       // Add to review queue
+      const reviewItem = {
+        bookSlug,
+        chapterIndex: parseInt(chapterIndex),
+        lessonIndex: parseInt(lessonIndex),
+        exerciseIndex: currentIndex,
+      }
       updatePlayer(prev => {
         const queue = prev.reviewQueue || []
-        const item = {
-          bookSlug,
-          chapterIndex: parseInt(chapterIndex),
-          lessonIndex: parseInt(lessonIndex),
-          exerciseIndex: currentIndex,
-        }
         const exists = queue.some(q =>
-          q.bookSlug === item.bookSlug &&
-          q.chapterIndex === item.chapterIndex &&
-          q.lessonIndex === item.lessonIndex &&
-          q.exerciseIndex === item.exerciseIndex
+          q.bookSlug === reviewItem.bookSlug &&
+          q.chapterIndex === reviewItem.chapterIndex &&
+          q.lessonIndex === reviewItem.lessonIndex &&
+          q.exerciseIndex === reviewItem.exerciseIndex
         )
         if (exists) return prev
-
-        // Add to spaced repetition queue
-        addToSpacedReview(
-          item.bookSlug,
-          item.chapterIndex,
-          item.lessonIndex,
-          item.exerciseIndex
-        )
-
-        return { ...prev, reviewQueue: [...queue, item] }
+        return { ...prev, reviewQueue: [...queue, reviewItem] }
       })
+      addToSpacedReview(
+        reviewItem.bookSlug,
+        reviewItem.chapterIndex,
+        reviewItem.lessonIndex,
+        reviewItem.exerciseIndex
+      )
     }
   }, [onCorrectAnswer, onWrongAnswer, updatePlayer, play, bookSlug, chapterIndex, lessonIndex, currentIndex, player.comboStreak, timerEnabled])
 
@@ -391,7 +410,7 @@ export default function LessonPage() {
       completeLesson(bookSlug, parseInt(chapterIndex), parseInt(lessonIndex), mistakes)
       play('lessonComplete')
       setIsComplete(true)
-      clearProgress(lessonKey)
+      clearProgress(userId, lessonKey)
     } else {
       // Animate exercise transition
       play('transition')

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { usePlayer } from '../../contexts/PlayerContext'
 import { useToast } from '../../contexts/ToastContext'
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock'
 import { X, Send, Loader2, Bot, User, Zap } from 'lucide-react'
 
 export default function AICoachChat({ bookSlug, bookTitle, systemPrompt, onClose }) {
@@ -21,18 +22,18 @@ export default function AICoachChat({ bookSlug, bookTitle, systemPrompt, onClose
     messagesEnd.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // Escape to close, auto-focus input, prevent background scroll on mobile
+  // iOS-safe background scroll lock while chat is open
+  useBodyScrollLock(true)
+
+  // Escape to close, auto-focus input
   useEffect(() => {
     const handler = (e) => {
       if (e.key === 'Escape') onClose()
     }
     window.addEventListener('keydown', handler)
     inputRef.current?.focus()
-    // Prevent background scroll when chat is open (mobile full-screen)
-    document.body.style.overflow = 'hidden'
     return () => {
       window.removeEventListener('keydown', handler)
-      document.body.style.overflow = ''
     }
   }, [onClose])
 
@@ -52,8 +53,6 @@ export default function AICoachChat({ bookSlug, bookTitle, systemPrompt, onClose
     setMessages(prev => [...prev, { role: 'user', content: userMsg }])
     setLoading(true)
 
-    spendToken()
-
     try {
       const res = await fetch('/api/ai-coach', {
         method: 'POST',
@@ -66,6 +65,7 @@ export default function AICoachChat({ bookSlug, bookTitle, systemPrompt, onClose
       })
 
       if (res.ok) {
+        spendToken()
         const data = await res.json()
         setMessages(prev => [...prev, { role: 'assistant', content: data.reply || 'לא קיבלתי תשובה. נסה שוב.' }])
       } else {

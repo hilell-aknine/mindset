@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { usePlayer } from '../../contexts/PlayerContext'
 import { useToast } from '../../contexts/ToastContext'
-import { X, Send, Loader2, Bot, User, Theater, Sparkles } from 'lucide-react'
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock'
+import { X, Send, Loader2, Bot, User, Theater, Sparkles, Crown } from 'lucide-react'
 
 const SCENARIO_PROMPTS = {
   'atomic-habits': 'אתה מנחה סימולציה. צור תרחיש מהחיים האמיתיים שדורש יישום של עקרונות "הרגלים אטומים" (שינוי סביבה, זהות, מערכות vs מטרות, חוק 1% וכו\'). הצג מצב ושאל "מה היית עושה?" עם 3 אפשרויות. רק אחת מיישמת נכון את העיקרון. אחרי שהמשתמש בוחר, הסבר למה. ענה בעברית.',
@@ -12,8 +13,9 @@ const SCENARIO_PROMPTS = {
 }
 
 export default function AIScenarioChat({ bookSlug, onClose }) {
-  const { player } = usePlayer()
+  const { player, spendToken } = usePlayer()
   const toast = useToast()
+  const tokensLeft = player.tokens || 0
   const [messages, setMessages] = useState([
     { role: 'assistant', content: 'ברוך הבא לסימולציה! אני אציג לך תרחיש מהחיים האמיתיים ותצטרך להחליט מה לעשות — לפי העקרונות שלמדת. מוכן?' }
   ])
@@ -27,17 +29,22 @@ export default function AIScenarioChat({ bookSlug, onClose }) {
     messagesEnd.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  // iOS-safe background scroll lock while modal is open
+  useBodyScrollLock(true)
+
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', handler)
-    document.body.style.overflow = 'hidden'
     return () => {
       window.removeEventListener('keydown', handler)
-      document.body.style.overflow = ''
     }
   }, [onClose])
 
   const startScenario = async () => {
+    if (tokensLeft <= 0) {
+      toast.error('נגמרו הטוקנים! חזור מחר')
+      return
+    }
     setStarted(true)
     setLoading(true)
 
@@ -53,6 +60,7 @@ export default function AIScenarioChat({ bookSlug, onClose }) {
         })
       })
       if (res.ok) {
+        spendToken()
         const data = await res.json()
         setMessages(prev => [...prev, { role: 'assistant', content: data.reply || 'לא הצלחתי ליצור תרחיש. נסה שוב.' }])
       } else {
@@ -68,6 +76,10 @@ export default function AIScenarioChat({ bookSlug, onClose }) {
 
   const handleSend = async () => {
     if (!input.trim() || loading) return
+    if (tokensLeft <= 0) {
+      toast.error('נגמרו הטוקנים! חזור מחר')
+      return
+    }
     const userMsg = input.trim()
     setInput('')
     setMessages(prev => [...prev, { role: 'user', content: userMsg }])
@@ -85,6 +97,7 @@ export default function AIScenarioChat({ bookSlug, onClose }) {
         })
       })
       if (res.ok) {
+        spendToken()
         const data = await res.json()
         setMessages(prev => [...prev, { role: 'assistant', content: data.reply || 'נסה שוב.' }])
       } else {
