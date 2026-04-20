@@ -17,7 +17,7 @@ import LessonComplete from '../components/feedback/LessonComplete'
 import LevelUpOverlay from '../components/feedback/LevelUpOverlay'
 import AchievementPopup from '../components/feedback/AchievementPopup'
 import OutOfHeartsModal from '../components/modals/OutOfHeartsModal'
-import { X, Heart, Zap, Timer, Flame } from 'lucide-react'
+import { X, Heart, Zap, Timer, Flame, AlertTriangle } from 'lucide-react'
 import strengthsFinder from '../data/books/strengths-finder.json'
 import atomicHabits from '../data/books/atomic-habits.json'
 import happyChemicals from '../data/books/happy-chemicals.json'
@@ -164,6 +164,7 @@ export default function LessonPage() {
   const [wrongCountForExercise, setWrongCountForExercise] = useState(0)
   const [floatingXP, setFloatingXP] = useState(null)
   const [timerEnabled, setTimerEnabled] = useState(false)
+  const [showExitConfirm, setShowExitConfirm] = useState(false)
   const timerTimeLeft = useRef(TIMER_DURATION)
   const [totalSpeedBonus, setTotalSpeedBonus] = useState(() => savedProgress?.totalSpeedBonus || 0)
   const [halfwayShown, setHalfwayShown] = useState(false)
@@ -512,7 +513,7 @@ export default function LessonPage() {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => navigate(`/book/${bookSlug}`)}
+              onClick={() => currentIndex >= 3 ? setShowExitConfirm(true) : navigate(`/book/${bookSlug}`)}
               className="p-2.5 -m-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-label="חזרה לספר"
             >
@@ -655,6 +656,34 @@ export default function LessonPage() {
           }}
           reviewCount={player.reviewQueue?.length || 0}
         />
+      )}
+
+      {/* Exit confirmation modal */}
+      {showExitConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowExitConfirm(false)} />
+          <div className="relative z-10 glass-card p-6 max-w-sm w-full text-center" role="dialog" aria-modal="true">
+            <AlertTriangle className="w-10 h-10 text-warning mx-auto mb-3" />
+            <h3 className="font-display text-lg font-bold text-frost-white mb-2">לעצור באמצע?</h3>
+            <p className="text-sm text-frost-white/60 leading-relaxed mb-5">
+              ההתקדמות בשיעור הזה לא תישמר. הרצף היומי שלך עדיין בטוח.
+            </p>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => setShowExitConfirm(false)}
+                className="w-full py-3 rounded-xl bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base font-bold text-sm"
+              >
+                המשך ללמוד
+              </button>
+              <button
+                onClick={() => { setShowExitConfirm(false); navigate(`/book/${bookSlug}`) }}
+                className="w-full py-3 rounded-xl border border-white/10 text-frost-white/50 text-sm hover:text-frost-white hover:border-white/20 transition-colors"
+              >
+                צא מהשיעור
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </main>
   )

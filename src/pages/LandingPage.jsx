@@ -132,12 +132,12 @@ function RevealSection({ children, className = '', delay = 0 }) {
   )
 }
 
-function CounterStat({ target, label, icon: Icon }) {
+function CounterStat({ target, suffix, label, icon: Icon }) {
   const { count, ref } = useCountUp(target)
   return (
     <div ref={ref} className="flex flex-col items-center gap-0.5 sm:gap-1">
       <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-gold mb-0.5 sm:mb-1" />
-      <span className="font-display text-xl sm:text-3xl font-bold text-frost-white">{count}</span>
+      <span className="font-display text-xl sm:text-3xl font-bold text-frost-white">{count}{suffix || ''}</span>
       <span className="text-[11px] sm:text-xs text-frost-white/40">{label}</span>
     </div>
   )
@@ -160,10 +160,9 @@ function useRotatingWord(words, interval = 2800) {
   return { word: words[index], visible }
 }
 
-// Simulated live users
-// Honest static label instead of a fake live counter.
+// Honest label — no fake counter
 function useLiveUsers() {
-  return 'אלפי'
+  return 'הצטרפו לראשונים שלומדים ספרים אחרת'
 }
 
 // Interactive exercise demo
@@ -425,7 +424,6 @@ export default function LandingPage() {
   const ctaRef = useRef(null)
   const heroRef = useRef(null)
   const { word: heroWord, visible: heroWordVisible } = useRotatingWord(HERO_WORDS)
-  const liveUsers = useLiveUsers()
 
   useEffect(() => {
     const onScroll = () => {
@@ -504,7 +502,7 @@ export default function LandingPage() {
             {/* Live users indicator */}
             <div className={`items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-success/5 border border-success/20 transition-opacity duration-300 hidden sm:flex ${scrolled ? 'opacity-100' : 'opacity-0'}`}>
               <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-              <span className="text-[10px] text-success/80 font-medium">{liveUsers} לומדים עכשיו</span>
+              <span className="text-[10px] text-success/80 font-medium">חינם לחלוטין</span>
             </div>
             <button
               onClick={openAuth}
@@ -554,7 +552,7 @@ export default function LandingPage() {
                 פרק ראשון חינם לכל ספר
               </div>
               <h1 className="font-display text-[28px] sm:text-5xl lg:text-6xl font-black leading-[1.2] sm:leading-tight mb-3 sm:mb-5">
-                מה אם יכולת{' '}
+                <span className="block sm:inline">מה אם יכולת{' '}
                 <span
                   aria-live="polite"
                   className={`inline-block text-transparent bg-clip-text bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-400 ${heroWordVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}
@@ -562,13 +560,11 @@ export default function LandingPage() {
                 >
                   {heroWord}
                 </span>{' '}
-                ספר
-                <br />
-                במקום לקרוא אותו?
+                ספר</span>{' '}
+                <span className="block sm:inline">במקום לקרוא אותו?</span>
               </h1>
               <p className="text-frost-white/60 text-sm sm:text-lg leading-relaxed max-w-lg mx-auto lg:mx-0 mb-5 sm:mb-8">
-                MindSet הופך ספרי פיתוח אישי לשיעורים אינטראקטיביים עם תרגילים, ניקוד ומאמן AI —
-                כמו Duolingo, רק לספרים.
+                MindSet הופך ספרי פיתוח אישי לחוויית למידה אינטראקטיבית — תרגילים, מאמן AI וחזרה מרווחת. 5 דקות ביום שבאמת נשארות איתך.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-3 justify-center lg:justify-start">
                 <button
@@ -585,10 +581,10 @@ export default function LandingPage() {
                   גלה עוד
                 </button>
               </div>
-              {/* Live users - mobile */}
+              {/* Join CTA - mobile */}
               <div className="flex items-center justify-center gap-1.5 mt-4 sm:hidden">
                 <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-                <span className="text-[11px] text-frost-white/40">{liveUsers} לומדים עכשיו</span>
+                <span className="text-[11px] text-frost-white/40">חינם · בלי כרטיס אשראי</span>
               </div>
             </div>
 
@@ -606,7 +602,7 @@ export default function LandingPage() {
           <div className="max-w-6xl mx-auto px-4 py-5 sm:py-6 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-4 text-center">
             <CounterStat target={BOOKS.length} label="ספרים זמינים" icon={BookOpen} />
             <CounterStat target={7} label="סוגי תרגילים" icon={Target} />
-            <CounterStat target={360} label="תרגילים" icon={Flame} />
+            <CounterStat target={1400} suffix="+" label="תרגילים" icon={Flame} />
             <CounterStat target={5} label="דקות ביום" icon={Clock} />
           </div>
           {/* Trust badges */}
@@ -625,11 +621,11 @@ export default function LandingPage() {
       </RevealSection>
 
       {/* ─── How It Works ─── */}
-      <section className="py-12 sm:py-24 px-4">
+      <section className="py-10 sm:py-16 px-4">
         <div className="max-w-4xl mx-auto">
           <RevealSection className="text-center mb-8 sm:mb-12">
             <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">איך זה עובד?</h2>
-            <p className="text-frost-white/50 text-sm sm:text-base">שלושה צעדים לידע אמיתי</p>
+            <p className="text-frost-white/50 text-sm sm:text-base">שלושה צעדים ללמידה שנשארת</p>
           </RevealSection>
 
           {/* Steps - vertical compact on mobile, 3-col on desktop */}
@@ -684,7 +680,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Book Showcase ─── */}
-      <section className="py-12 sm:py-24 px-4 relative overflow-hidden">
+      <section className="py-10 sm:py-16 px-4 relative overflow-hidden">
         {/* Background video on desktop, static image on mobile */}
         <video
           autoPlay
@@ -711,7 +707,7 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto relative z-10">
           <RevealSection className="text-center mb-8 sm:mb-12">
             <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">הספרים שלנו</h2>
-            <p className="text-frost-white/50 text-sm sm:text-base">{BOOKS.length} ספרים. 5 דקות ביום. ידע שנשאר.</p>
+            <p className="text-frost-white/50 text-sm sm:text-base">{BOOKS.length} ספרים. 5 דקות ביום. לאורך זמן — ידע שנשאר.</p>
           </RevealSection>
 
           <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
@@ -767,7 +763,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Exercise Types Preview ─── */}
-      <section className="py-12 sm:py-24 px-4 bg-white/[0.01] border-y border-white/5 relative overflow-hidden">
+      <section className="py-10 sm:py-16 px-4 bg-white/[0.01] border-y border-white/5 relative overflow-hidden">
         <img
           src="/backgrounds/exercises-bg.png"
           alt=""
@@ -820,7 +816,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Gamification Features ─── */}
-      <section className="py-12 sm:py-24 px-4 relative overflow-hidden">
+      <section className="py-10 sm:py-16 px-4 relative overflow-hidden">
         <img
           src="/backgrounds/hexagons-bg.png"
           alt=""
@@ -874,73 +870,48 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Testimonials ─── */}
-      <section className="py-12 sm:py-24 px-4 bg-white/[0.01] border-y border-white/5">
-        <div className="max-w-5xl mx-auto">
+      {/* ─── How Is This Different ─── */}
+      <section className="py-10 sm:py-16 px-4 bg-white/[0.01] border-y border-white/5">
+        <div className="max-w-4xl mx-auto">
           <RevealSection className="text-center mb-6 sm:mb-10">
-            <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">מה אומרים הלומדים</h2>
-            <p className="text-frost-white/40 text-xs sm:text-sm">הצטרפו לקהילה של לומדים שכבר שינו את הדרך שבה הם קולטים ידע</p>
+            <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">איך זה שונה מקריאה רגילה?</h2>
+            <p className="text-frost-white/40 text-xs sm:text-sm">למידה פעילה vs. קריאה פסיבית</p>
           </RevealSection>
 
-          <div className="grid sm:grid-cols-3 gap-3 sm:gap-4">
-            {[
-              {
-                name: 'נועם ר.',
-                avatar: '/avatars/noam.png',
-                text: '5 דקות ביום בדרך לעבודה — ואני מפנים את החומר הרבה יותר טוב מקריאה רגילה.',
-                streak: 14,
-                book: 'הרגלים אטומים',
-                level: 'רמה 8',
-              },
-              {
-                name: 'שירה מ.',
-                avatar: '/avatars/shira.png',
-                text: 'הליגות והאירועים גורמים לי לחזור כל יום. כבר 30 ימים רצף!',
-                streak: 30,
-                book: 'גלה את החוזקות שלך',
-                level: 'רמה 14',
-              },
-              {
-                name: 'יונתן ק.',
-                avatar: '/avatars/yonatan.png',
-                text: 'המאמן AI עזר לי להבין רעיונות שלא תפסתי בקריאה הראשונה. שווה כל שקל.',
-                streak: 7,
-                book: 'הכימיקלים של האושר',
-                level: 'רמה 5',
-              },
-            ].map((t, i) => (
-              <RevealSection key={t.name} delay={i * 100}>
-                <div className="glass-card p-4 sm:p-5 group hover:border-gold/15 transition-all">
-                  <div className="flex items-center gap-3 mb-3">
-                    <img src={t.avatar} alt={t.name} width={44} height={44} loading="lazy" className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-gold/30 group-hover:border-gold/60 transition-colors" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-bold text-frost-white">{t.name}</p>
-                        <StarRating />
-                      </div>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[10px] text-warning">🔥 רצף {t.streak} ימים</span>
-                        <span className="text-[9px] text-frost-white/20">·</span>
-                        <span className="text-[10px] text-frost-white/30">{t.level}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-xs sm:text-sm text-frost-white/60 leading-relaxed italic mb-2.5">
-                    &ldquo;{t.text}&rdquo;
-                  </p>
-                  <div className="flex items-center gap-1.5 pt-2.5 border-t border-white/5">
-                    <BookOpen className="w-3 h-3 text-dusty-aqua/50" />
-                    <span className="text-[10px] text-frost-white/30">לומד: {t.book}</span>
-                  </div>
-                </div>
-              </RevealSection>
-            ))}
-          </div>
+          <RevealSection>
+            <div className="glass-card overflow-hidden">
+              <table className="w-full text-sm" dir="rtl">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="p-3 sm:p-4 text-right text-frost-white/40 font-medium text-xs"></th>
+                    <th className="p-3 sm:p-4 text-center text-frost-white/40 font-medium text-xs">קריאה רגילה</th>
+                    <th className="p-3 sm:p-4 text-center text-gold font-bold text-xs">MindSet</th>
+                  </tr>
+                </thead>
+                <tbody className="text-xs sm:text-sm">
+                  {[
+                    ['זמן נדרש', '4-8 שעות', '5 דק\' ביום'],
+                    ['שימור ידע', '~10% אחרי שבוע', 'חזרה מרווחת אוטומטית'],
+                    ['מעורבות', 'פסיבית', 'אקטיבית — תרגילים + AI'],
+                    ['משוב', 'אין', 'מיידי בכל תרגיל'],
+                    ['מוטיבציה', 'דועכת', 'XP, רצפים, ליגות'],
+                    ['הבנה עמוקה', 'תלויה בקורא', 'מובנית בתרגול'],
+                  ].map(([label, regular, mindset], i) => (
+                    <tr key={i} className="border-b border-white/5 last:border-0">
+                      <td className="p-3 sm:p-4 text-frost-white/70 font-medium">{label}</td>
+                      <td className="p-3 sm:p-4 text-center text-frost-white/30">{regular}</td>
+                      <td className="p-3 sm:p-4 text-center text-frost-white/80 font-medium">{mindset}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </RevealSection>
         </div>
       </section>
 
       {/* ─── Features ─── */}
-      <section className="py-12 sm:py-24 px-4">
+      <section className="py-10 sm:py-16 px-4">
         <div className="max-w-5xl mx-auto">
           <RevealSection className="text-center mb-8 sm:mb-12">
             <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">למה MindSet?</h2>
@@ -1015,7 +986,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── FAQ ─── */}
-      <section id="faq" className="py-12 sm:py-24 px-4">
+      <section id="faq" className="py-10 sm:py-16 px-4">
         <div className="max-w-3xl mx-auto">
           <RevealSection className="text-center mb-6 sm:mb-10">
             <h2 className="font-display text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">שאלות נפוצות</h2>
@@ -1029,11 +1000,11 @@ export default function LandingPage() {
               },
               {
                 q: 'האם אני צריך לקרוא את הספר לפני?',
-                a: 'בכלל לא! MindSet מלמד את עקרונות הספר דרך תרגילים — בלי קריאה פסיבית. אחרי שתסיים, תדע את הרעיונות המרכזיים כאילו קראת את הספר.',
+                a: 'בכלל לא! MindSet מלמד את עקרונות הספר דרך תרגילים אינטראקטיביים. למידה פעילה ומרווחת יוצרת הפנמה עמוקה יותר מקריאה פסיבית אחת.',
               },
               {
                 q: 'כמה זמן לוקח כל שיעור?',
-                a: 'שיעור ממוצע לוקח 3-5 דקות. אתה לומד בקצב שלך — גם 5 דקות ביום מספיקות כדי להתקדם ולהפנים את החומר לעומק.',
+                a: 'שיעור ממוצע לוקח 3-5 דקות. הרעיון הוא לא לסיים ספר מהר — אלא ללמוד עקבית לאורך זמן. 5 דקות ביום במשך כמה שבועות יוצרות הפנמה עמוקה שקריאה רציפה לא נותנת.',
               },
               {
                 q: 'מה כלול בחינם?',
@@ -1053,7 +1024,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Final CTA + Auth ─── */}
-      <section ref={ctaRef} className="py-12 sm:py-24 px-4 relative">
+      <section ref={ctaRef} className="py-10 sm:py-16 px-4 relative">
         <div className="absolute top-0 right-1/4 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] rounded-full bg-deep-petrol/20 blur-[80px] sm:blur-[120px] pointer-events-none" />
         <div className="absolute bottom-0 left-1/4 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] rounded-full bg-gold/8 blur-[60px] sm:blur-[100px] pointer-events-none" />
 
@@ -1139,7 +1110,7 @@ export default function LandingPage() {
             </button>
             <div className="flex items-center justify-center gap-1.5 mt-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-              <span className="text-[10px] text-frost-white/30">{liveUsers} לומדים עכשיו · בלי כרטיס אשראי</span>
+              <span className="text-[10px] text-frost-white/30">חינם לחלוטין · בלי כרטיס אשראי</span>
             </div>
           </div>
         </div>

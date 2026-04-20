@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { checkAnswer } from '../../lib/gameEngine'
 import { useToast } from '../../contexts/ToastContext'
 
-const LETTERS = ['א', 'ב', 'ג', 'ד']
+const LETTERS = ['1', '2', '3', '4']
 
 export default function MultipleChoice({ exercise, onAnswer, disabled }) {
   const [selected, setSelected] = useState(null)
@@ -100,7 +100,6 @@ export default function MultipleChoice({ exercise, onAnswer, disabled }) {
                 'bg-white/5'
               }`}>
                 {LETTERS[i]}
-                <span className="absolute -top-1 -left-1 text-[8px] text-frost-white/25 font-mono bg-white/5 rounded px-1">{i + 1}</span>
               </span>
               <span className="text-xs sm:text-sm leading-relaxed flex-1 min-w-0 break-words">{option}</span>
             </button>

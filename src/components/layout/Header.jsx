@@ -9,6 +9,7 @@ export default function Header() {
   const { player } = usePlayer()
   const [showXPDetails, setShowXPDetails] = useState(false)
   const [heartTimerStr, setHeartTimerStr] = useState('')
+  const [tooltip, setTooltip] = useState(null) // 'streak' | 'hearts' | 'tokens' | null
 
   // Live countdown to next heart recovery
   useEffect(() => {
@@ -34,17 +35,22 @@ export default function Header() {
 
   const xpRef = useRef(null)
 
-  // Close XP popup on click outside
+  // Close XP popup and tooltips on click outside
   useEffect(() => {
-    if (!showXPDetails) return
+    if (!showXPDetails && !tooltip) return
     const handler = (e) => {
       if (xpRef.current && !xpRef.current.contains(e.target)) {
         setShowXPDetails(false)
       }
+      // Close tooltip if clicking outside the stats bar
+      if (tooltip) {
+        const statsBar = e.target.closest('[role="status"]')
+        if (!statsBar) setTooltip(null)
+      }
     }
     document.addEventListener('pointerdown', handler)
     return () => document.removeEventListener('pointerdown', handler)
-  }, [showXPDetails])
+  }, [showXPDetails, tooltip])
 
   return (
     <header className="sticky top-0 z-40 bg-bg-base/80 backdrop-blur-lg border-b border-white/5 safe-top" role="banner">
@@ -63,28 +69,58 @@ export default function Header() {
         <div className="flex items-center gap-3 sm:gap-4" role="status" aria-label="סטטיסטיקות שחקן">
           {/* Streak */}
           {player.currentStreak > 0 && (
-            <div className="flex items-center gap-1 text-warning min-h-[44px] justify-center" aria-label={`רצף: ${player.currentStreak} ימים`}>
-              <Flame className={`w-[18px] h-[18px] ${player.currentStreak >= 7 ? 'animate-heartbeat' : ''}`} aria-hidden="true" />
-              <span className="text-xs font-bold">{player.currentStreak}</span>
+            <div className="relative">
+              <button
+                onClick={() => setTooltip(tooltip === 'streak' ? null : 'streak')}
+                className="flex items-center gap-1 text-warning min-h-[44px] justify-center"
+                aria-label={`רצף: ${player.currentStreak} ימים`}
+              >
+                <Flame className={`w-[18px] h-[18px] ${player.currentStreak >= 7 ? 'animate-heartbeat' : ''}`} aria-hidden="true" />
+                <span className="text-xs font-bold">{player.currentStreak}</span>
+              </button>
+              {tooltip === 'streak' && (
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 glass-card p-3 animate-drop-in z-50 shadow-xl shadow-black/30 text-center">
+                  <p className="text-[11px] text-frost-white/70 leading-relaxed">🔥 רצף — מספר הימים שלמדת ברצף. המפתח לזיכרון לטווח ארוך.</p>
+                </div>
+              )}
             </div>
           )}
 
-          {/* Hearts — bigger touch target */}
-          <div
-            className={`flex items-center gap-1 min-h-[44px] justify-center ${player.hearts <= 1 ? 'text-danger animate-pulse' : 'text-danger'}`}
-            aria-label={`לבבות: ${player.hearts}`}
-          >
-            <Heart className="w-[18px] h-[18px] fill-current" aria-hidden="true" />
-            <span className="text-xs font-bold">{player.hearts}</span>
-            {heartTimerStr && (
-              <span className="text-[10px] text-frost-white/30 font-mono">{heartTimerStr}</span>
+          {/* Hearts */}
+          <div className="relative">
+            <button
+              onClick={() => setTooltip(tooltip === 'hearts' ? null : 'hearts')}
+              className={`flex items-center gap-1 min-h-[44px] justify-center ${player.hearts <= 1 ? 'text-danger animate-pulse' : 'text-danger'}`}
+              aria-label={`לבבות: ${player.hearts}`}
+            >
+              <Heart className="w-[18px] h-[18px] fill-current" aria-hidden="true" />
+              <span className="text-xs font-bold">{player.hearts}</span>
+              {heartTimerStr && (
+                <span className="text-[10px] text-frost-white/30 font-mono">{heartTimerStr}</span>
+              )}
+            </button>
+            {tooltip === 'hearts' && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 glass-card p-3 animate-drop-in z-50 shadow-xl shadow-black/30 text-center">
+                <p className="text-[11px] text-frost-white/70 leading-relaxed">❤️ לבבות — יש לך 5. כל טעות עולה לב. מתחדשים כל 20 דקות.</p>
+              </div>
             )}
           </div>
 
           {/* Tokens */}
-          <div className="flex items-center gap-1 text-gold min-h-[44px] justify-center" aria-label={`אסימונים: ${player.tokens}`}>
-            <Zap className="w-[18px] h-[18px] fill-current" aria-hidden="true" />
-            <span className="text-xs font-bold">{player.tokens}</span>
+          <div className="relative">
+            <button
+              onClick={() => setTooltip(tooltip === 'tokens' ? null : 'tokens')}
+              className="flex items-center gap-1 text-gold min-h-[44px] justify-center"
+              aria-label={`אסימונים: ${player.tokens}`}
+            >
+              <Zap className="w-[18px] h-[18px] fill-current" aria-hidden="true" />
+              <span className="text-xs font-bold">{player.tokens}</span>
+            </button>
+            {tooltip === 'tokens' && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 glass-card p-3 animate-drop-in z-50 shadow-xl shadow-black/30 text-center">
+                <p className="text-[11px] text-frost-white/70 leading-relaxed">⚡ XP — ניקוד שאתה צובר על למידה פעילה. עוזר לך לעלות רמות וליגות.</p>
+              </div>
+            )}
           </div>
 
           {/* XP / Level — clickable */}

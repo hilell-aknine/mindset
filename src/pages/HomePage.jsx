@@ -38,6 +38,98 @@ const BOOK_COVERS = {
   'indistractable': '/backgrounds/focus-shield.png',
 }
 
+const BOOK_CATEGORIES = {
+  'הכל': null,
+  'פרודוקטיביות': ['atomic-habits', 'indistractable', 'three-second-rule'],
+  'חשיבה': ['thinking-fast-slow', 'mindset-book', 'think-and-grow-rich'],
+  'כסף': ['psychology-of-money', 'millionaire-next-door'],
+  'רגש וחוסן': ['happy-chemicals', 'power-of-now', 'grit'],
+  'עסקים': ['blue-ocean-strategy', 'next-five-moves'],
+  'חוזקות': ['strengths-finder', 'seven-habits'],
+}
+
+function BookCategories({ books, player, navigate, BOOK_COVERS }) {
+  const [activeCategory, setActiveCategory] = useState('הכל')
+  const filteredBooks = activeCategory === 'הכל'
+    ? books
+    : books.filter(b => BOOK_CATEGORIES[activeCategory]?.includes(b.slug))
+
+  return (
+    <div data-spotlight="books">
+      {/* Category tabs */}
+      <div className="flex gap-2 overflow-x-auto pb-3 mb-4 mobile-scroll-x">
+        {Object.keys(BOOK_CATEGORIES).map(cat => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap shrink-0 transition-all ${
+              activeCategory === cat
+                ? 'bg-gold/20 border border-gold/40 text-gold'
+                : 'bg-white/5 border border-white/10 text-frost-white/50 hover:border-white/20'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Books grid */}
+      <div className="grid gap-4">
+        {filteredBooks.map((book, idx) => {
+          const totalLessons = book.chapters.reduce((acc, ch) => acc + ch.lessons.length, 0)
+          const completedCount = book.chapters.reduce((acc, ch) =>
+            acc + ch.lessons.filter((_, li) =>
+              player.completedLessons?.[`${book.slug}:${ch.orderIndex}:${li}`]
+            ).length, 0)
+          const progress = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0
+
+          return (
+            <button
+              key={book.slug}
+              onClick={() => navigate(`/book/${book.slug}`)}
+              className="glass-card p-4 flex items-center gap-3 text-right hover:border-gold/20 active:bg-white/5 press-scale transition-all group overflow-hidden w-full animate-fade-in min-h-[72px]"
+              style={{ animationDelay: `${Math.min(idx, 6) * 0.05}s` }}
+            >
+              {BOOK_COVERS[book.slug] ? (
+                <img
+                  src={BOOK_COVERS[book.slug]}
+                  alt={book.title}
+                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover shrink-0 group-hover:scale-105 transition-transform"
+                />
+              ) : (
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-2xl sm:text-3xl shrink-0 group-hover:scale-105 transition-transform">
+                  {book.icon}
+                </div>
+              )}
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <h3 className="font-display text-base sm:text-lg font-bold text-frost-white truncate">{book.title}</h3>
+                <p className="text-xs text-frost-white/40 mt-0.5">{book.author}</p>
+                {book.audience && <p className="text-[11px] text-frost-white/30 mt-0.5 truncate">{book.audience}</p>}
+                <div className="mt-2 flex items-center gap-2">
+                  <div
+                    className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden"
+                    role="progressbar"
+                    aria-valuenow={Math.round(progress)}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`${book.title}: ${Math.round(progress)}% הושלם`}
+                  >
+                    <div
+                      className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-500"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  <span className="text-[10px] text-frost-white/40">{Math.round(progress)}%</span>
+                </div>
+              </div>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 const DAILY_QUOTES = [
   { text: 'אתה לא צריך להיות מושלם כדי להתחיל, אבל צריך להתחיל כדי להשתפר.', source: 'הרגלים אטומים' },
   { text: 'כשאתה שם לב למה שעובד לך — אתה מתחזק. זו מהות החוזקות.', source: 'חוזקות' },
@@ -287,59 +379,8 @@ export default function HomePage() {
       </div>
 
 
-      {/* Books grid */}
-      <div className="grid gap-4" data-spotlight="books">
-        {BOOKS.map((book, idx) => {
-          const totalLessons = book.chapters.reduce((acc, ch) => acc + ch.lessons.length, 0)
-          const completedCount = book.chapters.reduce((acc, ch) =>
-            acc + ch.lessons.filter((_, li) =>
-              player.completedLessons?.[`${book.slug}:${ch.orderIndex}:${li}`]
-            ).length, 0)
-          const progress = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0
-
-          return (
-            <button
-              key={book.slug}
-              onClick={() => navigate(`/book/${book.slug}`)}
-              className="glass-card p-4 flex items-center gap-3 text-right hover:border-gold/20 active:bg-white/5 press-scale transition-all group overflow-hidden w-full animate-fade-in min-h-[72px]"
-              style={{ animationDelay: `${0.2 + Math.min(idx, 6) * 0.05}s` }}
-            >
-              {BOOK_COVERS[book.slug] ? (
-                <img
-                  src={BOOK_COVERS[book.slug]}
-                  alt={book.title}
-                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover shrink-0 group-hover:scale-105 transition-transform"
-                />
-              ) : (
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-2xl sm:text-3xl shrink-0 group-hover:scale-105 transition-transform">
-                  {book.icon}
-                </div>
-              )}
-              <div className="flex-1 min-w-0 overflow-hidden">
-                <h3 className="font-display text-base sm:text-lg font-bold text-frost-white truncate">{book.title}</h3>
-                <p className="text-xs text-frost-white/40 mt-0.5">{book.author}</p>
-                {book.audience && <p className="text-[11px] text-frost-white/30 mt-0.5 truncate">{book.audience}</p>}
-                <div className="mt-2 flex items-center gap-2">
-                  <div
-                    className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden"
-                    role="progressbar"
-                    aria-valuenow={Math.round(progress)}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label={`${book.title}: ${Math.round(progress)}% הושלם`}
-                  >
-                    <div
-                      className="h-full rounded-full bg-gradient-to-l from-gold to-dusty-aqua transition-all duration-500"
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
-                  <span className="text-[10px] text-frost-white/40">{Math.round(progress)}%</span>
-                </div>
-              </div>
-            </button>
-          )
-        })}
-      </div>
+      {/* Books grid with category filter */}
+      <BookCategories books={BOOKS} player={player} navigate={navigate} BOOK_COVERS={BOOK_COVERS} />
 
       {/* Quick actions — 2-column layout for better touch targets */}
       <div className="grid grid-cols-2 gap-3 mt-6">

@@ -7,8 +7,17 @@ import happyChemicals from '../data/books/happy-chemicals.json'
 import nextFiveMoves from '../data/books/next-five-moves.json'
 import mindsetBook from '../data/books/mindset-book.json'
 import indistractable from '../data/books/indistractable.json'
+import grit from '../data/books/grit.json'
+import powerOfNow from '../data/books/power-of-now.json'
+import sevenHabits from '../data/books/seven-habits.json'
+import thinkingFastSlow from '../data/books/thinking-fast-slow.json'
+import psychologyOfMoney from '../data/books/psychology-of-money.json'
+import millionaireNextDoor from '../data/books/millionaire-next-door.json'
+import thinkAndGrowRich from '../data/books/think-and-grow-rich.json'
+import blueOceanStrategy from '../data/books/blue-ocean-strategy.json'
+import threeSecondRule from '../data/books/three-second-rule.json'
 
-const ALL_BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable]
+const ALL_BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable, grit, powerOfNow, sevenHabits, thinkingFastSlow, psychologyOfMoney, millionaireNextDoor, thinkAndGrowRich, blueOceanStrategy, threeSecondRule]
 
 const BOOK_COVERS = {
   'strengths-finder': '/backgrounds/raw-diamond.png',
@@ -19,36 +28,21 @@ const BOOK_COVERS = {
   'indistractable': '/backgrounds/focus-shield.png',
 }
 
+const GOAL_OPTIONS = [
+  { id: 'productivity', label: 'פרודוקטיביות והרגלים', emoji: '⚡', books: ['atomic-habits', 'indistractable', 'three-second-rule'] },
+  { id: 'thinking', label: 'חשיבה וקבלת החלטות', emoji: '🧠', books: ['thinking-fast-slow', 'mindset-book', 'think-and-grow-rich'] },
+  { id: 'money', label: 'כסף ופיננסים', emoji: '💰', books: ['psychology-of-money', 'millionaire-next-door'] },
+  { id: 'resilience', label: 'מערכות יחסים וחוסן נפשי', emoji: '💪', books: ['happy-chemicals', 'power-of-now', 'grit'] },
+  { id: 'all', label: 'לגלות — תראה לי הכל', emoji: '🌟', books: null },
+]
+
+const TIME_OPTIONS = [3, 5, 10, 15]
+
 const STEPS = [
-  {
-    id: 'welcome',
-    icon: Brain,
-    title: 'ברוך הבא ל-MindSet!',
-    subtitle: 'הפלטפורמה שהופכת ספרים למשחקי למידה',
-    description: 'למידה חוויתית של ספרי פיתוח אישי — 5 דקות ביום עם תרגילים, ניקוד ומאמן AI אישי.',
-    visual: 'brain',
-  },
-  {
-    id: 'how',
-    icon: Gamepad2,
-    title: 'איך זה עובד?',
-    subtitle: '3 צעדים פשוטים',
-    visual: 'demo',
-  },
-  {
-    id: 'gamification',
-    icon: Trophy,
-    title: 'תשחק, תרוויח, תתקדם',
-    subtitle: 'מערכת גיימיפיקציה שלמה',
-    visual: 'gamification',
-  },
-  {
-    id: 'pick',
-    icon: BookOpen,
-    title: 'בחר את הספר הראשון שלך',
-    subtitle: 'הפרק הראשון חינם לגמרי!',
-    visual: 'books',
-  },
+  { id: 'goal', title: 'מה הכי חשוב לך עכשיו?', subtitle: 'נתאים לך ספרים לפי התחום שמעניין אותך' },
+  { id: 'time', title: 'כמה דקות ביום תרצה ללמוד?', subtitle: 'עקביות > אורך. אפשר לשנות בכל רגע.' },
+  { id: 'mechanics', title: 'ככה זה עובד', subtitle: 'הנה מה שתפגוש בכל שיעור' },
+  { id: 'pick', title: 'בחר את הספר הראשון שלך', subtitle: 'הפרק הראשון חינם לגמרי!' },
 ]
 
 // Mini exercise demo - simulates a multiple choice question
@@ -113,16 +107,30 @@ function ExerciseDemo() {
 export default function Onboarding({ onComplete }) {
   const { updatePlayer } = usePlayer()
   const [step, setStep] = useState(0)
+  const [selectedGoal, setSelectedGoal] = useState(null)
+  const [selectedTime, setSelectedTime] = useState(5)
   const [selectedBook, setSelectedBook] = useState(null)
   const [transitioning, setTransitioning] = useState(false)
 
   const current = STEPS[step]
   const isLast = step === STEPS.length - 1
 
+  // Filter books based on goal selection
+  const goalOption = GOAL_OPTIONS.find(g => g.id === selectedGoal)
+  const recommendedBooks = goalOption?.books
+    ? ALL_BOOKS.filter(b => goalOption.books.includes(b.slug))
+    : ALL_BOOKS
+
+  const canProceed = () => {
+    if (current.id === 'goal') return !!selectedGoal
+    if (current.id === 'pick') return !!selectedBook
+    return true
+  }
+
   const goNext = () => {
+    if (!canProceed()) return
     if (isLast) {
-      if (!selectedBook) return
-      updatePlayer(prev => ({ ...prev, onboardingComplete: true }))
+      updatePlayer(prev => ({ ...prev, onboardingComplete: true, dailyGoalMinutes: selectedTime }))
       onComplete(selectedBook)
       return
     }
@@ -142,22 +150,27 @@ export default function Onboarding({ onComplete }) {
     }, 250)
   }
 
-  // Keyboard navigation: arrows + Enter
+  const handleSkip = () => {
+    updatePlayer(prev => ({ ...prev, onboardingComplete: true }))
+    onComplete(null)
+  }
+
+  // Keyboard navigation
   useEffect(() => {
     const handler = (e) => {
-      if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') goNext()
-      if (e.key === 'ArrowRight' || e.key === 'ArrowUp') goBack()
       if (e.key === 'Enter') goNext()
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [step, selectedBook])
+  }, [step, selectedGoal, selectedTime, selectedBook])
 
   return (
-    <div className="min-h-dvh flex flex-col bg-bg-base relative overflow-hidden">
-      {/* Background orbs */}
-      <div className="absolute top-20 right-0 w-[400px] h-[400px] rounded-full bg-deep-petrol/20 blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full bg-gold/8 blur-[80px] pointer-events-none" />
+    <div className="min-h-dvh flex flex-col bg-bg-base relative">
+      {/* Decorative orbs — clipped to their own layer so the page can still scroll */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div className="absolute top-20 right-0 w-[400px] h-[400px] rounded-full bg-deep-petrol/20 blur-[100px]" />
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full bg-gold/8 blur-[80px]" />
+      </div>
 
       {/* Progress dots + step counter */}
       <div className="flex flex-col items-center pt-8 pb-4 relative z-10 gap-2">
@@ -180,130 +193,89 @@ export default function Onboarding({ onComplete }) {
       <div className={`flex-1 flex flex-col items-center justify-center px-6 relative z-10 ${
         transitioning ? 'animate-exercise-exit' : 'animate-exercise-enter'
       }`}>
-        {/* Icon / Image */}
-        {current.visual === 'books' ? (
-          <img
-            src="/backgrounds/compass-books.png"
-            alt=""
-            className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl object-cover mb-6 animate-bounce-in shadow-lg shadow-gold/20"
-          />
-        ) : current.visual === 'brain' ? (
-          <>
-            <video
-              autoPlay loop muted playsInline
-              className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl object-cover mb-6 animate-bounce-in shadow-lg shadow-deep-petrol/30 hidden sm:block"
-              aria-hidden="true"
-            >
-              <source src="/book-brain-video.mp4" type="video/mp4" />
-            </video>
-            <img
-              src="/backgrounds/hero-book-brain.png"
-              alt=""
-              className="w-28 h-16 sm:hidden rounded-2xl object-cover mb-6 animate-bounce-in shadow-lg shadow-deep-petrol/30"
-            />
-          </>
-        ) : (
-          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center mb-6 animate-bounce-in">
-            <current.icon className="w-10 h-10 text-frost-white" />
-          </div>
-        )}
-
         {/* Title */}
-        <h1 className="font-display text-3xl font-bold text-frost-white text-center mb-2">
+        <h1 className="font-display text-2xl sm:text-3xl font-bold text-frost-white text-center mb-2">
           {current.title}
         </h1>
         <p className="text-frost-white/50 text-sm text-center mb-8 max-w-sm">
           {current.subtitle}
         </p>
 
-        {/* Step-specific content */}
-        {current.visual === 'brain' && (
-          <div className="max-w-sm w-full">
-            <p className="text-frost-white/60 text-sm text-center leading-relaxed mb-6">
-              {current.description}
-            </p>
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { num: '8', label: 'סוגי תרגילים' },
-                { num: String(ALL_BOOKS.length), label: 'ספרים' },
-                { num: '15\'', label: 'לכל ספר' },
-              ].map(s => (
-                <div key={s.label} className="glass-card p-3 text-center">
-                  <p className="font-display text-xl font-bold text-gold">{s.num}</p>
-                  <p className="text-[10px] text-frost-white/40 mt-0.5">{s.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {current.visual === 'demo' && (
-          <div className="max-w-sm w-full space-y-4">
-            <div className="flex items-center gap-3 mb-2">
-              {[
-                { emoji: '📖', text: 'בחר ספר', delay: '0s' },
-                { emoji: '🎮', text: 'שחק תרגילים', delay: '0.1s' },
-                { emoji: '🧠', text: 'צבור XP', delay: '0.2s' },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className="flex-1 glass-card p-2.5 text-center animate-fade-in"
-                  style={{ animationDelay: item.delay }}
-                >
-                  <span className="text-lg block">{item.emoji}</span>
-                  <p className="text-[10px] text-frost-white/60 mt-1">{item.text}</p>
-                </div>
-              ))}
-            </div>
-            {/* Live exercise demo */}
-            <ExerciseDemo />
-          </div>
-        )}
-
-        {current.visual === 'gamification' && (
-          <div className="max-w-sm w-full grid grid-cols-2 gap-2.5">
-            {[
-              { icon: '🔥', title: 'רצפים', desc: 'למד כל יום', delay: '0s' },
-              { icon: '⚡', title: 'XP בונוסים', desc: 'ענה מהר', delay: '0.05s' },
-              { icon: '🏆', title: 'הישגים', desc: '28 הישגים', delay: '0.1s' },
-              { icon: '👑', title: 'ליגות', desc: 'התחרה בטבלה', delay: '0.15s' },
-              { icon: '💡', title: 'רמזים AI', desc: 'מאמן אישי', delay: '0.2s' },
-              { icon: '📊', title: 'סטטיסטיקות', desc: 'עקוב אחרי ההתקדמות', delay: '0.25s' },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="glass-card p-3 flex items-center gap-2.5 animate-fade-in"
-                style={{ animationDelay: item.delay }}
+        {/* Step: Goal */}
+        {current.id === 'goal' && (
+          <div className="max-w-sm w-full space-y-2.5">
+            {GOAL_OPTIONS.map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => setSelectedGoal(opt.id)}
+                className={`w-full glass-card p-4 flex items-center gap-3 transition-all ${
+                  selectedGoal === opt.id ? 'border-gold/40 bg-gold/5' : 'hover:border-white/20'
+                }`}
               >
-                <span className="text-xl shrink-0">{item.icon}</span>
-                <div>
-                  <p className="text-xs font-bold text-frost-white">{item.title}</p>
-                  <p className="text-[10px] text-frost-white/40">{item.desc}</p>
-                </div>
-              </div>
+                <span className="text-xl">{opt.emoji}</span>
+                <span className="text-sm text-frost-white font-medium">{opt.label}</span>
+                {selectedGoal === opt.id && (
+                  <Sparkles className="w-4 h-4 text-gold mr-auto" />
+                )}
+              </button>
             ))}
           </div>
         )}
 
-        {current.visual === 'books' && (
+        {/* Step: Time */}
+        {current.id === 'time' && (
+          <div className="max-w-sm w-full">
+            <div className="grid grid-cols-4 gap-3 mb-4">
+              {TIME_OPTIONS.map(t => (
+                <button
+                  key={t}
+                  onClick={() => setSelectedTime(t)}
+                  className={`glass-card p-4 text-center transition-all ${
+                    selectedTime === t ? 'border-gold/40 bg-gold/5' : 'hover:border-white/20'
+                  }`}
+                >
+                  <span className="font-display text-2xl font-bold text-frost-white block">{t}</span>
+                  <span className="text-[10px] text-frost-white/40">דקות</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Step: Mechanics */}
+        {current.id === 'mechanics' && (
           <div className="max-w-sm w-full space-y-3">
-            {ALL_BOOKS.map((book, i) => (
+            {[
+              { icon: '⚡', title: 'XP', desc: 'ניקוד שאתה צובר על למידה פעילה. עוזר לך לעלות רמות וליגות.' },
+              { icon: '❤️', title: 'לבבות', desc: '5 הזדמנויות לטעות (כמו במשחק). מתחדשים כל 20 דקות.' },
+              { icon: '🔥', title: 'רצף', desc: 'ימים ברצף שלמדת. המפתח לזיכרון לטווח ארוך.' },
+            ].map((item, i) => (
+              <div key={i} className="glass-card p-4 flex items-center gap-3 animate-fade-in" style={{ animationDelay: `${i * 0.1}s` }}>
+                <span className="text-2xl shrink-0">{item.icon}</span>
+                <div>
+                  <p className="text-sm font-bold text-frost-white">{item.title}</p>
+                  <p className="text-xs text-frost-white/50 leading-relaxed">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+            <p className="text-center text-xs text-frost-white/30 mt-4">בכל שיעור תקרא קטע קצר, ואז תתרגל. אל תדאג לטעויות — הן חלק מהלמידה.</p>
+          </div>
+        )}
+
+        {/* Step: Pick book */}
+        {current.id === 'pick' && (
+          <div className="max-w-sm w-full space-y-3 max-h-[50vh] overflow-y-auto">
+            {recommendedBooks.map((book, i) => (
               <button
                 key={book.slug}
                 onClick={() => setSelectedBook(book.slug)}
                 className={`w-full glass-card p-4 flex items-center gap-3 transition-all animate-fade-in ${
-                  selectedBook === book.slug
-                    ? 'border-gold/40 bg-gold/5'
-                    : 'hover:border-white/20'
+                  selectedBook === book.slug ? 'border-gold/40 bg-gold/5' : 'hover:border-white/20'
                 }`}
-                style={{ animationDelay: `${i * 0.1}s` }}
+                style={{ animationDelay: `${i * 0.05}s` }}
               >
                 {BOOK_COVERS[book.slug] ? (
-                  <img
-                    src={BOOK_COVERS[book.slug]}
-                    alt=""
-                    className="w-12 h-12 rounded-xl object-cover shrink-0"
-                  />
+                  <img src={BOOK_COVERS[book.slug]} alt="" className="w-12 h-12 rounded-xl object-cover shrink-0" />
                 ) : (
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-deep-petrol to-dusty-aqua flex items-center justify-center text-xl shrink-0">
                     {book.icon}
@@ -324,7 +296,7 @@ export default function Onboarding({ onComplete }) {
         )}
       </div>
 
-      {/* Bottom buttons — safe area padding for notch devices */}
+      {/* Bottom buttons */}
       <div className="px-6 pt-4 relative z-10" style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom, 2rem))' }}>
         <div className="max-w-sm mx-auto flex items-center gap-3">
           {step > 0 && (
@@ -338,13 +310,18 @@ export default function Onboarding({ onComplete }) {
           )}
           <button
             onClick={goNext}
-            disabled={isLast && !selectedBook}
+            disabled={!canProceed()}
             className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl font-bold text-base transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-gradient-to-l from-gold via-gold to-[#e8c84a] text-bg-base hover:brightness-110 active:scale-[0.98] min-h-[52px]"
           >
-            {isLast ? 'התחל ללמוד!' : 'המשך'}
+            {isLast ? 'בוא נתחיל!' : 'המשך'}
             <ArrowLeft className="w-4 h-4" />
           </button>
         </div>
+        {step === 0 && (
+          <button onClick={handleSkip} className="block mx-auto mt-3 text-xs text-frost-white/30 hover:text-frost-white/50 transition-colors">
+            דלג
+          </button>
+        )}
         {step === 0 && (
           <button
             onClick={() => {
