@@ -1,6 +1,8 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { usePlayer } from '../../contexts/PlayerContext'
-import { Home, RotateCcw, BarChart2, Settings, Trophy } from 'lucide-react'
+import { useAuth } from '../../contexts/AuthContext'
+import { isAdmin } from '../../config/admin'
+import { Home, RotateCcw, BarChart2, Settings, Trophy, Shield } from 'lucide-react'
 
 const NAV_ITEMS = [
   { path: '/settings', icon: Settings, label: 'הגדרות' },
@@ -8,12 +10,15 @@ const NAV_ITEMS = [
   { path: '/leaderboard', icon: Trophy, label: 'מובילים' },
   { path: '/review', icon: RotateCcw, label: 'חזרה', badgeKey: 'review' },
   { path: '/home', icon: Home, label: 'בית' },
+  { path: '/admin', icon: Shield, label: 'ניהול', adminOnly: true },
 ]
 
 export default function BottomNav() {
   const navigate = useNavigate()
   const location = useLocation()
   const { player } = usePlayer()
+  const { user } = useAuth()
+  const showAdmin = isAdmin(user?.email)
 
   // Include both manual review queue and due spaced-repetition items
   const today = new Date().toISOString().split('T')[0]
@@ -34,7 +39,7 @@ export default function BottomNav() {
       aria-label="ניווט ראשי"
     >
       <ul className="max-w-2xl mx-auto flex items-center justify-around px-2 list-none m-0 p-0">
-        {NAV_ITEMS.map(item => {
+        {NAV_ITEMS.filter(item => !item.adminOnly || showAdmin).map(item => {
           const isActive = location.pathname === item.path ||
             (item.path === '/home' && location.pathname.startsWith('/book/'))
           const Icon = item.icon
