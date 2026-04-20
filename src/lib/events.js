@@ -114,10 +114,10 @@ export function checkStreakMilestone(streak) {
  * Research: "Daily quests increased DAU by 25%"
  */
 export const WEEKLY_GOALS = [
-  { xp: 100, label: 'קל', emoji: '🌱' },
-  { xp: 250, label: 'רגיל', emoji: '🌿' },
-  { xp: 500, label: 'רציני', emoji: '🌳' },
-  { xp: 1000, label: 'אינטנסיבי', emoji: '🔥' },
+  { xp: 100, label: 'עקבי', emoji: '🌱', timeHint: '~3 דק׳ ביום, 3 ימים בשבוע' },
+  { xp: 250, label: 'מתמיד', emoji: '🌿', timeHint: '~5 דק׳ ביום, 4 ימים בשבוע' },
+  { xp: 500, label: 'מקצועי', emoji: '🌳', timeHint: '~10 דק׳ ביום, 5 ימים בשבוע' },
+  { xp: 1000, label: 'מחויב', emoji: '🔥', timeHint: '~15 דק׳ ביום, כל יום' },
 ]
 
 export function getWeeklyXPEarned(player) {

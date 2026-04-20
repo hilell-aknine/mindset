@@ -7,7 +7,8 @@ import { Home, RotateCcw, BarChart2, Settings, Trophy, Shield } from 'lucide-rea
 const NAV_ITEMS = [
   { path: '/settings', icon: Settings, label: 'הגדרות' },
   { path: '/stats', icon: BarChart2, label: 'סטטיסטיקות' },
-  { path: '/leaderboard', icon: Trophy, label: 'מובילים' },
+  // Leaderboard hidden until real users exist — fake data hurts trust
+  // { path: '/leaderboard', icon: Trophy, label: 'מובילים' },
   { path: '/review', icon: RotateCcw, label: 'חזרה', badgeKey: 'review' },
   { path: '/home', icon: Home, label: 'בית' },
   { path: '/admin', icon: Shield, label: 'ניהול', adminOnly: true },

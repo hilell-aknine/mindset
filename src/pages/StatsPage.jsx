@@ -209,9 +209,10 @@ export default function StatsPage() {
   const xpProgress = getXPProgress(player.xp)
   const currentThreshold = LEVEL_THRESHOLDS[player.level - 1] || 0
   const nextThreshold = LEVEL_THRESHOLDS[player.level] || LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1]
-  const accuracy = player.totalCorrect + player.totalWrong > 0
-    ? Math.round((player.totalCorrect / (player.totalCorrect + player.totalWrong)) * 100)
-    : 0
+  const totalAnswers = player.totalCorrect + player.totalWrong
+  const accuracy = totalAnswers >= 10
+    ? Math.round((player.totalCorrect / totalAnswers) * 100)
+    : null
 
   const totalLessonsAvailable = BOOKS.reduce((acc, b) =>
     acc + b.chapters.reduce((a, ch) => a + ch.lessons.length, 0), 0)
@@ -237,7 +238,7 @@ export default function StatsPage() {
             onClick={() => {
               navigator.share({
                 title: 'הסטטיסטיקות שלי ב-MindSet',
-                text: `רמה ${player.level} (${levelName}) | ${player.xp} XP | דיוק ${accuracy}% | רצף ${player.currentStreak} ימים`,
+                text: `רמה ${player.level} (${levelName}) | ${player.xp} XP${accuracy !== null ? ` | דיוק ${accuracy}%` : ''} | רצף ${player.currentStreak} ימים`,
               }).catch(() => {})
             }}
             className="p-2.5 -m-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors text-frost-white/30 hover:text-frost-white/60"
@@ -270,7 +271,7 @@ export default function StatsPage() {
       <div className="grid grid-cols-2 gap-3 mb-6">
         {[
           { icon: Brain, color: 'text-dusty-aqua', bg: 'bg-dusty-aqua/10', value: player.xp.toLocaleString(), label: 'נקודות XP' },
-          { icon: Target, color: 'text-success', bg: 'bg-success/10', value: `${accuracy}%`, label: 'דיוק' },
+          { icon: Target, color: 'text-success', bg: 'bg-success/10', value: accuracy !== null ? `${accuracy}%` : '—', label: accuracy !== null ? 'דיוק' : 'עוד כמה תרגילים...' },
           { icon: Flame, color: 'text-warning', bg: 'bg-warning/10', value: player.longestStreak.toLocaleString(), label: 'רצף שיא' },
           { icon: Heart, color: 'text-danger', bg: 'bg-danger/10', value: player.totalCorrect.toLocaleString(), label: 'תשובות נכונות' },
           { icon: Zap, color: 'text-gold', bg: 'bg-gold/10', value: completedCount.toLocaleString(), label: 'שיעורים' },

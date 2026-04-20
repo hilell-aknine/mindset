@@ -283,13 +283,17 @@ export default function BookPage() {
               >
                 {/* Chapter header */}
                 <div className="flex items-center gap-3 mb-3 relative z-10">
-                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center text-xl shrink-0 ${
-                    progress.percent === 100
-                      ? 'bg-success/20 text-success'
-                      : unlocked
-                        ? 'bg-gradient-to-br from-deep-petrol to-dusty-aqua text-frost-white'
-                        : 'bg-white/5 text-frost-white/20'
-                  }`}>
+                  <div
+                    className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center text-xl shrink-0 ${
+                      progress.percent === 100
+                        ? 'bg-success/20 text-success'
+                        : unlocked
+                          ? 'bg-gradient-to-br from-deep-petrol to-dusty-aqua text-frost-white'
+                          : 'bg-white/5 text-frost-white/20'
+                    }`}
+                    aria-label={chapter.title}
+                    role="img"
+                  >
                     {progress.percent === 100 ? <Check className="w-6 h-6" /> :
                      !unlocked ? <Lock className="w-5 h-5" /> : chapter.icon}
                   </div>
@@ -338,13 +342,13 @@ export default function BookPage() {
                                 : 'glass-card hover:border-white/15'
                           }`}
                         >
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                          <div className={`w-11 h-11 p-2.5 -m-1 rounded-xl flex items-center justify-center shrink-0 ${
                             completed ? 'bg-success/20' : isContinue ? 'bg-gold/15' : 'bg-white/5'
                           }`}>
                             {completed ? (
-                              <Check className="w-4 h-4 text-success" />
+                              <Check className="w-5 h-5 text-success" />
                             ) : (
-                              <Play className={`w-4 h-4 ${isContinue ? 'text-gold' : 'text-frost-white/40'}`} />
+                              <Play className={`w-5 h-5 ${isContinue ? 'text-gold fill-gold' : 'text-frost-white/40'}`} />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
@@ -359,8 +363,6 @@ export default function BookPage() {
                               </span>
                               <span className="text-frost-white/10">·</span>
                               <span className="text-[10px] text-frost-white/25">{getLessonTime(lesson)}</span>
-                              <span className="text-frost-white/10">·</span>
-                              <span className="text-[10px]">{types.join('')}</span>
                             </div>
                           </div>
                           {completed && (

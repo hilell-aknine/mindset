@@ -170,7 +170,7 @@ export default function SettingsPage() {
           <h3 className="text-sm font-bold text-frost-white">יעד שבועי</h3>
         </div>
         <p className="text-xs text-frost-white/40 mb-3">
-          כמה XP תרצה לצבור בשבוע? יעד גבוה = התקדמות מהירה.
+          עקביות חשובה ממהירות. בחר יעד שתוכל לעמוד בו לאורך זמן.
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {WEEKLY_GOALS.map(goal => {
@@ -192,6 +192,9 @@ export default function SettingsPage() {
                 <span className="text-[10px] text-frost-white/30 block mt-0.5">
                   {goal.xp} XP
                 </span>
+                {goal.timeHint && (
+                  <span className="text-[9px] text-frost-white/20 block mt-1">{goal.timeHint}</span>
+                )}
               </button>
             )
           })}
