@@ -30,8 +30,9 @@ import awakenTheGiant from '../data/books/awaken-the-giant.json'
 import resultantIntelligence from '../data/books/resultant-intelligence.json'
 import positiveIntelligence from '../data/books/positive-intelligence.json'
 import richDadPoorDad from '../data/books/rich-dad-poor-dad.json'
+import deepWork from '../data/books/deep-work.json'
 
-const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable, grit, powerOfNow, sevenHabits, thinkingFastSlow, psychologyOfMoney, millionaireNextDoor, thinkAndGrowRich, blueOceanStrategy, threeSecondRule, awakenTheGiant, resultantIntelligence, positiveIntelligence, richDadPoorDad]
+const BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable, grit, powerOfNow, sevenHabits, thinkingFastSlow, psychologyOfMoney, millionaireNextDoor, thinkAndGrowRich, blueOceanStrategy, threeSecondRule, awakenTheGiant, resultantIntelligence, positiveIntelligence, richDadPoorDad, deepWork]
 
 const BOOK_COVERS = {
   'strengths-finder': '/backgrounds/raw-diamond.png',
@@ -44,7 +45,7 @@ const BOOK_COVERS = {
 
 const BOOK_CATEGORIES = {
   'הכל': null,
-  'פרודוקטיביות': ['atomic-habits', 'indistractable', 'three-second-rule', 'resultant-intelligence'],
+  'פרודוקטיביות': ['atomic-habits', 'indistractable', 'three-second-rule', 'resultant-intelligence', 'deep-work'],
   'חשיבה': ['thinking-fast-slow', 'mindset-book', 'think-and-grow-rich', 'positive-intelligence'],
   'כסף': ['psychology-of-money', 'millionaire-next-door', 'rich-dad-poor-dad'],
   'רגש וחוסן': ['happy-chemicals', 'power-of-now', 'grit'],

@@ -20,8 +20,9 @@ import awakenTheGiant from '../data/books/awaken-the-giant.json'
 import resultantIntelligence from '../data/books/resultant-intelligence.json'
 import positiveIntelligence from '../data/books/positive-intelligence.json'
 import richDadPoorDad from '../data/books/rich-dad-poor-dad.json'
+import deepWork from '../data/books/deep-work.json'
 
-const ALL_BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable, grit, powerOfNow, sevenHabits, thinkingFastSlow, psychologyOfMoney, millionaireNextDoor, thinkAndGrowRich, blueOceanStrategy, threeSecondRule, awakenTheGiant, resultantIntelligence, positiveIntelligence, richDadPoorDad]
+const ALL_BOOKS = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable, grit, powerOfNow, sevenHabits, thinkingFastSlow, psychologyOfMoney, millionaireNextDoor, thinkAndGrowRich, blueOceanStrategy, threeSecondRule, awakenTheGiant, resultantIntelligence, positiveIntelligence, richDadPoorDad, deepWork]
 
 const BOOK_COVERS = {
   'strengths-finder': '/backgrounds/raw-diamond.png',

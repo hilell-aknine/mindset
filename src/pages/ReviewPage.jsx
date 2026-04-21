@@ -25,9 +25,10 @@ import awakenTheGiant from '../data/books/awaken-the-giant.json'
 import resultantIntelligence from '../data/books/resultant-intelligence.json'
 import positiveIntelligence from '../data/books/positive-intelligence.json'
 import richDadPoorDad from '../data/books/rich-dad-poor-dad.json'
+import deepWork from '../data/books/deep-work.json'
 
-const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook, 'indistractable': indistractable, 'grit': grit, 'power-of-now': powerOfNow, 'seven-habits': sevenHabits, 'thinking-fast-slow': thinkingFastSlow, 'psychology-of-money': psychologyOfMoney, 'millionaire-next-door': millionaireNextDoor, 'think-and-grow-rich': thinkAndGrowRich, 'blue-ocean-strategy': blueOceanStrategy, 'three-second-rule': threeSecondRule, 'awaken-the-giant': awakenTheGiant, 'resultant-intelligence': resultantIntelligence, 'positive-intelligence': positiveIntelligence, 'rich-dad-poor-dad': richDadPoorDad }
-const BOOKS_LIST = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable, grit, powerOfNow, sevenHabits, thinkingFastSlow, psychologyOfMoney, millionaireNextDoor, thinkAndGrowRich, blueOceanStrategy, threeSecondRule, awakenTheGiant, resultantIntelligence, positiveIntelligence, richDadPoorDad]
+const BOOKS = { 'strengths-finder': strengthsFinder, 'atomic-habits': atomicHabits, 'happy-chemicals': happyChemicals, 'next-five-moves': nextFiveMoves, 'mindset-book': mindsetBook, 'indistractable': indistractable, 'grit': grit, 'power-of-now': powerOfNow, 'seven-habits': sevenHabits, 'thinking-fast-slow': thinkingFastSlow, 'psychology-of-money': psychologyOfMoney, 'millionaire-next-door': millionaireNextDoor, 'think-and-grow-rich': thinkAndGrowRich, 'blue-ocean-strategy': blueOceanStrategy, 'three-second-rule': threeSecondRule, 'awaken-the-giant': awakenTheGiant, 'resultant-intelligence': resultantIntelligence, 'positive-intelligence': positiveIntelligence, 'rich-dad-poor-dad': richDadPoorDad, 'deep-work': deepWork }
+const BOOKS_LIST = [strengthsFinder, atomicHabits, happyChemicals, nextFiveMoves, mindsetBook, indistractable, grit, powerOfNow, sevenHabits, thinkingFastSlow, psychologyOfMoney, millionaireNextDoor, thinkAndGrowRich, blueOceanStrategy, threeSecondRule, awakenTheGiant, resultantIntelligence, positiveIntelligence, richDadPoorDad, deepWork]
 
 export default function ReviewPage() {
   const navigate = useNavigate()
