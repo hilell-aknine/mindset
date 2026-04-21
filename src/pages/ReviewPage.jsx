@@ -115,7 +115,7 @@ export default function ReviewPage() {
   const hasEverCompleted = Object.keys(player.completedLessons || {}).length > 0
   if (reviewExercises.length === 0) {
     return (
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
+      <div className="max-w-2xl mx-auto w-full px-4 py-4">
         <div className="flex items-center gap-3 mb-6 animate-fade-in">
           <button
             onClick={() => navigate('/home')}
@@ -165,14 +165,14 @@ export default function ReviewPage() {
             חזרה לספרייה
           </button>
         </div>
-      </main>
+      </div>
     )
   }
 
   // All reviewed
   if (currentIndex >= reviewExercises.length) {
     return (
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
+      <div className="max-w-2xl mx-auto w-full px-4 py-4">
         <div className="text-center py-16">
           <div className="w-20 h-20 rounded-3xl bg-success/10 mx-auto mb-4 flex items-center justify-center animate-bounce-in">
             <Trophy className="w-10 h-10 text-success" />
@@ -207,7 +207,7 @@ export default function ReviewPage() {
             חזרה לספרייה
           </button>
         </div>
-      </main>
+      </div>
     )
   }
 

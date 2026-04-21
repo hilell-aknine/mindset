@@ -222,7 +222,7 @@ export default function StatsPage() {
   const totalAchievements = ACHIEVEMENTS.length
 
   return (
-    <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
+    <div className="max-w-2xl mx-auto w-full px-4 py-4">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6 animate-fade-in">
         <button
@@ -441,6 +441,6 @@ export default function StatsPage() {
           </div>
         )
       })}
-    </main>
+    </div>
   )
 }

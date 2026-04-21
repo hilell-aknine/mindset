@@ -103,13 +103,13 @@ function OnboardingGate({ children }) {
 
 function PageLayout({ children, hideFooter = false }) {
   return (
-    <>
+    <main className="h-dvh flex flex-col overflow-hidden">
       <Header />
-      <main id="main-content" className="animate-page-enter has-bottom-nav">
+      <div id="main-content" className="flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-momentum has-bottom-nav animate-page-enter" style={{ WebkitOverflowScrolling: 'touch' }}>
         {children}
-      </main>
-      {!hideFooter && <Footer />}
-    </>
+        {!hideFooter && <Footer />}
+      </div>
+    </main>
   )
 }
 

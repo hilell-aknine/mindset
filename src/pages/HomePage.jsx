@@ -205,7 +205,7 @@ export default function HomePage() {
           : 'מה תרצה ללמוד היום?'
 
   return (
-    <main className="flex-1 max-w-2xl mx-auto w-full px-4 pt-6 pb-24">
+    <div className="max-w-2xl mx-auto w-full px-4 pt-4 pb-4">
       <PopupModal />
       {/* Welcome */}
       <div className="mb-6 animate-fade-in">
@@ -488,6 +488,6 @@ export default function HomePage() {
 
       {/* First-time feature spotlight */}
       <FeatureSpotlight />
-    </main>
+    </div>
   )
 }

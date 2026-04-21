@@ -53,7 +53,7 @@ export default function BookPage() {
   const book = BOOKS[slug]
   if (!book) {
     return (
-      <main className="flex-1 flex flex-col items-center justify-center gap-4 px-6 text-center">
+      <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6 text-center">
         <h1 className="text-2xl font-bold text-frost-white">הספר לא נמצא</h1>
         <p className="text-frost-white/50 text-sm">ייתכן שהספר הוסר או שהקישור שגוי.</p>
         <div className="flex gap-3 mt-2">
@@ -70,7 +70,7 @@ export default function BookPage() {
             לעמוד הבית
           </button>
         </div>
-      </main>
+      </div>
     )
   }
 
@@ -125,7 +125,7 @@ export default function BookPage() {
   const reviewCount = (player.reviewQueue || []).filter(r => r.bookSlug === slug).length
 
   return (
-    <main className="flex-1 max-w-2xl mx-auto w-full px-4 pt-6 pb-24">
+    <div className="max-w-2xl mx-auto w-full px-4 pt-4 pb-4">
       {/* Back + Title */}
       <div className="flex items-center gap-3 mb-4 animate-fade-in">
         <button
@@ -416,6 +416,6 @@ export default function BookPage() {
       {/* AI Coach floating button */}
       <AICoachButton bookSlug={slug} bookTitle={book.title} systemPrompt={book.systemPrompt} />
 
-    </main>
+    </div>
   )
 }
